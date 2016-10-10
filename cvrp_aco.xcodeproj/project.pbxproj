@@ -1,0 +1,289 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A320B0E51DABCB0C00F1E85D /* acovrp.c in Sources */ = {isa = PBXBuildFile; fileRef = A320B0D61DABCB0C00F1E85D /* acovrp.c */; };
+		A320B0E61DABCB0C00F1E85D /* ants.c in Sources */ = {isa = PBXBuildFile; fileRef = A320B0D71DABCB0C00F1E85D /* ants.c */; };
+		A320B0E71DABCB0C00F1E85D /* InOut.c in Sources */ = {isa = PBXBuildFile; fileRef = A320B0D91DABCB0C00F1E85D /* InOut.c */; };
+		A320B0E81DABCB0C00F1E85D /* ls.c in Sources */ = {isa = PBXBuildFile; fileRef = A320B0DB1DABCB0C00F1E85D /* ls.c */; };
+		A320B0E91DABCB0C00F1E85D /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = A320B0DD1DABCB0C00F1E85D /* Makefile */; };
+		A320B0EA1DABCB0C00F1E85D /* unix_timer.c in Sources */ = {isa = PBXBuildFile; fileRef = A320B0E01DABCB0C00F1E85D /* unix_timer.c */; };
+		A320B0EB1DABCB0C00F1E85D /* utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = A320B0E11DABCB0C00F1E85D /* utilities.c */; };
+		A320B0EC1DABCB0C00F1E85D /* vrp.c in Sources */ = {isa = PBXBuildFile; fileRef = A320B0E31DABCB0C00F1E85D /* vrp.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A320B0CA1DABCAC000F1E85D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		A320B0CC1DABCAC000F1E85D /* cvrp_aco */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cvrp_aco; sourceTree = BUILT_PRODUCTS_DIR; };
+		A320B0D61DABCB0C00F1E85D /* acovrp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = acovrp.c; sourceTree = "<group>"; };
+		A320B0D71DABCB0C00F1E85D /* ants.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ants.c; sourceTree = "<group>"; };
+		A320B0D81DABCB0C00F1E85D /* ants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ants.h; sourceTree = "<group>"; };
+		A320B0D91DABCB0C00F1E85D /* InOut.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = InOut.c; sourceTree = "<group>"; };
+		A320B0DA1DABCB0C00F1E85D /* InOut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InOut.h; sourceTree = "<group>"; };
+		A320B0DB1DABCB0C00F1E85D /* ls.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ls.c; sourceTree = "<group>"; };
+		A320B0DC1DABCB0C00F1E85D /* ls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ls.h; sourceTree = "<group>"; };
+		A320B0DD1DABCB0C00F1E85D /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		A320B0DE1DABCB0C00F1E85D /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		A320B0DF1DABCB0C00F1E85D /* timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timer.h; sourceTree = "<group>"; };
+		A320B0E01DABCB0C00F1E85D /* unix_timer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unix_timer.c; sourceTree = "<group>"; };
+		A320B0E11DABCB0C00F1E85D /* utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utilities.c; sourceTree = "<group>"; };
+		A320B0E21DABCB0C00F1E85D /* utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utilities.h; sourceTree = "<group>"; };
+		A320B0E31DABCB0C00F1E85D /* vrp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vrp.c; sourceTree = "<group>"; };
+		A320B0E41DABCB0C00F1E85D /* vrp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vrp.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A320B0C91DABCAC000F1E85D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A320B0C31DABCAC000F1E85D = {
+			isa = PBXGroup;
+			children = (
+				A320B0CE1DABCAC000F1E85D /* cvrp_aco */,
+				A320B0CD1DABCAC000F1E85D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A320B0CD1DABCAC000F1E85D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A320B0CC1DABCAC000F1E85D /* cvrp_aco */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A320B0CE1DABCAC000F1E85D /* cvrp_aco */ = {
+			isa = PBXGroup;
+			children = (
+				A320B0D61DABCB0C00F1E85D /* acovrp.c */,
+				A320B0D71DABCB0C00F1E85D /* ants.c */,
+				A320B0D81DABCB0C00F1E85D /* ants.h */,
+				A320B0D91DABCB0C00F1E85D /* InOut.c */,
+				A320B0DA1DABCB0C00F1E85D /* InOut.h */,
+				A320B0DB1DABCB0C00F1E85D /* ls.c */,
+				A320B0DC1DABCB0C00F1E85D /* ls.h */,
+				A320B0DD1DABCB0C00F1E85D /* Makefile */,
+				A320B0DE1DABCB0C00F1E85D /* README */,
+				A320B0DF1DABCB0C00F1E85D /* timer.h */,
+				A320B0E01DABCB0C00F1E85D /* unix_timer.c */,
+				A320B0E11DABCB0C00F1E85D /* utilities.c */,
+				A320B0E21DABCB0C00F1E85D /* utilities.h */,
+				A320B0E31DABCB0C00F1E85D /* vrp.c */,
+				A320B0E41DABCB0C00F1E85D /* vrp.h */,
+			);
+			path = cvrp_aco;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A320B0CB1DABCAC000F1E85D /* cvrp_aco */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A320B0D31DABCAC000F1E85D /* Build configuration list for PBXNativeTarget "cvrp_aco" */;
+			buildPhases = (
+				A320B0C81DABCAC000F1E85D /* Sources */,
+				A320B0C91DABCAC000F1E85D /* Frameworks */,
+				A320B0CA1DABCAC000F1E85D /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = cvrp_aco;
+			productName = cvrp_aco;
+			productReference = A320B0CC1DABCAC000F1E85D /* cvrp_aco */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A320B0C41DABCAC000F1E85D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = xiaoqi.sxq;
+				TargetAttributes = {
+					A320B0CB1DABCAC000F1E85D = {
+						CreatedOnToolsVersion = 7.3;
+					};
+				};
+			};
+			buildConfigurationList = A320B0C71DABCAC000F1E85D /* Build configuration list for PBXProject "cvrp_aco" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A320B0C31DABCAC000F1E85D;
+			productRefGroup = A320B0CD1DABCAC000F1E85D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A320B0CB1DABCAC000F1E85D /* cvrp_aco */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A320B0C81DABCAC000F1E85D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A320B0EB1DABCB0C00F1E85D /* utilities.c in Sources */,
+				A320B0E91DABCB0C00F1E85D /* Makefile in Sources */,
+				A320B0E81DABCB0C00F1E85D /* ls.c in Sources */,
+				A320B0E71DABCB0C00F1E85D /* InOut.c in Sources */,
+				A320B0EA1DABCB0C00F1E85D /* unix_timer.c in Sources */,
+				A320B0E51DABCB0C00F1E85D /* acovrp.c in Sources */,
+				A320B0EC1DABCB0C00F1E85D /* vrp.c in Sources */,
+				A320B0E61DABCB0C00F1E85D /* ants.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A320B0D11DABCAC000F1E85D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		A320B0D21DABCAC000F1E85D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		A320B0D41DABCAC000F1E85D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		A320B0D51DABCAC000F1E85D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A320B0C71DABCAC000F1E85D /* Build configuration list for PBXProject "cvrp_aco" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A320B0D11DABCAC000F1E85D /* Debug */,
+				A320B0D21DABCAC000F1E85D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A320B0D31DABCAC000F1E85D /* Build configuration list for PBXNativeTarget "cvrp_aco" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A320B0D41DABCAC000F1E85D /* Debug */,
+				A320B0D51DABCAC000F1E85D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A320B0C41DABCAC000F1E85D /* Project object */;
+}
