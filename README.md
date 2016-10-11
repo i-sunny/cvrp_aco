@@ -1,2 +1,2 @@
 # crvp_aco
-Ant colony optimization for the capacitated vehicle routing problem
+Ant colony optimization(ranked aco) for the capacitated vehicle routing problem
