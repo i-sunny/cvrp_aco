@@ -239,6 +239,30 @@ long int compute_tour_length( long int *tour, long int tour_size)
 }
 
 /*
+ * FUNCTION:    Determine for each route of this solution the center gravity
+ * INPUT:       tour, soulution point
+ *              i.e. toute = [0,1,4,2,0]
+ */
+void compute_tour_centers(long int *tour, struct route_center *centers, long int route_num)
+{
+    double gx = 0, gy = 0;
+    long int route_total_demand = 0;
+    long int i, j;
+    for (i = 0; i < route_num; i++) {
+        for (j = centers[i].beg; j < centers[i].end - 1; j++) {
+            route_total_demand += instance.nodeptr[tour[j]].demand;
+        }
+        for (j = centers[i].beg; j < centers[i].end - 1; j++) {
+            // weighted by demand
+            gx += instance.nodeptr[tour[j]].x * instance.nodeptr[tour[j]].demand * 1.0/ route_total_demand;
+            gy += instance.nodeptr[tour[j]].y * instance.nodeptr[tour[j]].demand * 1.0 / route_total_demand;
+        }
+        centers[i].cp->x = (long int)(gx + 0.5);
+        centers[i].cp->y = (long int)(gy + 0.5);
+    }
+}
+
+/*
  * 检查 ant vrp solution 的有效性
  * i.e. tour = [0,1,4,2,0,5,3,0] toute1 = [0,1,4,2,0] route2 = [0,5,3,0]
  */
@@ -301,7 +325,7 @@ error:
 /*
  * 检查单条回路有效性
  * 注意depot点出现两次（分别出现在首尾）
- * i.e. toute1 = [0,1,4,2,0]
+ * i.e. toute = [0,1,4,2,0]
  */
 int vrp_check_route(const long int *tour, long int rbeg, long int rend)
 {

@@ -24,6 +24,12 @@ struct point {
   long int demand;     /* 每个配送点需求 */
 };
 
+struct route_center{
+    long int beg;                   /* route在tour中的开始位置 */
+    long int end;                   /* route在tour中的结束位置 */
+    struct point *cp;               /* center pointroute */
+};
+
 struct problem{
   char          name[LINE_BUF_LEN];      	 /* instance name */
   char          edge_weight_type[LINE_BUF_LEN];  /* selfexplanatory */
@@ -60,6 +66,8 @@ long int compute_tour_length( long int *t, long int t_sz);
 long int **compute_distances(void);
 
 long int ** compute_nn_lists ( void );
+
+void compute_tour_centers(long int *tour, struct route_center *centers, long int route_num);
 
 int vrp_check_solution(const long int *tour, long int tour_size);
 

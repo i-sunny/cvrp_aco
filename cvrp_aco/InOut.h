@@ -25,6 +25,10 @@ extern long int optimal;                 /* optimal solution or bound to find */
 extern long int best_solution_iter;   /* iteration in which best solution is found */
 extern long int *demand_meet_node_map;   /** 所有可配送的点(单次route中，目前车辆可以仍可配送的点) */
 
+extern long int master_problem_iteration_num;   /* 每次外循环，主问题蚁群的迭代的次数 */
+extern long int sub_problem_iteration_num;      /* 每次外循环，子问题蚁群的迭代的次数 */
+extern long int num_sub_problems;               /* 拆分子问题个数 */
+
 
 void init_program( long int argc, char *argv[] );
 void exit_program(void);

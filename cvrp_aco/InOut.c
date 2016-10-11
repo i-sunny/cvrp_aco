@@ -26,6 +26,7 @@
 #include "utilities.h"
 #include "ants.h"
 #include "ls.h"
+#include "parallel_acovrp.h"
 
 long int iteration;           /* counter of number iterations */
 long int max_iteration;         /* maximum number of iterations */
@@ -37,6 +38,11 @@ double   best_so_far_time;        /* 当前最优解出现的时间 */
 long int optimal;                 /* optimal solution or bound to find */
 long int best_solution_iter;      /* iteration in which best solution is found */
 long int *demand_meet_node_map;   /** 所有可配送的点(单次route中，目前车辆可以仍可配送的点) */
+
+/**** 用于parallel aco参数 ***/
+long int master_problem_iteration_num;   /* 每次外循环，主问题蚁群的迭代的次数 */
+long int sub_problem_iteration_num;      /* 每次外循环，子问题蚁群的迭代的次数 */
+long int num_sub_problems;               /* 拆分子问题个数 */
 
 /* ------------------------------------------------------------------------ */
 
@@ -263,6 +269,12 @@ void set_default_parameters ()
     iteration      = 0;
     
     report_flag    = 1;
+    
+    // parallel aco
+    parallel_flag                   = TRUE;
+    master_problem_iteration_num    = 1;
+    sub_problem_iteration_num       = 75;
+    num_sub_problems                = num_node/50;
 }
 
 /*

@@ -15,6 +15,7 @@
 		A320B0EA1DABCB0C00F1E85D /* unix_timer.c in Sources */ = {isa = PBXBuildFile; fileRef = A320B0E01DABCB0C00F1E85D /* unix_timer.c */; };
 		A320B0EB1DABCB0C00F1E85D /* utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = A320B0E11DABCB0C00F1E85D /* utilities.c */; };
 		A320B0EC1DABCB0C00F1E85D /* vrp.c in Sources */ = {isa = PBXBuildFile; fileRef = A320B0E31DABCB0C00F1E85D /* vrp.c */; };
+		A38F95C21DAC7F99003C86F6 /* parallel_acovrp.c in Sources */ = {isa = PBXBuildFile; fileRef = A38F95C11DAC7F99003C86F6 /* parallel_acovrp.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -39,13 +40,15 @@
 		A320B0DB1DABCB0C00F1E85D /* ls.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ls.c; sourceTree = "<group>"; };
 		A320B0DC1DABCB0C00F1E85D /* ls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ls.h; sourceTree = "<group>"; };
 		A320B0DD1DABCB0C00F1E85D /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		A320B0DE1DABCB0C00F1E85D /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		A320B0DF1DABCB0C00F1E85D /* timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timer.h; sourceTree = "<group>"; };
 		A320B0E01DABCB0C00F1E85D /* unix_timer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unix_timer.c; sourceTree = "<group>"; };
 		A320B0E11DABCB0C00F1E85D /* utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utilities.c; sourceTree = "<group>"; };
 		A320B0E21DABCB0C00F1E85D /* utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utilities.h; sourceTree = "<group>"; };
 		A320B0E31DABCB0C00F1E85D /* vrp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vrp.c; sourceTree = "<group>"; };
 		A320B0E41DABCB0C00F1E85D /* vrp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vrp.h; sourceTree = "<group>"; };
+		A38F95C11DAC7F99003C86F6 /* parallel_acovrp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = parallel_acovrp.c; sourceTree = "<group>"; };
+		A38F95C31DAC87DD003C86F6 /* acovrp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = acovrp.h; sourceTree = "<group>"; };
+		A38F95C41DACB79D003C86F6 /* parallel_acovrp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = parallel_acovrp.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,7 +81,9 @@
 		A320B0CE1DABCAC000F1E85D /* cvrp_aco */ = {
 			isa = PBXGroup;
 			children = (
+				A38F95C01DAC7E90003C86F6 /* parallel */,
 				A320B0D61DABCB0C00F1E85D /* acovrp.c */,
+				A38F95C31DAC87DD003C86F6 /* acovrp.h */,
 				A320B0D71DABCB0C00F1E85D /* ants.c */,
 				A320B0D81DABCB0C00F1E85D /* ants.h */,
 				A320B0D91DABCB0C00F1E85D /* InOut.c */,
@@ -86,7 +91,6 @@
 				A320B0DB1DABCB0C00F1E85D /* ls.c */,
 				A320B0DC1DABCB0C00F1E85D /* ls.h */,
 				A320B0DD1DABCB0C00F1E85D /* Makefile */,
-				A320B0DE1DABCB0C00F1E85D /* README */,
 				A320B0DF1DABCB0C00F1E85D /* timer.h */,
 				A320B0E01DABCB0C00F1E85D /* unix_timer.c */,
 				A320B0E11DABCB0C00F1E85D /* utilities.c */,
@@ -95,6 +99,15 @@
 				A320B0E41DABCB0C00F1E85D /* vrp.h */,
 			);
 			path = cvrp_aco;
+			sourceTree = "<group>";
+		};
+		A38F95C01DAC7E90003C86F6 /* parallel */ = {
+			isa = PBXGroup;
+			children = (
+				A38F95C11DAC7F99003C86F6 /* parallel_acovrp.c */,
+				A38F95C41DACB79D003C86F6 /* parallel_acovrp.h */,
+			);
+			name = parallel;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -159,6 +172,7 @@
 				A320B0E71DABCB0C00F1E85D /* InOut.c in Sources */,
 				A320B0EA1DABCB0C00F1E85D /* unix_timer.c in Sources */,
 				A320B0E51DABCB0C00F1E85D /* acovrp.c in Sources */,
+				A38F95C21DAC7F99003C86F6 /* parallel_acovrp.c in Sources */,
 				A320B0EC1DABCB0C00F1E85D /* vrp.c in Sources */,
 				A320B0E61DABCB0C00F1E85D /* ants.c in Sources */,
 			);

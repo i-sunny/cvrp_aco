@@ -124,9 +124,6 @@ void construct_solutions( void )
     }
 }
 
-
-
-
 /*
  FUNCTION:       manage the local search phase; apply local search to ALL ants; in
                  dependence of ls_flag one of 2-opt local search is chosen.
@@ -237,6 +234,30 @@ void pheromone_trail_update( void )
     }
 }
 
+/*
+ FUNCTION:       manage some statistical information about the solution, especially
+ if a new best solution (best-so-far or restart-best) is found
+ INPUT:          none
+ OUTPUT:         none
+ (SIDE)EFFECTS:  best-so-far ant may be updated
+ */
+void update_statistics( void )
+{
+    
+    /* 本次迭代中结果最优的蚂蚁 */
+    iteration_best_ant = &ant[find_best()];
+    write_iter_report();
+    
+    if (iteration_best_ant->tour_length < best_so_far_ant->tour_length) {
+        
+        best_so_far_time = elapsed_time( VIRTUAL );
+        copy_solution_from_to(iteration_best_ant, best_so_far_ant );
+        
+        best_solution_iter = iteration;
+        write_best_so_far_report();
+    }
+}
+
 void exit_try()
 {
     
@@ -269,6 +290,17 @@ void init_try()
      */
     double trail_0 = 0.5;
     init_pheromone_trails(trail_0);
+    compute_total_information();
+    
+    // 第一次迭代用于设置一个合适的 pheromone init trail
+    construct_solutions();
+    if (ls_flag > 0) {
+        local_search();
+    }
+    update_statistics();
+    trail_0 =  1.0 / ((rho) * iteration_best_ant->tour_length);
+    init_pheromone_trails(trail_0);
+    iteration++;
     
     /* Calculate combined information pheromone times heuristic information */
     compute_total_information();
@@ -276,29 +308,21 @@ void init_try()
 }
 
 /*
- FUNCTION:       manage some statistical information about the solution, especially
-                 if a new best solution (best-so-far or restart-best) is found
- INPUT:          none
- OUTPUT:         none
- (SIDE)EFFECTS:  best-so-far ant may be updated
+ * 蚁群算法单次迭代的执行
  */
-void update_statistics( void )
+void aco_iteration_runner(void)
 {
     
-    /* 本次迭代中结果最优的蚂蚁 */
-    iteration_best_ant = &ant[find_best()];
-    write_iter_report();
+    construct_solutions();
     
-    if (iteration_best_ant->tour_length < best_so_far_ant->tour_length ) {
-        
-        best_so_far_time = elapsed_time( VIRTUAL );
-        copy_solution_from_to(iteration_best_ant, best_so_far_ant );
-        
-        best_solution_iter = iteration;
-        write_best_so_far_report();
+    if (ls_flag > 0) {
+        local_search();
     }
+    
+    update_statistics();
+    
+    pheromone_trail_update();
 }
-
 
 /* --- main program ------------------------------------------------------ */
 /*
@@ -323,21 +347,8 @@ int main(int argc, char *argv[]) {
 	init_try();
 
 	while ( !termination_condition() ) {
-
-	    construct_solutions();
-
-        if (ls_flag > 0) {
-            local_search();
-        }
-        update_statistics();
         
-        if (iteration == 0) {
-            // 第一次迭代用于设置一个合适的 pheromone init trail
-            double trail_0 =  0.5 * ras_ranks * (ras_ranks - 1)/ ((rho) * iteration_best_ant->tour_length);
-            init_pheromone_trails(trail_0);
-        } else {
-            pheromone_trail_update();
-        }
+        aco_iteration_runner();
 	    iteration++;
 	}
 	exit_try();
