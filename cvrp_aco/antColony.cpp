@@ -49,6 +49,7 @@ AntColony::AntColony(Problem *instance)
     nodeptr = instance->nodeptr;
     vehicle_capacity = instance->vehicle_capacity;
     ls_flag = instance->ls_flag;
+    
 }
 
 AntColony::~AntColony(){
@@ -72,12 +73,7 @@ Procedures implementing init/exit aco and aco steps:
  */
 void AntColony::init_aco()
 {
-    
-    TRACE ( printf("INITIALIZE TRIAL\n"); );
-    
-    start_timers();
-    g_best_so_far_time = elapsed_time( VIRTUAL );
-    
+    g_best_so_far_time = elapsed_time(VIRTUAL);
     
     /* Initialize variables concerning statistics etc. */
     instance->iteration   = 0;
@@ -95,7 +91,7 @@ void AntColony::init_aco()
     
     // 第一次迭代用于设置一个合适的 pheromone init trail
     construct_solutions();
-    if (ls_flag > 0) {
+    if (ls_flag) {
         local_search->do_local_search();
     }
     update_statistics();
@@ -124,7 +120,7 @@ void AntColony::run_aco_iteration(void)
     
     construct_solutions();
     
-    if (ls_flag > 0) {
+    if (ls_flag) {
         local_search->do_local_search();
     }
     
@@ -725,7 +721,7 @@ long int AntColony::neighbour_choose_and_move_to_next(AntStruct *a, long int pha
 
     if (sum_prob <= 0.0) {
         /* All nodes from the candidate set are tabu */
-        return choose_best_next( a, phase);
+        return choose_best_next(a, phase);
     } else {
         /* at least one neighbor is eligible, chose one according to the
            selection probabilities */

@@ -26,8 +26,8 @@ void print_single_route(Problem *instance, long int *route, long int route_size)
 void print_probabilities(Problem *instance);
 void print_solution_to_file(Problem *instance, FILE *file, long int *tour, long int tour_size);
 
-void init_report(Problem *instance, bool report_flag);
-void exit_report(Problem *instance, bool report_flag);
+void init_report(Problem *instance);
+void exit_report(Problem *instance);
 void write_best_so_far_report(Problem *instance);
 void write_iter_report(Problem *instance);
 

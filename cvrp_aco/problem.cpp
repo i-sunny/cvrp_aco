@@ -31,7 +31,7 @@ long int g_best_solution_iter;      /* iteration in which best solution is found
 
 /**** 用于parallel aco参数 ***/
 long int g_master_problem_iteration_num;   /* 每次外循环，主问题蚁群的迭代的次数 */
-long int g_sub_problem_iteration_num;      /* 每次外循环，子问题蚁群的迭代的次数 */
+long int g_sub_problem_iteration_num;      /* 每次外循环，子问题蚁群的迭代次数 */
 long int g_num_sub_problems;               /* 拆分子问题个数 */
 
 double rho;           /* parameter for evaporation */
@@ -41,20 +41,14 @@ long int ras_ranks;   /* additional parameter for rank-based version of ant syst
 
 /* ------------------------------------------------------------------------ */
 
-long int report_flag;                    /* 结果是否打印输出 */
-
 void set_default_parameters (Problem *instance);
 void allocate_ants (Problem *instance);
 
-
 /*
- * 初始化主问题
+ * 初始化问题
  */
-Problem * init_master_problem(const char *filename)
+void init_problem(Problem *instance)
 {
-    Problem *instance = (Problem *)malloc(sizeof(Problem));
-    instance->nodeptr = read_instance_file(instance, filename);
-    
     set_default_parameters(instance);
     
     // 为 problem 实例的成员分配内存
@@ -62,22 +56,12 @@ Problem * init_master_problem(const char *filename)
     instance->nn_list = compute_nn_lists(instance);
     instance->pheromone = generate_double_matrix(instance->num_node, instance->num_node);
     instance->total_info = generate_double_matrix(instance->num_node, instance->num_node );
-    instance->demand_meet_node_map = (long int *)calloc(instance->num_node, sizeof(long int));
+    instance->demand_meet_node_map = (bool *)calloc(instance->num_node, sizeof(bool));
     allocate_ants(instance);
-    
-    init_report(instance, report_flag);
-    
-    return instance;
 }
 
-
-/*
- * 主问题结束
- */
-void exit_master_problem(Problem *instance)
+void exit_problem(Problem *instance)
 {
-    exit_report(instance, report_flag);
-    
     // 释放内存
     free( instance->distance );
     free(instance->nodeptr);
@@ -96,13 +80,14 @@ void exit_master_problem(Problem *instance)
     free(instance);
 }
 
-
 /*
  * 初始化子问题
  */
-void init_sub_problem(Problem *instance)
-
+void init_sub_problem()
 {
+    Problem *instance = new Problem();
+    instance->max_iteration = g_sub_problem_iteration_num;
+    init_problem(instance);
 }
 
 
@@ -131,13 +116,13 @@ void allocate_ants (Problem *instance)
     double   *prob_of_selection;
     
     if((ants = (AntStruct *)malloc(sizeof( AntStruct ) * instance->n_ants +
-                                  sizeof(AntStruct *) * instance->n_ants)) == NULL){
+                                   sizeof(AntStruct *) * instance->n_ants)) == NULL){
         printf("Out of memory, exit.");
         exit(1);
     }
     for (i = 0 ; i < instance->n_ants ; i++) {
         ants[i].tour        = (long int *)calloc(2*instance->num_node-1, sizeof(long int));   // tour最长为2 * num_node - 1
-        ants[i].visited     = (char *)calloc(instance->num_node, sizeof(char));
+        ants[i].visited     = (bool *)calloc(instance->num_node, sizeof(bool));
     }
     
     if((best_so_far_ant = (AntStruct *)malloc(sizeof(AntStruct))) == NULL){
@@ -145,7 +130,7 @@ void allocate_ants (Problem *instance)
         exit(1);
     }
     best_so_far_ant->tour        = (long int *)calloc(2*instance->num_node-1, sizeof(long int));
-    best_so_far_ant->visited     = (char *)calloc(instance->num_node, sizeof(char));
+    best_so_far_ant->visited     = (bool *)calloc(instance->num_node, sizeof(bool));
     
     if ((prob_of_selection = (double *)malloc(sizeof(double) * (instance->nn_ants + 1))) == NULL) {
         printf("Out of memory, exit.");
@@ -179,7 +164,7 @@ void set_default_parameters (Problem *instance)
     instance->iteration      = 0;
     
     /* apply local search */
-    instance->ls_flag        = 1;
+    instance->ls_flag        = TRUE;
     /* apply don't look bits in local search */
     instance->dlb_flag       = TRUE;
     
@@ -189,17 +174,13 @@ void set_default_parameters (Problem *instance)
     ras_ranks      = 6;          /* number of ranked ants, top-{ras_ranks} ants */
     
     seed           = (long int) time(NULL);
-    g_max_runtime    = 20.0;
-    
-    report_flag    = 1;
+    g_max_runtime    = 10.0;
     
     // parallel aco
-    //    parallel_flag                     = TRUE;
-    g_master_problem_iteration_num    = 1;
-    g_sub_problem_iteration_num       = 75;
-    g_num_sub_problems                = instance->num_node/50;
+    g_master_problem_iteration_num    = 1;      /* 每次外循环，主问题蚁群的迭代次数 */
+    g_sub_problem_iteration_num       = 75;     /* 每次外循环，子问题蚁群的迭代次数 */
+    g_num_sub_problems                = 4;      // instance->num_node/50;
 }
-
 
 /*
  * 检查 ant vrp solution 的有效性
@@ -278,7 +259,7 @@ int check_route(Problem *instance, const long int *tour, long int rbeg, long int
         fprintf(stderr,"\n%s:error: 单条回路长度不对. rbeg=%ld, rend=%ld\n", __FUNCTION__, rbeg, rend);
         return FALSE;
     }
-    for (long int i = rbeg + 1; i < rend - 1; i++) {
+    for (long int i = rbeg + 1; i < rend; i++) {
         load += instance->nodeptr[tour[i]].demand;
     }
     if (load > instance->vehicle_capacity) {

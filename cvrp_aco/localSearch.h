@@ -30,12 +30,12 @@ private:
     // 直接引入，减少一次指针使用，加快执行速度
     AntStruct *ants;
     long int n_ants;
-    long int ls_flag;
+    bool ls_flag;
     long int **distance;
     long int num_node;
     long int **nn_list;
     long int nn_ls;
-    long int dlb_flag;
+    bool dlb_flag;
     
     void two_opt_solution(long int *tour, long int tour_size);
     long int * generate_random_permutation( long int n );

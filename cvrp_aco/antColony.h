@@ -19,7 +19,7 @@
 /* add a small constant to avoid division by zero if a distance is
  zero */
 
-#include "Problem.h"
+#include "problem.h"
 #include "localSearch.h"
 
 #define EPSILON            0.00000000000000000000000000000001
@@ -30,9 +30,9 @@
 class AntColony {
 public:
     AntColony(Problem *instance);
-    ~AntColony();
+    virtual ~AntColony();
     
-    void run_aco_iteration(void);
+    virtual void run_aco_iteration(void);
     void init_aco();
     void exit_aco();
     
@@ -43,7 +43,7 @@ public:
     void pheromone_trail_update( void );
     void update_statistics( void );
     
-private:
+protected:
     Problem *instance;
     LocalSearch *local_search;
     
@@ -51,8 +51,8 @@ private:
     AntStruct *ants;
     AntStruct *best_so_far_ant;
     
-    long int      **distance;
-    long int *demand_meet_node_map;
+    long int **distance;
+    bool     *demand_meet_node_map;
     double   *prob_of_selection;
     double   **pheromone;
     double   **total_info;
@@ -65,8 +65,9 @@ private:
     Point    *nodeptr;
     long int vehicle_capacity;
     
-    long int ls_flag;               /* indicates whether and which local search is used */
+    bool ls_flag;               /* indicates whether and which local search is used */
     
+private:
     /* Pheromone manipulation etc. */
     void init_pheromone_trails ( double initial_trail );
     void evaporation ( void );

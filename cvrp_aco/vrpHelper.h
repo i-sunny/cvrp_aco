@@ -14,6 +14,7 @@
 #define   vrpHelper_h
 
 #include <stdio.h>
+#include <vector>
 #include "problem.h"
 
 #define RRR            6378.388
@@ -25,6 +26,6 @@
 long int compute_tour_length(Problem *instance, long int *t, long int t_sz);
 long int **compute_distances(Problem *instance);
 long int ** compute_nn_lists (Problem *instance);
-void compute_tour_centers(Problem *instance, long int *tour, RouteCenter *centers, long int route_num);
+void compute_route_centers(Problem *instance, long int *tour, const vector<RouteCenter *>& centers);
 
 #endif

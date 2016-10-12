@@ -27,7 +27,8 @@
 #include "vrpHelper.h"
 
 
-FILE *report, *best_so_far_report, *iter_report;
+static bool report_flag = TRUE;   /* 结果是否输出文件 */
+static FILE *report, *best_so_far_report, *iter_report;
 
 void write_params(Problem *instance);
 static void fprintf_parameters (FILE *stream, Problem *instance);
@@ -125,7 +126,7 @@ void print_probabilities(Problem *instance)
 /*
  * 问题开始时
  */
-void init_report(Problem *instance, bool report_flag)
+void init_report(Problem *instance)
 {
     char temp_buffer[LINE_BUF_LEN];
     
@@ -149,7 +150,7 @@ void init_report(Problem *instance, bool report_flag)
 /*
  * 问题结束时
  */
-void exit_report(Problem *instance, bool report_flag) {
+void exit_report(Problem *instance) {
     
     if (report) {
         fprintf(report, "Best Length: %ld\t Iterations: %ld\t At time %.2f\t Tot.time %.2f\n",
@@ -247,9 +248,9 @@ static void fprintf_parameters (FILE *stream, Problem *instance)
     fprintf(stream,"beta\t\t\t %.2f\n", beta);
     fprintf(stream,"rho\t\t\t %.2f\n", rho);
     fprintf(stream,"ras_ranks\t\t %ld\n", ras_ranks);
-    fprintf(stream,"ls_flag\t\t\t %ld\n", instance->ls_flag);
+    fprintf(stream,"ls_flag\t\t\t %d\n", instance->ls_flag);
     fprintf(stream,"nn_ls\t\t\t %ld\n", instance->nn_ls);
-    fprintf(stream,"dlb_flag\t\t %ld\n", instance->dlb_flag);
+    fprintf(stream,"dlb_flag\t\t %d\n", instance->dlb_flag);
 //    fprintf(stream, "parallel\t\t %ld\n", parallel_flag);
 }
 

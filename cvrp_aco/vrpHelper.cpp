@@ -16,6 +16,7 @@ email: sunxq1991@gmail.com
 #include <math.h>
 #include <limits.h>
 #include <assert.h>
+#include <vector>
 
 #include "vrpHelper.h"
 #include "utilities.h"
@@ -256,24 +257,25 @@ long int compute_tour_length(Problem *instance, long int *tour, long int tour_si
  * INPUT:       tour, soulution point
  *              i.e. toute = [0,1,4,2,0]
  */
-void compute_tour_centers(Problem *instance, long int *tour, RouteCenter *centers, long int route_num)
+void compute_route_centers(Problem *instance, long int *tour, const vector<RouteCenter *>& centers)
 {
     Point *nodeptr = instance->nodeptr;
+    Point *cp;
     
-    double gx = 0, gy = 0;
-    long int route_total_demand = 0;
     long int i, j;
-    for (i = 0; i < route_num; i++) {
-        for (j = centers[i].beg; j < centers[i].end - 1; j++) {
-            route_total_demand += nodeptr[tour[j]].demand;
+    for (i = 0; i < centers.size(); i++) {
+        cp = new Point();
+        cp->x = 0;
+        cp->y = 0;
+        for (j = centers[i]->beg; j < centers[i]->end; j++) {
+            cp->demand += nodeptr[tour[j]].demand;
         }
-        for (j = centers[i].beg; j < centers[i].end - 1; j++) {
+        for (j = centers[i]->beg; j < centers[i]->end; j++) {
             // weighted by demand
-            gx += nodeptr[tour[j]].x * nodeptr[tour[j]].demand * 1.0/ route_total_demand;
-            gy += nodeptr[tour[j]].y * nodeptr[tour[j]].demand * 1.0 / route_total_demand;
+            cp->x += nodeptr[tour[j]].x * nodeptr[tour[j]].demand * 1.0 / cp->demand;
+            cp->y += nodeptr[tour[j]].y * nodeptr[tour[j]].demand * 1.0 / cp->demand;
         }
-        centers[i].cp->x = (long int)(gx + 0.5);
-        centers[i].cp->y = (long int)(gy + 0.5);
+        centers[i]->coord = cp;
     }
 }
 

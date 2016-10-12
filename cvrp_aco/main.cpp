@@ -12,10 +12,12 @@
 
 #include "utilities.h"
 #include "antColony.h"
+#include "parallelAco.h"
 #include "problem.h"
 #include "timer.h"
 #include "io.h"
 
+static bool parallel_flag  = TRUE;  /* 是否使用并行算法 */
 /*
  FUNCTION:       checks whether termination condition is met
  INPUT:          none
@@ -54,31 +56,39 @@ const char* parse_commandline (long int argc, char *argv [])
  COMMENTS:       this function controls the run of "max_tries" independent trials
  
  */
-int main(int argc, char *argv[]) {
-    
-    Problem *instance;
+int main(int argc, char *argv[])
+{
+    Problem *instance = new Problem();
     AntColony *solver;
     
     start_timers();
     
     const char *filename = parse_commandline(argc, argv);
+    instance->nodeptr = read_instance_file(instance, filename);
+    init_problem(instance);
+    init_report(instance);
     
-    instance = init_master_problem(filename);
+    printf("Initialization took %.10f seconds\n", elapsed_time(VIRTUAL));
+
+    if (parallel_flag) {
+        solver = new ParallelAco(instance);
+    } else {
+        solver = new AntColony(instance);
+    }
     
-    g_best_so_far_time = elapsed_time( VIRTUAL );
-    printf("Initialization took %.10f seconds\n", g_best_so_far_time);
-    
-    solver = new AntColony(instance);
     solver->init_aco();
     
-    while (!termination_condition(instance)) {
-        
+//    while (!termination_condition(instance)) {
+    
         solver->run_aco_iteration();
         instance->iteration++;
-    }
+//    }
+    
     solver->exit_aco();
     
-    exit_master_problem(instance);
+    delete solver;
+    exit_report(instance);
+    exit_problem(instance);
     
     return(0);
 }

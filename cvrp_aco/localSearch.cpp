@@ -60,15 +60,10 @@ void LocalSearch::do_local_search(void)
 //            print_solution(instance, ants[k].tour, ants[k].tour_size);
 //        }
         
-        switch (ls_flag) {
-            case 1:
-                two_opt_solution(ants[k].tour, ants[k].tour_size);    /* 2-opt local search */
-                break;
-            default:
-                fprintf(stderr,"type of local search procedure not correctly specified\n");
-                exit(1);
+        if (ls_flag) {
+            two_opt_solution(ants[k].tour, ants[k].tour_size);    /* 2-opt local search */
+            ants[k].tour_length = compute_tour_length(instance, ants[k].tour, ants[k].tour_size);
         }
-        ants[k].tour_length = compute_tour_length(instance, ants[k].tour, ants[k].tour_size);
         
         //debug
 //        printf("\n--After local search:");
@@ -165,7 +160,7 @@ void LocalSearch::two_opt_solution(long int *tour, long int tour_size)
                  This heuristic is applied separately to each
  of the vehicle routes built by an ant.
  INPUT:          rbeg, route的起始位置
-                 rend, route的结束位置(包含rend处的点)
+                 rend, route的结束位置(包含rend处的点, rend处不为0)
  OUTPUT:         none
  COMMENTS:       the neighbourhood is scanned in random order
  */

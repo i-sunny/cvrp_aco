@@ -16,7 +16,7 @@
 		A320B0EC1DABCB0C00F1E85D /* vrpHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A320B0E31DABCB0C00F1E85D /* vrpHelper.cpp */; };
 		A34681391DAD0FC1004558C7 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A34681381DAD0FC1004558C7 /* main.cpp */; };
 		A34681421DAD3768004558C7 /* problem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A34681401DAD3768004558C7 /* problem.cpp */; };
-		A38F95C21DAC7F99003C86F6 /* parallel_acovrp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A38F95C11DAC7F99003C86F6 /* parallel_acovrp.cpp */; };
+		A38F95C21DAC7F99003C86F6 /* parallelAco.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A38F95C11DAC7F99003C86F6 /* parallelAco.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -49,8 +49,8 @@
 		A34681381DAD0FC1004558C7 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		A34681401DAD3768004558C7 /* problem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = problem.cpp; sourceTree = "<group>"; };
 		A34681411DAD3768004558C7 /* problem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = problem.h; sourceTree = "<group>"; };
-		A38F95C11DAC7F99003C86F6 /* parallel_acovrp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = parallel_acovrp.cpp; sourceTree = "<group>"; };
-		A38F95C41DACB79D003C86F6 /* parallel_acovrp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = parallel_acovrp.h; sourceTree = "<group>"; };
+		A38F95C11DAC7F99003C86F6 /* parallelAco.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = parallelAco.cpp; sourceTree = "<group>"; };
+		A38F95C41DACB79D003C86F6 /* parallelAco.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = parallelAco.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,8 +107,8 @@
 		A38F95C01DAC7E90003C86F6 /* parallel */ = {
 			isa = PBXGroup;
 			children = (
-				A38F95C11DAC7F99003C86F6 /* parallel_acovrp.cpp */,
-				A38F95C41DACB79D003C86F6 /* parallel_acovrp.h */,
+				A38F95C11DAC7F99003C86F6 /* parallelAco.cpp */,
+				A38F95C41DACB79D003C86F6 /* parallelAco.h */,
 			);
 			name = parallel;
 			sourceTree = "<group>";
@@ -175,7 +175,7 @@
 				A320B0E71DABCB0C00F1E85D /* io.cpp in Sources */,
 				A34681421DAD3768004558C7 /* problem.cpp in Sources */,
 				A320B0EA1DABCB0C00F1E85D /* unix_timer.cpp in Sources */,
-				A38F95C21DAC7F99003C86F6 /* parallel_acovrp.cpp in Sources */,
+				A38F95C21DAC7F99003C86F6 /* parallelAco.cpp in Sources */,
 				A320B0EC1DABCB0C00F1E85D /* vrpHelper.cpp in Sources */,
 				A34681391DAD0FC1004558C7 /* main.cpp in Sources */,
 				A320B0E61DABCB0C00F1E85D /* antColony.cpp in Sources */,

@@ -15,6 +15,8 @@
 #define Problem_h
 
 #include <stdio.h>
+#include <bitset>
+using namespace std;
 
 #define LINE_BUF_LEN     255
 
@@ -26,7 +28,7 @@ extern double   g_best_so_far_time;               /* 最优解出现的时间 */
 extern long int g_best_solution_iter;             /* iteration in which best solution is found */
 
 extern long int g_master_problem_iteration_num;   /* 每次外循环，主问题蚁群的迭代的次数 */
-extern long int g_sub_problem_iteration_num;      /* 每次外循环，子问题蚁群的迭代的次数 */
+extern long int g_sub_problem_iteration_num;      /* 每次外循环，子问题蚁群的迭代次数 */
 extern long int g_num_sub_problems;               /* 拆分子问题个数 */
 
 extern double rho;           /* parameter for evaporation */
@@ -48,7 +50,8 @@ struct Point {
 struct RouteCenter {
     long int beg;                   /* route在tour中的开始位置 */
     long int end;                   /* route在tour中的结束位置 */
-    Point    *cp;                   /* center pointroute */
+    Point   *coord;                 /* center point coord */
+    short angle;                    /* 重心与depot的角度 -180~180 */
 };
 
 /*
@@ -60,7 +63,7 @@ struct AntStruct {
     long int  *tour;
     long int  tour_size;     /* 路程中经过的点个数（depot可能出现多次） */
     long int  tour_length;   /* 车辆路程行走长度 */
-    char      *visited;
+    bool      *visited;      /* mark nodes visited status */
 };
 
 
@@ -76,14 +79,14 @@ struct Problem {
     long int      **nn_list;              /* nearest neighbor list; contains for each node i a
                                            sorted list of n_near nearest neighbors */
     long int      vehicle_capacity;       /* 车辆最大装载量 */
-    long int      *demand_meet_node_map;  /** 所有可配送的点(单次route中，目前车辆可以仍可配送的点) */
+    bool          *demand_meet_node_map;  /** 所有可配送的点(单次route中，目前车辆可以仍可配送的点) */
     
     
     /*----- local search -----*/
-    long int ls_flag;          /* indicates whether and which local search is used */
+    bool ls_flag;          /* indicates whether and which local search is used */
     long int nn_ls;            /* maximal depth of nearest neighbour lists used in the
                                 local search */
-    long int dlb_flag;         /* flag indicating whether don't look bits are used. I recommend
+    bool dlb_flag;         /* flag indicating whether don't look bits are used. I recommend
                                 to always use it if local search is applied */
     
     long int iteration;           /* counter of number iterations */
@@ -104,9 +107,9 @@ struct Problem {
                                          solution construction */
 };
 
-Problem * init_master_problem(const char *filename);
-void exit_master_problem(Problem *instance);
-void init_sub_problem(Problem *instance);
+void init_problem(Problem *instance);
+void exit_problem(Problem *instance);
+void init_sub_problem(void);
 void exit_sub_problem(Problem *instance);
 int check_solution(Problem *instance, const long int *tour, long int tour_size);
 int check_route(Problem *instance, const long int *tour, long int rbeg, long int rend);
