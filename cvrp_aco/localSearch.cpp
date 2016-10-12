@@ -17,17 +17,67 @@
 #include <stdlib.h>
 #include <limits.h>
 
-#include "ls.h"
-#include "InOut.h"
-#include "vrp.h"
-#include "ants.h"
+#include "localSearch.h"
 #include "utilities.h"
+#include "vrpHelper.h"
+#include "io.h"
 
-long int ls_flag;          /* indicates whether and which local search is used */ 
-long int nn_ls;            /* maximal depth of nearest neighbour lists used in the 
-                              local search */
-long int dlb_flag = TRUE;  /* flag indicating whether don't look bits are used. I recommend 
-			                  to always use it if local search is applied */
+LocalSearch::LocalSearch(Problem *instance) {
+    this->instance = instance;
+    
+    ants = instance->ants;
+    n_ants = instance->n_ants;
+    ls_flag = instance->ls_flag;
+    num_node = instance->num_node;
+    nn_list = instance->nn_list;
+    nn_ls = instance->nn_ls;
+    dlb_flag = instance->dlb_flag;
+    distance = instance->distance;
+}
+
+/*
+ FUNCTION:       manage the local search phase; apply local search to ALL ants; in
+ dependence of ls_flag one of 2-opt local search is chosen.
+ INPUT:          none
+ OUTPUT:         none
+ (SIDE)EFFECTS:  all ants of the colony have locally optimal tours
+ COMMENTS:       typically, best performance is obtained by applying local search
+ to all ants. It is known that some improvements (e.g. convergence
+ speed towards high quality solutions) may be obtained for some
+ ACO algorithms by applying local search to only some of the ants.
+ Overall best performance is typcially obtained by using 3-opt.
+ */
+void LocalSearch::do_local_search(void)
+{
+    long int k;
+    
+    TRACE ( printf("apply local search to all ants\n"); );
+    
+    for ( k = 0 ; k < n_ants ; k++ ) {
+        //debug
+//        printf("\n--Before local search:");
+//        if(check_solution(instance, ants[k].tour, ants[k].tour_size)) {
+//            print_solution(instance, ants[k].tour, ants[k].tour_size);
+//        }
+        
+        switch (ls_flag) {
+            case 1:
+                two_opt_solution(ants[k].tour, ants[k].tour_size);    /* 2-opt local search */
+                break;
+            default:
+                fprintf(stderr,"type of local search procedure not correctly specified\n");
+                exit(1);
+        }
+        ants[k].tour_length = compute_tour_length(instance, ants[k].tour, ants[k].tour_size);
+        
+        //debug
+//        printf("\n--After local search:");
+//        if(check_solution(instance, ants[k].tour, ants[k].tour_size)) {
+//            print_solution(instance, ants[k].tour, ants[k].tour_size);
+//        }
+    }
+}
+
 /*
  FUNCTION:       generate a random permutation of the integers 0 .. n-1
  INPUT:          length of the array
@@ -36,13 +86,13 @@ long int dlb_flag = TRUE;  /* flag indicating whether don't look bits are used. 
  function. Don't forget to free again the memory!
  COMMENTS:       only needed by the local search procedures
  */
-long int * generate_random_permutation( long int n )
+long int * LocalSearch::generate_random_permutation( long int n )
 {
    long int  i, help, node, tot_assigned = 0;
    double    rnd;
    long int  *r;
 
-   r = malloc(n * sizeof(long int));  
+   r = (long int *)malloc(n * sizeof(long int));
 
    for ( i = 0 ; i < n; i++) 
      r[i] = i;
@@ -66,7 +116,7 @@ long int * generate_random_permutation( long int n )
                  depotId
  OUTPUT:         none
  */
-void two_opt_solution(long int *tour, long int tour_size)
+void LocalSearch::two_opt_solution(long int *tour, long int tour_size)
 {
     long int *dlb;               /* vector containing don't look bits */
     long int *route_node_map;    /* mark for all nodes in a single route */
@@ -74,17 +124,17 @@ void two_opt_solution(long int *tour, long int tour_size)
 
     long int route_beg = 0;
     
-    dlb = malloc(num_node * sizeof(long int));
+    dlb = (long int *)malloc(num_node * sizeof(long int));
     for (int i = 0 ; i < num_node; i++) {
         dlb[i] = FALSE;
     }
     
-    route_node_map =  malloc(num_node * sizeof(long int));
+    route_node_map =  (long int *)malloc(num_node * sizeof(long int));
     for (int j = 0; j < num_node; j++) {
         route_node_map[j] = FALSE;
     }
     
-    tour_node_pos =  malloc(num_node * sizeof(long int));
+    tour_node_pos =  (long int *)malloc(num_node * sizeof(long int));
     for (int j = 0; j < tour_size; j++) {
         tour_node_pos[tour[j]] = j;
     }
@@ -119,7 +169,7 @@ void two_opt_solution(long int *tour, long int tour_size)
  OUTPUT:         none
  COMMENTS:       the neighbourhood is scanned in random order
  */
-void two_opt_single_route(long int *tour, long int rbeg, long int rend,
+void LocalSearch::two_opt_single_route(long int *tour, long int rbeg, long int rend,
                           long int *dlb, long int *route_node_map, long int *tour_node_pos)
 {
     long int n1, n2;                            /* nodes considered for an exchange */
@@ -154,19 +204,19 @@ void two_opt_single_route(long int *tour, long int rbeg, long int rend,
                 continue;
             
             s_n1 = pos_n1 == rend ? tour[rbeg] : tour[pos_n1+1];
-            radius = instance.distance[n1][s_n1];
+            radius = distance[n1][s_n1];
             /* First search for c1's nearest neighbours, use successor of c1 */
             for ( h = 0 ; h < nn_ls ; h++ ) {
-                n2 = instance.nn_list[n1][h]; /* exchange partner, determine its position */
+                n2 = nn_list[n1][h]; /* exchange partner, determine its position */
                 if (route_node_map[n2] == FALSE) {
                     /* 该点不在本route中 */
                     continue;
                 }
-                if (radius > instance.distance[n1][n2] ) {
+                if (radius > distance[n1][n2] ) {
                     pos_n2 = tour_node_pos[n2];
                     s_n2 = pos_n2 == rend ? tour[rbeg] : tour[pos_n2+1];
-                    gain =  - radius + instance.distance[n1][n2] +
-                            instance.distance[s_n1][s_n2] - instance.distance[n2][s_n2];
+                    gain =  - radius + distance[n1][n2] +
+                            distance[s_n1][s_n2] - distance[n2][s_n2];
                     if ( gain < 0 ) {
                         h1 = n1; h2 = s_n1; h3 = n2; h4 = s_n2;
                         goto exchange2opt;
@@ -177,21 +227,21 @@ void two_opt_single_route(long int *tour, long int rbeg, long int rend,
             
             /* Search one for next c1's h-nearest neighbours, use predecessor c1 */
             p_n1 = pos_n1 == rbeg ? tour[rend] : tour[pos_n1-1];
-            radius = instance.distance[p_n1][n1];
+            radius = distance[p_n1][n1];
             for ( h = 0 ; h < nn_ls ; h++ ) {
-                n2 = instance.nn_list[n1][h];  /* exchange partner, determine its position */
+                n2 = nn_list[n1][h];  /* exchange partner, determine its position */
                 if (route_node_map[n2] == FALSE) {
                     /* 该点不在本route中 */
                     continue;
                 }
-                if ( radius > instance.distance[n1][n2] ) {
+                if ( radius > distance[n1][n2] ) {
                     pos_n2 = tour_node_pos[n2];
                     p_n2 = pos_n2 == rbeg ? tour[rend] : tour[pos_n2-1];
                     
                     if ( p_n2 == n1 || p_n1 == n2)
                         continue;
-                    gain =  - radius + instance.distance[n1][n2] +
-                            instance.distance[p_n1][p_n2] - instance.distance[p_n2][n2];
+                    gain =  - radius + distance[n1][n2] +
+                            distance[p_n1][p_n2] - distance[p_n2][n2];
                     if ( gain < 0 ) {
                         h1 = p_n1; h2 = n1; h3 = p_n2; h4 = n2;
                         goto exchange2opt;

@@ -20,79 +20,305 @@
 #include <limits.h>
 #include <time.h>
 
-#include "InOut.h"
-#include "vrp.h"
-#include "ants.h"
-#include "ls.h"
+#include "antColony.h"
 #include "utilities.h"
+#include "vrpHelper.h"
+#include "problem.h"
+#include "io.h"
 #include "timer.h"
 
-
-ant_struct *ant;
-ant_struct *best_so_far_ant;
-ant_struct *iteration_best_ant;
-
-double   **pheromone;
-double   **total_info;
-
-double   *prob_of_selection;
-
-long int n_ants;      /* number of ants */
-long int nn_ants;     /* length of nearest neighbor lists for the ants'
-			 solution construction */
-
-double rho;           /* parameter for evaporation */
-double alpha;         /* importance of trail */
-double beta;          /* importance of heuristic evaluate */
-double q_0;           /* probability of best choice in tour construction */
-
-long int ras_flag;    /* rank-based version of ant system */
-long int ras_ranks;   /* additional parameter for rank-based version
-                             of ant system */
-long int u_gb;            /* every u_gb iterations update with best-so-far ant */
-
-
-void allocate_ants ( void )
-/*    
-      FUNCTION:       allocate the memory for the ant colony, the best-so-far and 
-                      the iteration best ant
-      INPUT:          none
-      OUTPUT:         none
-      (SIDE)EFFECTS:  allocation of memory for the ant colony and two ants that 
-                      store intermediate tours
-
-*/
+AntColony::AntColony(Problem *instance)
 {
-    long int i;
-  
-    if((ant = malloc(sizeof( ant_struct ) * n_ants +
-		     sizeof(ant_struct *) * n_ants	 )) == NULL){
-        printf("Out of memory, exit.");
-        exit(1);
-    }
-    for ( i = 0 ; i < n_ants ; i++ ) {
-        ant[i].tour        = calloc(2*num_node-1, sizeof(long int));   // tour最长为2 * num_node - 1
-        ant[i].visited     = calloc(num_node, sizeof(char));
-    }
+    this->instance = instance;
+    local_search = new LocalSearch(instance);
+    
+    ants = instance->ants;
+    best_so_far_ant = instance->best_so_far_ant;
+    
+    distance = instance->distance;
+    demand_meet_node_map = instance->demand_meet_node_map;
+    prob_of_selection = instance->prob_of_selection;
+    pheromone = instance->pheromone;
+    total_info = instance->total_info;
+    
+    num_node = instance->num_node;
+    n_ants = instance->n_ants;
+    nn_ants = instance->nn_ants;
+    nn_list = instance->nn_list;
+    
+    nodeptr = instance->nodeptr;
+    vehicle_capacity = instance->vehicle_capacity;
+    ls_flag = instance->ls_flag;
+}
 
-    if((best_so_far_ant = malloc(sizeof( ant_struct ) )) == NULL){
-        printf("Out of memory, exit.");
-        exit(1);
-    }
-    best_so_far_ant->tour        = calloc(2*num_node-1, sizeof(long int));
-    best_so_far_ant->visited     = calloc(num_node, sizeof(char));
-
-    if ((prob_of_selection = malloc(sizeof(double) * (nn_ants + 1))) == NULL) {
-        printf("Out of memory, exit.");
-        exit(1);
-    }
-    /* Ensures that we do not run over the last element in the random wheel.  */
-    prob_of_selection[nn_ants] = HUGE_VAL;
+AntColony::~AntColony(){
+    delete local_search;
 }
 
 
+/****************************************************************
+ ****************************************************************
+Procedures implementing init/exit aco and aco steps:
+ 1) solution construction
+ 2) pheromone update
+ ****************************************************************
+ ****************************************************************/
 
-long int find_best( void ) 
+/*
+ FUNCTION: initilialize variables appropriately when starting a trial
+ INPUT:    trial number
+ OUTPUT:   none
+ COMMENTS: none
+ */
+void AntColony::init_aco()
+{
+    
+    TRACE ( printf("INITIALIZE TRIAL\n"); );
+    
+    start_timers();
+    g_best_so_far_time = elapsed_time( VIRTUAL );
+    
+    
+    /* Initialize variables concerning statistics etc. */
+    instance->iteration   = 0;
+    best_so_far_ant->tour_length = INFTY;
+    
+    /* Initialize the Pheromone trails */
+    /* in the original papers on Ant System, Elitist Ant System, and
+     Rank-based Ant System it is not exactly defined what the
+     initial value of the pheromones is. Here we set it to some
+     small constant, analogously as done in MAX-MIN Ant System.
+     */
+    double trail_0 = 0.5;
+    init_pheromone_trails(trail_0);
+    compute_total_information();
+    
+    // 第一次迭代用于设置一个合适的 pheromone init trail
+    construct_solutions();
+    if (ls_flag > 0) {
+        local_search->do_local_search();
+    }
+    update_statistics();
+    trail_0 =  1.0 / ((rho) * best_so_far_ant->tour_length);
+    init_pheromone_trails(trail_0);
+    instance->iteration++;
+    
+    /* Calculate combined information pheromone times heuristic information */
+    compute_total_information();
+    
+}
+
+/*
+ * exit of Ant Colony Optimization
+ */
+void AntColony::exit_aco()
+{
+    
+}
+
+/*
+ * 蚁群算法单次迭代的执行
+ */
+void AntColony::run_aco_iteration(void)
+{
+    
+    construct_solutions();
+    
+    if (ls_flag > 0) {
+        local_search->do_local_search();
+    }
+    
+    update_statistics();
+    
+    pheromone_trail_update();
+    
+//    print_probabilities(instance);
+}
+
+/*
+ FUNCTION:       manage the solution construction phase
+ INPUT:          none
+ OUTPUT:         none
+ (SIDE)EFFECTS:  when finished, all ants of the colony have constructed a solution
+ */
+void AntColony::construct_solutions( void )
+{
+    long int k;
+    
+    TRACE ( printf("construct solutions for all ants\n"); );
+    
+    for(k = 0; k < n_ants; k++) {
+        construct_ant_solution(&ants[k]);
+    }
+}
+
+/*
+ FUNCTION:       construct the solution for this ant
+ INPUT:          this ant id
+ OUTPUT:         none
+ (SIDE)EFFECTS:  when finished, this ant has constructed a solution
+ */
+
+void AntColony::construct_ant_solution(AntStruct *ant)
+{
+    long int visited_node_cnt = 0;   /* count of visited node by this ant */
+    
+    long int path_load;          /* 单次从depot出发的送货量 */
+    long int next_node;
+    long int i, demand_meet_cnt, step;
+    
+    /* Mark all nodes as unvisited */
+    ant_empty_memory(ant);
+    
+    path_load = 0;
+    step = 0;
+    init_ant_place(ant, step);
+    
+    while (visited_node_cnt < num_node - 1) {
+        
+        step++;
+        /* 查看所有可以派送的点 */
+        demand_meet_cnt = 0;
+        for (i = 0; i < num_node; i++) {
+            demand_meet_node_map[i] = FALSE;
+        }
+        for(i = 0; i < num_node; i++) {
+            if (ant->visited[i] == FALSE && path_load + nodeptr[i].demand <= vehicle_capacity) {
+                demand_meet_node_map[i] = TRUE;
+                demand_meet_cnt++;
+            }
+        }
+        
+        /*
+         1)如果没有可行的配送点,则蚂蚁回到depot，重新开始新的路径
+         2）否则，选择下一个配送点
+         */
+        if (demand_meet_cnt == 0) {
+            path_load = 0;
+            init_ant_place(ant, step);
+        } else {
+            next_node = neighbour_choose_and_move_to_next(ant, step);
+            path_load += nodeptr[next_node].demand;
+            visited_node_cnt++;
+        }
+    }
+    
+    // 最后回到depot
+    step++;
+    ant->tour[step] = ant->tour[0];
+    ant->tour_size = step + 1;
+    ant->tour_length = compute_tour_length(instance, ant->tour, ant->tour_size);
+    
+    // debug
+//    if(check_solution(instance, ant->tour, ant->tour_size)) {
+//        print_solution(instance, ant->tour, ant->tour_size);
+//    }
+}
+
+
+/*
+ FUNCTION:       manage global pheromone deposit for Rank-based Ant System
+ INPUT:          none
+ OUTPUT:         none
+ (SIDE)EFFECTS:  the ras_ranks-1 best ants plus the best-so-far ant deposit pheromone
+ on matrix "pheromone"
+ COMMENTS:       this procedure could be implemented slightly faster, but it is
+ anyway not critical w.r.t. CPU time given that ras_ranks is
+ typically very small.
+ */
+void AntColony::ras_update( void )
+{
+    long int i, k, b, target;
+    long int *help_b;
+    
+    TRACE ( printf("Rank-based Ant System pheromone deposit\n"); );
+    
+    help_b = (long int *)malloc( n_ants  * sizeof(long int) );
+    for ( k = 0 ; k < n_ants ; k++ )
+        help_b[k] = ants[k].tour_length;
+    
+    for ( i = 0 ; i < ras_ranks-1 ; i++ ) {
+        b = help_b[0]; target = 0;
+        for ( k = 0 ; k < n_ants ; k++ ) {
+            if ( help_b[k] < b ) {
+                b = help_b[k];
+                target = k;
+            }
+        }
+        help_b[target] = LONG_MAX;
+        global_update_pheromone_weighted(&ants[target], ras_ranks-i-1);
+    }
+    global_update_pheromone_weighted(best_so_far_ant, ras_ranks);
+    free ( help_b );
+}
+
+/*
+ FUNCTION:       manage global pheromone trail update for the ACO algorithms
+ INPUT:          none
+ OUTPUT:         none
+ (SIDE)EFFECTS:  pheromone trails are evaporated and pheromones are deposited
+ according to the rules defined by the various ACO algorithms.
+ */
+void AntColony::pheromone_trail_update( void )
+{
+    /* Simulate the pheromone evaporation of all pheromones; this is not necessary
+     for ACS (see also ACO Book) */
+    if (ls_flag) {
+        evaporation_nn_list();
+        /* evaporate only pheromones on arcs of candidate list to make the
+         pheromone evaporation faster for being able to tackle large TSP
+         instances. For MMAS additionally check lower pheromone trail limits.
+         */
+    } else {
+        /* if no local search is used, evaporate all pheromone trails */
+        evaporation();
+    }
+    
+    /* Next, apply the pheromone deposit for the various ACO algorithms */
+    ras_update();
+    
+    /* Compute combined information pheromone times heuristic info after
+     the pheromone update for all ACO algorithms except ACS; in the ACS case
+     this is already done in the pheromone update procedures of ACS */
+    if (ls_flag) {
+        compute_nn_list_total_information();
+    } else {
+        compute_total_information();
+    }
+}
+
+/*
+ FUNCTION:       manage some statistical information about the solution, especially
+ if a new best solution (best-so-far or restart-best) is found
+ INPUT:          none
+ OUTPUT:         none
+ (SIDE)EFFECTS:  best-so-far ant may be updated
+ */
+void AntColony::update_statistics( void )
+{
+    /* 本次迭代中结果最优的蚂蚁 */
+    instance->iteration_best_ant = &ants[find_best()];
+    
+    write_iter_report(instance);
+    
+    if (instance->iteration_best_ant->tour_length < best_so_far_ant->tour_length) {
+        
+        g_best_so_far_time = elapsed_time( VIRTUAL );
+        copy_solution_from_to(instance->iteration_best_ant, best_so_far_ant );
+        
+        g_best_solution_iter = instance->iteration;
+        write_best_so_far_report(instance);
+    }
+}
+
+
+/****************************************************************
+ ****************************************************************
+ Procedures for finding best/worst tour in an iteration
+ ****************************************************************
+ ****************************************************************/
+
+long int AntColony::find_best(void)
 /*    
       FUNCTION:       find the best ant of the current iteration
       INPUT:          none
@@ -103,11 +329,11 @@ long int find_best( void )
     long int   min;
     long int   k, k_min;
 
-    min = ant[0].tour_length;
+    min = ants[0].tour_length;
     k_min = 0;
     for( k = 1 ; k < n_ants ; k++ ) {
-        if( ant[k].tour_length < min ) {
-            min = ant[k].tour_length;
+        if(ants[k].tour_length < min ) {
+            min = ants[k].tour_length;
             k_min = k;
         }
     }
@@ -116,7 +342,7 @@ long int find_best( void )
 
 
 
-long int find_worst( void ) 
+long int AntColony::find_worst(void)
 /*    
       FUNCTION:       find the worst ant of the current iteration
       INPUT:          none
@@ -127,11 +353,11 @@ long int find_worst( void )
     long int   max;
     long int   k, k_max;
 
-    max = ant[0].tour_length;
+    max = ants[0].tour_length;
     k_max = 0;
     for( k = 1 ; k < n_ants ; k++ ) {
-        if( ant[k].tour_length > max ) {
-            max = ant[k].tour_length;
+        if( ants[k].tour_length > max ) {
+            max = ants[k].tour_length;
             k_max = k;
         }
     }
@@ -148,7 +374,7 @@ Procedures for pheromone manipulation
 
 
 
-void init_pheromone_trails( double initial_trail )
+void AntColony::init_pheromone_trails( double initial_trail )
 /*    
       FUNCTION:      initialize pheromone trails
       INPUT:         initial value of pheromone trails "initial_trail"
@@ -171,7 +397,7 @@ void init_pheromone_trails( double initial_trail )
 
 
 
-void evaporation( void )
+void AntColony::evaporation( void )
 /*    
       FUNCTION:      implements the pheromone trail evaporation
       INPUT:         none
@@ -193,7 +419,7 @@ void evaporation( void )
 
 
 
-void evaporation_nn_list( void )
+void AntColony::evaporation_nn_list( void )
 /*    
       FUNCTION:      simulation of the pheromone trail evaporation
       INPUT:         none
@@ -210,7 +436,7 @@ void evaporation_nn_list( void )
 
     for ( i = 0 ; i < num_node ; i++ ) {
         for ( j = 0 ; j < nn_ants ; j++ ) {
-            help_node = instance.nn_list[i][j];
+            help_node = nn_list[i][j];
             pheromone[i][help_node] = (1 - rho) * pheromone[i][help_node];
         }
     }
@@ -218,7 +444,7 @@ void evaporation_nn_list( void )
 
 
 
-void global_update_pheromone( ant_struct *a )
+void AntColony::global_update_pheromone( AntStruct *a )
 /*    
       FUNCTION:      reinforces edges used in ant k's solution
       INPUT:         pointer to ant that updates the pheromone trail 
@@ -241,7 +467,7 @@ void global_update_pheromone( ant_struct *a )
 
 
 
-void global_update_pheromone_weighted( ant_struct *a, long int weight )
+void AntColony::global_update_pheromone_weighted( AntStruct *a, long int weight )
 /*    
       FUNCTION:      reinforces edges of the ant's tour with weight "weight"
       INPUT:         pointer to ant that updates pheromones and its weight  
@@ -264,7 +490,7 @@ void global_update_pheromone_weighted( ant_struct *a, long int weight )
 
 
 
-void compute_total_information( void )
+void AntColony::compute_total_information( void )
 /*    
       FUNCTION: calculates heuristic info times pheromone for each arc
       INPUT:    none  
@@ -285,7 +511,7 @@ void compute_total_information( void )
 
 
 
-void compute_nn_list_total_information( void )
+void AntColony::compute_nn_list_total_information( void )
 /*    
       FUNCTION: calculates heuristic info times pheromone for arcs in nn_list
       INPUT:    none  
@@ -298,7 +524,7 @@ void compute_nn_list_total_information( void )
 
     for ( i = 0 ; i < num_node ; i++ ) {
         for ( j = 0 ; j < nn_ants ; j++ ) {
-            h = instance.nn_list[i][j];
+            h = nn_list[i][j];
             total_info[i][h] = pow(pheromone[i][h], alpha) * pow(HEURISTIC(i,h),beta);
         }
     }
@@ -314,7 +540,7 @@ Procedures implementing solution construction and related things
 
 
 
-void ant_empty_memory( ant_struct *a ) 
+void AntColony::ant_empty_memory( AntStruct *a )
 /*    
       FUNCTION:       empty the ants's memory regarding visited nodes
       INPUT:          ant identifier
@@ -332,7 +558,7 @@ void ant_empty_memory( ant_struct *a )
 
 
 
-void init_ant_place( ant_struct *a , long int phase)
+void AntColony::init_ant_place( AntStruct *a , long int phase)
 /*    
       FUNCTION:      place an ant on the single depot
       INPUT:         pointer to ant and the number of construction steps 
@@ -346,7 +572,7 @@ void init_ant_place( ant_struct *a , long int phase)
 
 
 
-long int choose_best_next( ant_struct *a, long int phase )
+long int AntColony::choose_best_next( AntStruct *a, long int phase )
 /*    
       FUNCTION:      chooses for an ant as the next node the one with
                      maximal value of heuristic information times pheromone 
@@ -385,7 +611,7 @@ long int choose_best_next( ant_struct *a, long int phase )
 
 
 
-long int neighbour_choose_best_next( ant_struct *a, long int phase )
+long int AntColony::neighbour_choose_best_next( AntStruct *a, long int phase )
 /*    
       FUNCTION:      chooses for an ant as the next node the one with
                      maximal value of heuristic information times pheromone 
@@ -403,7 +629,7 @@ long int neighbour_choose_best_next( ant_struct *a, long int phase )
     DEBUG ( assert ( 0 <= current_node && current_node < num_node ); )
     value_best = -1.;             /* values in total matix are always >= 0.0 */    
     for ( i = 0 ; i < nn_ants ; i++ ) {
-        help_node = instance.nn_list[current_node][i];
+        help_node = nn_list[current_node][i];
         if ( a->visited[help_node] ) {
             ;   /* node already visited, do nothing */
         } else if(demand_meet_node_map[help_node] == FALSE) {
@@ -431,7 +657,7 @@ long int neighbour_choose_best_next( ant_struct *a, long int phase )
 
 
 
-void choose_closest_next( ant_struct *a, long int phase )
+void AntColony::choose_closest_next( AntStruct *a, long int phase )
 /*    
       FUNCTION:      Chooses for an ant the closest node as the next one 
       INPUT:         pointer to ant and the construction step "phase" 
@@ -451,9 +677,9 @@ void choose_closest_next( ant_struct *a, long int phase )
         } else if(demand_meet_node_map[node] == FALSE) {
             ;  /* 该点不满足要求 */
         } else {
-            if ( instance.distance[current_node][node] < min_distance) {
+            if ( distance[current_node][node] < min_distance) {
                 next_node = node;
-                min_distance = instance.distance[current_node][node];
+                min_distance = distance[current_node][node];
             }
         } 
     }
@@ -463,7 +689,7 @@ void choose_closest_next( ant_struct *a, long int phase )
 }
 
 
-long int neighbour_choose_and_move_to_next(ant_struct *a, long int phase)
+long int AntColony::neighbour_choose_and_move_to_next(AntStruct *a, long int phase)
 /*    
      FUNCTION:      Choose for an ant probabilistically a next node among all
      unvisited and possible nodes in the current node's candidate list.
@@ -480,23 +706,12 @@ long int neighbour_choose_and_move_to_next(ant_struct *a, long int phase)
 	of the nearest neighbor nodes */
     double   *prob_ptr;
 
-
-
-    if ( (q_0 > 0.0) && (ran01( &seed ) < q_0)  ) {
-        /* with a probability q_0 make the best possible choice
-           according to pheromone trails and heuristic information */
-        /* we first check whether q_0 > 0.0, to avoid the very common case
-           of q_0 = 0.0 to have to compute a random number, which is
-           expensive computationally */
-        return neighbour_choose_best_next(a, phase);
-    }
-
     prob_ptr = prob_of_selection;
 
     current_node = a->tour[phase-1]; /* current_node node of ant k */
     DEBUG( assert ( current_node >= 0 && current_node < num_node ); )
     for ( i = 0 ; i < nn_ants ; i++ ) {
-        neighbour_node = instance.nn_list[current_node][i];
+        neighbour_node = nn_list[current_node][i];
         if ( a->visited[neighbour_node] ) {
             prob_ptr[i] = 0.0;   /* node already visited */
         } else if(demand_meet_node_map[neighbour_node] == FALSE) {
@@ -530,10 +745,10 @@ long int neighbour_choose_and_move_to_next(ant_struct *a, long int phase)
         }
         DEBUG( assert ( 0 <= i && i < nn_ants); );
         DEBUG( assert ( prob_ptr[i] >= 0.0); );
-        help = instance.nn_list[current_node][i];
+        help = nn_list[current_node][i];
         DEBUG( assert ( help >= 0 && help < n ); )
         DEBUG( assert ( a->visited[help] == FALSE ); )
-        a->tour[phase] = help; /* instance.nn_list[current_node][i]; */
+        a->tour[phase] = help; /* nn_list[current_node][i]; */
         a->visited[help] = TRUE;
         
         return help;
@@ -554,7 +769,7 @@ Procedures specific to the ant's tour manipulation other than construction
  OUTPUT:         none
  (SIDE)EFFECTS:  a2 is copy of a1
  */
-void copy_solution_from_to(ant_struct *a1, ant_struct *a2)
+void AntColony::copy_solution_from_to(AntStruct *a1, AntStruct *a2)
 {
     int   i;
   
