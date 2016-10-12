@@ -422,3 +422,5 @@ Point * read_instance_file(Problem *instance, const char *vrp_file_name)
     TRACE ( printf("\n... done\n"); )
     return (nodeptr);
 }
+
+
