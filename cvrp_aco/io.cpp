@@ -124,6 +124,49 @@ void print_probabilities(Problem *instance)
 }
 
 /*
+ FUNCTION:       print distance matrix
+ INPUT:          none
+ OUTPUT:         none
+ */
+void print_distance(Problem *instance)
+{
+    long int i,j;
+    
+    printf("Distance Matrix:\n");
+    for ( i = 0 ; i < instance->num_node ; i++) {
+        printf("From %ld:  ",i);
+        for ( j = 0 ; j < instance->num_node - 1 ; j++ ) {
+            printf(" %ld", instance->distance[i][j]);
+        }
+        printf(" %ld\n", instance->distance[i][instance->num_node-1]);
+        printf("\n");
+    }
+    printf("\n");
+}
+
+/*
+ FUNCTION:       print pheromone trail values
+ INPUT:          none
+ OUTPUT:         none
+ */
+void print_pheromone(Problem *instance)
+{
+    long int i,j;
+    
+    printf("pheromone Trail matrix, iteration: %ld\n\n",instance->iteration);
+    for ( i = 0 ; i < instance->num_node ; i++) {
+        printf("From %ld:  ",i);
+        for ( j = 0 ; j < instance->num_node ; j++ ) {
+            printf(" %.10f ", instance->pheromone[i][j]);
+            if (instance->pheromone[i][j] > 1.0)
+                printf("XXXXX\n");
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+/*
  * 问题开始时
  */
 void init_report(Problem *instance)
@@ -257,10 +300,10 @@ static void fprintf_parameters (FILE *stream, Problem *instance)
 /*
  FUNCTION: parse and read instance file
  INPUT:    instance name
- OUTPUT:   list of coordinates for all nodes
+ OUTPUT:   none
  COMMENTS: Instance files have to be in vrpLIB format, otherwise procedure fails
  */
-Point * read_instance_file(Problem *instance, const char *vrp_file_name)
+void read_instance_file(Problem *instance, const char *vrp_file_name)
 {
     FILE         *vrp_file;
     char         buf[LINE_BUF_LEN];
@@ -420,8 +463,9 @@ Point * read_instance_file(Problem *instance, const char *vrp_file_name)
         fscanf(vrp_file,"%ld %ld", &j, &nodeptr[i].demand);
     }
     
+    instance->nodeptr = nodeptr;
+    
     TRACE ( printf("\n... done\n"); )
-    return (nodeptr);
 }
 
 

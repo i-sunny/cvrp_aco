@@ -16,6 +16,8 @@
 
 #include <stdio.h>
 #include <bitset>
+#include <vector>
+
 using namespace std;
 
 #define LINE_BUF_LEN     255
@@ -48,8 +50,8 @@ struct Point {
 };
 
 struct RouteCenter {
-    long int beg;                   /* route在tour中的开始位置 */
-    long int end;                   /* route在tour中的结束位置 */
+    long int beg;                   /* route在tour中的开始位置,tour[beg] = 0(depot) */
+    long int end;                   /* route在tour中的结束位置,tour[end] = 0(depot) */
     Point   *coord;                 /* center point coord */
     short angle;                    /* 重心与depot的角度 -180~180 */
 };
@@ -68,6 +70,9 @@ struct AntStruct {
 
 
 struct Problem {
+    Problem(short id): pid(id){}
+    
+    short         pid;                      /* 主问题id = 0, 子问题id递增 */
     char          name[LINE_BUF_LEN];      	 /* instance name */
     char          edge_weight_type[LINE_BUF_LEN];  /* selfexplanatory */
     DistanceTypeEnum dis_type;               /* 用于决定使用哪种距离方式 */
@@ -105,12 +110,13 @@ struct Problem {
     long int n_ants;                    /* number of ants */
     long int nn_ants;                   /* length of nearest neighbor lists for the ants'
                                          solution construction */
+    vector<long int> real_nodes;        /* 仅用于子问题，子问题nodes需要重新编号，因此需要额外数组记录nodes真实的编号 */
 };
 
 void init_problem(Problem *instance);
 void exit_problem(Problem *instance);
-void init_sub_problem(void);
-void exit_sub_problem(Problem *instance);
+void init_sub_problem(Problem *master, Problem *sub);
+void exit_sub_problem(Problem *sub);
 int check_solution(Problem *instance, const long int *tour, long int tour_size);
 int check_route(Problem *instance, const long int *tour, long int rbeg, long int rend);
 

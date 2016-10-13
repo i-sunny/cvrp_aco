@@ -52,7 +52,10 @@ void init_problem(Problem *instance)
     set_default_parameters(instance);
     
     // 为 problem 实例的成员分配内存
-    instance->distance = compute_distances(instance);
+    // 只有主问题需要计算distance矩阵
+    if (instance->pid == 0) {
+        instance->distance = compute_distances(instance);
+    }
     instance->nn_list = compute_nn_lists(instance);
     instance->pheromone = generate_double_matrix(instance->num_node, instance->num_node);
     instance->total_info = generate_double_matrix(instance->num_node, instance->num_node );
@@ -80,25 +83,58 @@ void exit_problem(Problem *instance)
     free(instance);
 }
 
-/*
- * 初始化子问题
- */
-void init_sub_problem()
-{
-    Problem *instance = new Problem();
-    instance->max_iteration = g_sub_problem_iteration_num;
-    init_problem(instance);
-}
-
 
 /*
- * 结束子问题
+ * 初始子问题
+ * Note: 子问题的distance可以从主问题直接赋值，减少重复计算
  */
-void exit_sub_problem(Problem *instance)
+void init_sub_problem(Problem *master, Problem *sub)
 {
+    long int **sub_dis;
+    long int ri, rj;
+    Point *nodeptr, *m_node;
     
+    // 初始化 sub-problem distance矩阵
+    if((sub_dis = (long int **)malloc(sizeof(long int) * sub->num_node * sub->num_node +
+                                      sizeof(long int *) * sub->num_node)) == NULL) {
+        exit(EXIT_FAILURE);
+    }
+    for (long int i = 0; i < sub->num_node; i++ ) {
+        sub_dis[i] = (long int *)(sub_dis + sub->num_node) + i * sub->num_node;
+        ri = sub->real_nodes[i];
+        for (long int j = 0; j < sub->num_node; j++ ) {
+            rj = sub->real_nodes[j];
+            sub_dis[i][j] = master->distance[ri][rj];
+        }
+    }
+    sub->distance = sub_dis;
+    
+    // 初始化nodeptr
+    if((nodeptr = (Point *)malloc(sizeof(Point) * sub->num_node)) == NULL) {
+        exit(EXIT_FAILURE);
+    }
+    for (long int i = 0 ; i < sub->num_node ; i++ ) {
+        ri = sub->real_nodes[i];
+        m_node = &master->nodeptr[ri];
+        nodeptr[i].x = m_node->x;
+        nodeptr[i].y = m_node->y;
+        nodeptr[i].demand = m_node->demand;
+    }
+    sub->nodeptr = nodeptr;
+    
+//    print_distance(sub);
+    
+    init_problem(sub);
+    
+    sub->max_iteration = g_sub_problem_iteration_num;
+    sub->dis_type = master->dis_type;
+    sub->vehicle_capacity = master->vehicle_capacity;
 }
 
+void exit_sub_problem(Problem *sub)
+{
+    exit_problem(sub);
+}
 
 /*
  FUNCTION:       allocate the memory for the ant colony, the best-so-far and
@@ -174,7 +210,7 @@ void set_default_parameters (Problem *instance)
     ras_ranks      = 6;          /* number of ranked ants, top-{ras_ranks} ants */
     
     seed           = (long int) time(NULL);
-    g_max_runtime    = 10.0;
+    g_max_runtime    = 20.0;
     
     // parallel aco
     g_master_problem_iteration_num    = 1;      /* 每次外循环，主问题蚁群的迭代次数 */

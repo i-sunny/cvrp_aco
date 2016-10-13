@@ -67,7 +67,6 @@ protected:
     
     bool ls_flag;               /* indicates whether and which local search is used */
     
-private:
     /* Pheromone manipulation etc. */
     void init_pheromone_trails ( double initial_trail );
     void evaporation ( void );

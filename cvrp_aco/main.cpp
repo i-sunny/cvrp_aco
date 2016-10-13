@@ -58,13 +58,13 @@ const char* parse_commandline (long int argc, char *argv [])
  */
 int main(int argc, char *argv[])
 {
-    Problem *instance = new Problem();
+    Problem *instance = new Problem(0);
     AntColony *solver;
     
     start_timers();
     
     const char *filename = parse_commandline(argc, argv);
-    instance->nodeptr = read_instance_file(instance, filename);
+    read_instance_file(instance, filename);
     init_problem(instance);
     init_report(instance);
     
@@ -78,12 +78,12 @@ int main(int argc, char *argv[])
     
     solver->init_aco();
     
-//    while (!termination_condition(instance)) {
+    while (!termination_condition(instance)) {
     
         solver->run_aco_iteration();
         instance->iteration++;
-//    }
-    
+    }
+
     solver->exit_aco();
     
     delete solver;

@@ -115,7 +115,7 @@ void AntColony::exit_aco()
 /*
  * 蚁群算法单次迭代的执行
  */
-void AntColony::run_aco_iteration(void)
+void AntColony::run_aco_iteration()
 {
     
     construct_solutions();
@@ -290,12 +290,14 @@ void AntColony::pheromone_trail_update( void )
  OUTPUT:         none
  (SIDE)EFFECTS:  best-so-far ant may be updated
  */
-void AntColony::update_statistics( void )
+void AntColony::update_statistics()
 {
     /* 本次迭代中结果最优的蚂蚁 */
     instance->iteration_best_ant = &ants[find_best()];
     
-    write_iter_report(instance);
+    if (instance->pid == 0) {
+        write_iter_report(instance);
+    }
     
     if (instance->iteration_best_ant->tour_length < best_so_far_ant->tour_length) {
         
@@ -303,7 +305,9 @@ void AntColony::update_statistics( void )
         copy_solution_from_to(instance->iteration_best_ant, best_so_far_ant );
         
         g_best_solution_iter = instance->iteration;
-        write_best_so_far_report(instance);
+        if (instance->pid == 0) {
+            write_best_so_far_report(instance);
+        }
     }
 }
 

@@ -31,13 +31,15 @@ public:
     virtual void run_aco_iteration(void);
     
 private:
-    Problem **sub_insts;                   /* 多个子问题 */
+    vector<Problem *> subs;            /* 多个子问题 */
     vector<RouteCenter *> route_centers;    /* each route's center info */
     
     void get_solution_centers(AntStruct *ant);
     void sort_route_centers();
-    void decompose_problem(void);
-    void build_sub_problem(const vector< vector<RouteCenter *> >& sub_problem_routes);
+    void decompose_problem(AntStruct *best_so_far_ant);
+    void init_sub_pheromone(Problem *master, Problem *sub, double ratio);
+    void update_sub_to_master(Problem *master, Problem *sub, double ratio);
+    void build_sub_problems(AntStruct *ant, const vector< vector<RouteCenter *> >& sub_problem_routes);
 };
 
 #endif /* parallelAco_h */
