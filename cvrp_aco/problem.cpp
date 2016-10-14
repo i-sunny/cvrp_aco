@@ -23,12 +23,9 @@
 #include "timer.h"
 
 
-long int seed;
-
 /**** 用于parallel aco参数 ***/
 long int g_master_problem_iteration_num;   /* 每次外循环，主问题蚁群的迭代的次数 */
 long int g_sub_problem_iteration_num;      /* 每次外循环，子问题蚁群的迭代次数 */
-long int g_num_sub_problems;               /* 拆分子问题个数 */
 
 double rho;           /* parameter for evaporation */
 double alpha;         /* importance of trail */
@@ -208,13 +205,13 @@ void set_default_parameters (Problem *instance)
     rho            = 0.1;
     ras_ranks      = 6;          /* number of ranked ants, top-{ras_ranks} ants */
     
-    seed           = (long int) time(NULL);
-    instance->max_runtime    = 60.0;
+    instance->rnd_seed       = (long int) time(NULL);
+    instance->max_runtime    = 500.0;
     
     // parallel aco
     g_master_problem_iteration_num    = 1;      /* 每次外循环，主问题蚁群的迭代次数 */
     g_sub_problem_iteration_num       = 75;     /* 每次外循环，子问题蚁群的迭代次数 */
-    g_num_sub_problems                = 4;      // instance->num_node/50;
+    instance->num_subs                = instance->num_node/50;
 }
 
 /*

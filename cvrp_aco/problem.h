@@ -23,11 +23,9 @@ using namespace std;
 #define LINE_BUF_LEN     255
 
 /*************** global variables *********************/
-extern long int seed;
 
 extern long int g_master_problem_iteration_num;   /* 每次外循环，主问题蚁群的迭代的次数 */
 extern long int g_sub_problem_iteration_num;      /* 每次外循环，子问题蚁群的迭代次数 */
-extern long int g_num_sub_problems;               /* 拆分子问题个数 */
 
 extern double rho;           /* parameter for evaporation */
 extern double alpha;         /* importance of trail */
@@ -111,7 +109,10 @@ struct Problem {
     double   best_so_far_time;          /* 当前最优解出现的时间 */
     long int best_solution_iter;        /* iteration in which best solution is found */
     
+    long int rnd_seed;                  /* 用于生成随机数的种子 */
+    
     /*----- sub problem only -----*/
+    long int num_subs;                  /* 仅用于parallel版本蚁群, 子问题个数 */
     vector<long int> real_nodes;        /* 仅用于sub-problem, sub nodes需要重新编号，因此需要额外数组记录nodes真实的编号 */
     double   **best_pheromone;          /* 仅用于sub-problem, 记录sub 获得best_so_far_solution时候的信息素
                                            用于sub 迭代结束时更新至master */

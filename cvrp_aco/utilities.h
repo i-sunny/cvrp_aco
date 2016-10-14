@@ -35,8 +35,6 @@
 #define IR 2836
 #define MASK 123459876
 
-extern long int seed;
-
 double mean ( long int *values, long int max);
 
 double meanr ( double *values, long int max );

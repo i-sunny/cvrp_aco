@@ -94,7 +94,7 @@ long int * LocalSearch::generate_random_permutation( long int n )
 
    for ( i = 0 ; i < n ; i++ ) {
      /* find (randomly) an index for a free unit */ 
-     rnd  = ran01 ( &seed );
+     rnd  = ran01 ( &instance->rnd_seed );
      node = (long int) (rnd  * (n - tot_assigned)); 
      assert( i + node < n );
      help = r[i];

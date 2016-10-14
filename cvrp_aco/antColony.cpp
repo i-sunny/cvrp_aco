@@ -727,8 +727,10 @@ long int AntColony::neighbour_choose_and_move_to_next(AntStruct *a, long int pha
     } else {
         /* at least one neighbor is eligible, chose one according to the
            selection probabilities */
-        rnd = ran01( &seed );
+        rnd = ran01( &instance->rnd_seed );
         rnd *= sum_prob;
+        DEBUG(assert ( rnd >= 0 && rnd <= sum_prob );)
+        
         i = 0;
         partial_sum = prob_ptr[i];
         /* This loop always stops because prob_ptr[nn_ants] == HUGE_VAL  */
@@ -742,9 +744,9 @@ long int AntColony::neighbour_choose_and_move_to_next(AntStruct *a, long int pha
             return neighbour_choose_best_next(a, phase);
         }
         DEBUG( assert ( 0 <= i && i < nn_ants); );
-        DEBUG( assert ( prob_ptr[i] >= 0.0); );
+        DEBUG( assert ( prob_ptr[i] > 0.0); );
         help = nn_list[current_node][i];
-        assert ( help >= 0 && help < num_node );
+        DEBUG(assert ( help >= 0 && help < num_node );)
         DEBUG( assert ( a->visited[help] == FALSE ); )
         a->tour[phase] = help; /* nn_list[current_node][i]; */
         a->visited[help] = TRUE;

@@ -323,7 +323,7 @@ void write_params(Problem *instance)
 static void fprintf_parameters (FILE *stream, Problem *instance)
 {
     fprintf(stream,"max_time\t\t %.2f\n", instance->max_runtime);
-    fprintf(stream,"seed\t\t %ld\n", seed);
+    fprintf(stream,"seed\t\t %ld\n", instance->rnd_seed);
     fprintf(stream,"optimum\t\t\t %ld\n", instance->optimum);
     fprintf(stream,"n_ants\t\t\t %ld\n", instance->n_ants);
     fprintf(stream,"nn_ants\t\t\t %ld\n", instance->nn_ants);

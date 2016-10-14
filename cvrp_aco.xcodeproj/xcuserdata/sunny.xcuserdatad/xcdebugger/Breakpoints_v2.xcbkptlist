@@ -122,11 +122,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/problem.cpp"
-            timestampString = "498129352.800217"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "179"
-            endingLineNumber = "179"
+            startingLineNumber = "176"
+            endingLineNumber = "176"
             landmarkName = "allocate_ants (Problem *instance)"
             landmarkType = "7">
          </BreakpointContent>
@@ -250,11 +250,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498121706.782464"
+            timestampString = "498150850.737164"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "68"
-            endingLineNumber = "68"
+            startingLineNumber = "67"
+            endingLineNumber = "67"
             landmarkName = "ParallelAco::get_solution_centers(AntStruct *ant)"
             landmarkType = "5">
          </BreakpointContent>
@@ -314,11 +314,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498121706.782464"
+            timestampString = "498150850.737164"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "62"
-            endingLineNumber = "62"
+            startingLineNumber = "61"
+            endingLineNumber = "61"
             landmarkName = "ParallelAco::get_solution_centers(AntStruct *ant)"
             landmarkType = "5">
          </BreakpointContent>
@@ -330,11 +330,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498121706.782464"
+            timestampString = "498150850.737164"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "65"
-            endingLineNumber = "65"
+            startingLineNumber = "64"
+            endingLineNumber = "64"
             landmarkName = "ParallelAco::get_solution_centers(AntStruct *ant)"
             landmarkType = "5">
          </BreakpointContent>
@@ -362,11 +362,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/problem.cpp"
-            timestampString = "498129352.800217"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "289"
-            endingLineNumber = "289"
+            startingLineNumber = "286"
+            endingLineNumber = "286"
             landmarkName = "check_route(Problem *instance, const long int *tour, long int rbeg, long int rend)"
             landmarkType = "7">
          </BreakpointContent>
@@ -378,29 +378,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/problem.cpp"
-            timestampString = "498129352.800217"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "269"
-            endingLineNumber = "269"
+            startingLineNumber = "266"
+            endingLineNumber = "266"
             landmarkName = "check_solution(Problem *instance, const long int *tour, long int tour_size)"
             landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "cvrp_aco/antColony.cpp"
-            timestampString = "498110895.348281"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "747"
-            endingLineNumber = "747"
-            landmarkName = "AntColony::neighbour_choose_and_move_to_next(AntStruct *a, long int phase)"
-            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -506,11 +490,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498121706.782464"
+            timestampString = "498150850.737164"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "80"
-            endingLineNumber = "80"
+            startingLineNumber = "79"
+            endingLineNumber = "79"
             landmarkName = "ParallelAco::sort_route_centers()"
             landmarkType = "5">
          </BreakpointContent>
@@ -522,11 +506,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498121706.782464"
+            timestampString = "498150850.737164"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "92"
-            endingLineNumber = "92"
+            startingLineNumber = "91"
+            endingLineNumber = "91"
             landmarkName = "ParallelAco::sort_route_centers()"
             landmarkType = "5">
          </BreakpointContent>
@@ -538,11 +522,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498129352.800217"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "127"
-            endingLineNumber = "127"
+            startingLineNumber = "128"
+            endingLineNumber = "128"
             landmarkName = "ParallelAco::decompose_problem(AntStruct *ant)"
             landmarkType = "5">
          </BreakpointContent>
@@ -554,11 +538,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498129352.800217"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "127"
-            endingLineNumber = "127"
+            startingLineNumber = "128"
+            endingLineNumber = "128"
             landmarkName = "ParallelAco::decompose_problem(AntStruct *ant)"
             landmarkType = "5">
          </BreakpointContent>
@@ -570,11 +554,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498129352.800217"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "133"
-            endingLineNumber = "133"
+            startingLineNumber = "134"
+            endingLineNumber = "134"
             landmarkName = "ParallelAco::decompose_problem(AntStruct *ant)"
             landmarkType = "5">
          </BreakpointContent>
@@ -586,11 +570,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498129352.800217"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "142"
-            endingLineNumber = "142"
+            startingLineNumber = "143"
+            endingLineNumber = "143"
             landmarkName = "ParallelAco::decompose_problem(AntStruct *ant)"
             landmarkType = "5">
          </BreakpointContent>
@@ -634,11 +618,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498129352.800217"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "145"
-            endingLineNumber = "145"
+            startingLineNumber = "146"
+            endingLineNumber = "146"
             landmarkName = "ParallelAco::decompose_problem(AntStruct *ant)"
             landmarkType = "5">
          </BreakpointContent>
@@ -650,11 +634,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498129352.800217"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "215"
-            endingLineNumber = "215"
+            startingLineNumber = "216"
+            endingLineNumber = "216"
             landmarkName = "ParallelAco::build_sub_problems(AntStruct *ant, const vector&lt; vector&lt;RouteCenter *&gt; &gt;&amp; sub_problem_routes)"
             landmarkType = "5">
          </BreakpointContent>
@@ -666,11 +650,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498129352.800217"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "164"
-            endingLineNumber = "164"
+            startingLineNumber = "165"
+            endingLineNumber = "165"
             landmarkName = "ParallelAco::build_sub_problems(AntStruct *ant, const vector&lt; vector&lt;RouteCenter *&gt; &gt;&amp; sub_problem_routes)"
             landmarkType = "5">
          </BreakpointContent>
@@ -698,11 +682,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/problem.cpp"
-            timestampString = "498114136.197154"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "55"
-            endingLineNumber = "55"
+            startingLineNumber = "52"
+            endingLineNumber = "52"
             landmarkName = "init_problem(Problem *instance)"
             landmarkType = "7">
          </BreakpointContent>
@@ -714,11 +698,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498129352.800217"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "178"
-            endingLineNumber = "178"
+            startingLineNumber = "179"
+            endingLineNumber = "179"
             landmarkName = "ParallelAco::build_sub_problems(AntStruct *ant, const vector&lt; vector&lt;RouteCenter *&gt; &gt;&amp; sub_problem_routes)"
             landmarkType = "5">
          </BreakpointContent>
@@ -730,11 +714,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498129352.800217"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "175"
-            endingLineNumber = "175"
+            startingLineNumber = "176"
+            endingLineNumber = "176"
             landmarkName = "ParallelAco::build_sub_problems(AntStruct *ant, const vector&lt; vector&lt;RouteCenter *&gt; &gt;&amp; sub_problem_routes)"
             landmarkType = "5">
          </BreakpointContent>
@@ -746,11 +730,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/problem.cpp"
-            timestampString = "498132346.612213"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "125"
-            endingLineNumber = "125"
+            startingLineNumber = "122"
+            endingLineNumber = "122"
             landmarkName = "init_sub_problem(Problem *master, Problem *sub)"
             landmarkType = "7">
          </BreakpointContent>
@@ -762,11 +746,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/problem.cpp"
-            timestampString = "498132346.612213"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "94"
-            endingLineNumber = "94"
+            startingLineNumber = "91"
+            endingLineNumber = "91"
             landmarkName = "init_sub_problem(Problem *master, Problem *sub)"
             landmarkType = "7">
          </BreakpointContent>
@@ -778,11 +762,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/problem.cpp"
-            timestampString = "498132346.612213"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "129"
-            endingLineNumber = "129"
+            startingLineNumber = "126"
+            endingLineNumber = "126"
             landmarkName = "init_sub_problem(Problem *master, Problem *sub)"
             landmarkType = "7">
          </BreakpointContent>
@@ -794,11 +778,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498129352.800217"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "214"
-            endingLineNumber = "214"
+            startingLineNumber = "215"
+            endingLineNumber = "215"
             landmarkName = "ParallelAco::build_sub_problems(AntStruct *ant, const vector&lt; vector&lt;RouteCenter *&gt; &gt;&amp; sub_problem_routes)"
             landmarkType = "5">
          </BreakpointContent>
@@ -810,11 +794,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498129352.800217"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "226"
-            endingLineNumber = "226"
+            startingLineNumber = "227"
+            endingLineNumber = "227"
             landmarkName = "ParallelAco::init_sub_pheromone(AntColony *sub_solver, Problem *master, Problem *sub)"
             landmarkType = "5">
          </BreakpointContent>
@@ -858,11 +842,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/problem.cpp"
-            timestampString = "498129352.800217"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "226"
-            endingLineNumber = "226"
+            startingLineNumber = "223"
+            endingLineNumber = "223"
             landmarkName = "check_solution(Problem *instance, const long int *tour, long int tour_size)"
             landmarkType = "7">
          </BreakpointContent>
@@ -874,11 +858,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/problem.cpp"
-            timestampString = "498129352.800217"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "231"
-            endingLineNumber = "231"
+            startingLineNumber = "228"
+            endingLineNumber = "228"
             landmarkName = "check_solution(Problem *instance, const long int *tour, long int tour_size)"
             landmarkType = "7">
          </BreakpointContent>
@@ -890,11 +874,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498144824.787095"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "278"
-            endingLineNumber = "278"
+            startingLineNumber = "279"
+            endingLineNumber = "279"
             landmarkName = "ParallelAco::init_sub_pheromone(AntColony *sub_solver, Problem *master, Problem *sub)"
             landmarkType = "5">
          </BreakpointContent>
@@ -906,11 +890,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498144824.787095"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "262"
-            endingLineNumber = "262"
+            startingLineNumber = "263"
+            endingLineNumber = "263"
             landmarkName = "ParallelAco::init_sub_pheromone(AntColony *sub_solver, Problem *master, Problem *sub)"
             landmarkType = "5">
          </BreakpointContent>
@@ -922,11 +906,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498144824.787095"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "257"
-            endingLineNumber = "257"
+            startingLineNumber = "258"
+            endingLineNumber = "258"
             landmarkName = "ParallelAco::init_sub_pheromone(AntColony *sub_solver, Problem *master, Problem *sub)"
             landmarkType = "5">
          </BreakpointContent>
@@ -970,11 +954,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498129352.800217"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "208"
-            endingLineNumber = "208"
+            startingLineNumber = "209"
+            endingLineNumber = "209"
             landmarkName = "ParallelAco::build_sub_problems(AntStruct *ant, const vector&lt; vector&lt;RouteCenter *&gt; &gt;&amp; sub_problem_routes)"
             landmarkType = "5">
          </BreakpointContent>
@@ -986,11 +970,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498129106.313298"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "212"
-            endingLineNumber = "212"
+            startingLineNumber = "213"
+            endingLineNumber = "213"
             landmarkName = "ParallelAco::build_sub_problems(AntStruct *ant, const vector&lt; vector&lt;RouteCenter *&gt; &gt;&amp; sub_problem_routes)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1002,11 +986,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498144824.787095"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "374"
-            endingLineNumber = "374"
+            startingLineNumber = "376"
+            endingLineNumber = "376"
             landmarkName = "ParallelAco::update_subs_to_master(Problem *master, const vector&lt;Problem *&gt; &amp;subs)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1018,11 +1002,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498144824.787095"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "341"
-            endingLineNumber = "341"
+            startingLineNumber = "342"
+            endingLineNumber = "342"
             landmarkName = "ParallelAco::update_subs_to_master(Problem *master, const vector&lt;Problem *&gt; &amp;subs)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1034,11 +1018,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498144824.787095"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "346"
-            endingLineNumber = "346"
+            startingLineNumber = "347"
+            endingLineNumber = "347"
             landmarkName = "ParallelAco::update_subs_to_master(Problem *master, const vector&lt;Problem *&gt; &amp;subs)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1046,16 +1030,128 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/parallelAco.cpp"
-            timestampString = "498144824.787095"
+            timestampString = "498157848.857836"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "416"
-            endingLineNumber = "416"
+            startingLineNumber = "424"
+            endingLineNumber = "424"
             landmarkName = "ParallelAco::run_aco_iteration()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "cvrp_aco/parallelAco.cpp"
+            timestampString = "498157848.857836"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "454"
+            endingLineNumber = "454"
+            landmarkName = "sub_thread_func(void* in)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "cvrp_aco/antColony.cpp"
+            timestampString = "498151116.046165"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "383"
+            endingLineNumber = "383"
+            landmarkName = "AntColony::init_pheromone_trails( double initial_trail )"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "cvrp_aco/parallelAco.cpp"
+            timestampString = "498157848.857836"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "410"
+            endingLineNumber = "410"
+            landmarkName = "ParallelAco::run_aco_iteration()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "cvrp_aco/localSearch.cpp"
+            timestampString = "498155431.778808"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "98"
+            endingLineNumber = "98"
+            landmarkName = "LocalSearch::generate_random_permutation( long int n )"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "cvrp_aco/parallelAco.cpp"
+            timestampString = "498157848.857836"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "114"
+            endingLineNumber = "114"
+            landmarkName = "ParallelAco::decompose_problem(AntStruct *ant)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "cvrp_aco/antColony.cpp"
+            timestampString = "498155478.324543"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "731"
+            endingLineNumber = "731"
+            landmarkName = "AntColony::neighbour_choose_and_move_to_next(AntStruct *a, long int phase)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "cvrp_aco/parallelAco.cpp"
+            timestampString = "498157848.857836"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "322"
+            endingLineNumber = "322"
+            landmarkName = "ParallelAco::update_subs_to_master(Problem *master, const vector&lt;Problem *&gt; &amp;subs)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

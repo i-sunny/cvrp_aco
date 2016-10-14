@@ -30,7 +30,7 @@ public:
     
     virtual void run_aco_iteration(void);
     void init_sub_pheromone(AntColony *sub_solver, Problem *master, Problem *sub);
-    void update_sub_best_pheromone(Problem *sub);
+    static void update_sub_best_pheromone(Problem *sub);
     void update_subs_to_master(Problem *master, const vector<Problem *> &subs);
     
 private:

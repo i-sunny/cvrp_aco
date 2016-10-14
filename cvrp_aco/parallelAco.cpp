@@ -34,10 +34,9 @@ struct ThreadInfo
     Problem *master;
     ParallelAco *master_solver;
     Problem *sub;
-    long int master_best_length;
 };
 
-void *sub_problem_thread(void* in);
+void *sub_thread_func(void* in);
 
 
 ParallelAco::~ParallelAco()
@@ -107,16 +106,18 @@ void ParallelAco::sort_route_centers()
  */
 void ParallelAco::decompose_problem(AntStruct *ant)
 {
+    Problem *master = instance;
+    
     // random start pos from [0, route_num)
-    long int rnd_beg = (long int)(ran01(&seed) * (route_centers.size() - 1));
+    long int rnd_beg = (long int)(ran01(&instance->rnd_seed) * (route_centers.size() - 1));
     /* 一个子问题包含的routes数目 */
-    long int sub_problem_route_num = (long int)(route_centers.size() / g_num_sub_problems);
+    long int sub_problem_route_num = (long int)(route_centers.size() / master->num_subs);
     /* 
      * 剩余的routes, 前remainder个子问题，每个子问题多分配一个，
      * 如此尽量保证分配均匀. 
      * 每个子问题分配的子routes数量为: sub_problem_route_num 或 sub_problem_route_num + 1
      */
-    long int remainder = route_centers.size() % g_num_sub_problems;
+    long int remainder = route_centers.size() % master->num_subs;
     
     vector< vector<RouteCenter *> > sub_problem_routes;
     vector<RouteCenter *> tmp;
@@ -368,6 +369,7 @@ void ParallelAco::update_subs_to_master(Problem *master, const vector<Problem *>
     master->best_so_far_ant->tour_size = k;
     master->best_so_far_ant->tour_length = compute_tour_length(master, master_tour, k);
     
+    // 记录-report
     master->best_so_far_time = elapsed_time(VIRTUAL);
     write_best_so_far_report(master);
     
@@ -384,17 +386,13 @@ void ParallelAco::update_subs_to_master(Problem *master, const vector<Problem *>
  */
 void ParallelAco::run_aco_iteration()
 {
-    long int i, j;
-    Problem *sub, *master = instance;
-    AntColony *sub_solver;
-    long int sub_best_length, master_best_length;
+    long int i;
+    Problem *master = instance;
     
     //1)computer master problem
     for (i = 0; i < g_master_problem_iteration_num; i++) {
         this->AntColony::run_aco_iteration();
     }
-    // 在子问题递归过程中可能会更新主问题最优解，该值用于计算主从问题信息素转换率ratio
-    master_best_length = master->best_so_far_ant->tour_length;
     
     // 2) compute the center of gravity for each route
     get_solution_centers(master->best_so_far_ant);
@@ -403,29 +401,23 @@ void ParallelAco::run_aco_iteration()
     decompose_problem(master->best_so_far_ant);
     
     // 4)子问题递归
-    for (i = 0; i < subs.size(); i++)
-    {
-        sub = subs[i];
-        sub_solver = new AntColony(sub);
-        sub_best_length = sub->best_so_far_ant->tour_length;
+    pthread_t tids[subs.size()];
+    ThreadInfo infos[subs.size()], *info;
+    for (i = 0; i < subs.size(); i++) {
+        info = &infos[i];
+        info->master = master;
+        info->master_solver = this;
+        info->sub = subs[i];
         
-        // 根据主问题信息素初始化子问题信息素
-        init_sub_pheromone(sub_solver, master, sub);
-        
-        // 子问题递归
-        for (j = 0; j < sub->max_iteration; j++)
-        {
-            sub_solver->AntColony::run_aco_iteration();
-            
-            // 子问题获得更优解, 则更新最有信息素
-            if (sub->best_so_far_ant->tour_length < sub_best_length)
-            {
-                sub_best_length = sub->best_so_far_ant->tour_length;
-                update_sub_best_pheromone(sub);
-//                print_solution(sub, sub->best_so_far_ant->tour, sub->best_so_far_ant->tour_size);
-            }
-            sub->iteration++;
+        int ret = pthread_create(&tids[i], NULL, sub_thread_func, (void *)info);
+        if(ret) {
+            printf("create pthread error!\n");
+            exit(EXIT_FAILURE);
         }
+    }
+    
+    for (i = 0; i < subs.size(); i++) {
+        pthread_join(tids[i], NULL);
     }
     
     // 5)更新master
@@ -439,43 +431,41 @@ void ParallelAco::run_aco_iteration()
 }
 
 
-//void *sub_problem_thread(void* in)
-//{
-//    ThreadInfo *info = (ThreadInfo *)in;
-//    Problem *sub, *master;
-//    AntColony *sub_solver;
-//    ParallelAco *master_solver;
-//    long int sub_best_length, master_best_length;
-//    double ratio;    // 主从问题信息素转换率
-//    
-//    master = info->master;
-//    sub = info->sub;
-//    master_solver = info->master_solver;
-//    sub_solver = new AntColony(sub);
-//    
-//    sub_best_length = sub->best_so_far_ant->tour_length;
-//    
-//    // 根据主问题信息素初始化子问题信息素
-//    master_solver->init_sub_pheromone(sub_solver, master, sub);
-//    
-//    // 子问题递归
-//    for (j = 0; j < sub->max_iteration; j++)
-//    {
-//        sub_solver->AntColony::run_aco_iteration();
-//        
-//        // 子问题获得更优解, 则更新最有信息素
-//        if (sub->best_so_far_ant->tour_length < sub_best_length)
-//        {
-//            sub_best_length = sub->best_so_far_ant->tour_length;
-//            update_sub_best_pheromone(sub);
-//            //                print_solution(sub, sub->best_so_far_ant->tour, sub->best_so_far_ant->tour_size);
-//        }
-//        sub->iteration++;
-//    }
-//
-//    
-//    return NULL;
-//}
+void *sub_thread_func(void* in)
+{
+    long int j;
+    ThreadInfo *info = (ThreadInfo *)in;
+    Problem *sub, *master;
+    AntColony *sub_solver;
+    ParallelAco *master_solver;
+    long int sub_best_length;
+    
+    master = info->master;
+    sub = info->sub;
+    master_solver = info->master_solver;
+    sub_solver = new AntColony(sub);
+    
+    sub_best_length = sub->best_so_far_ant->tour_length;
+    
+    // 根据主问题信息素初始化子问题信息素
+    master_solver->init_sub_pheromone(sub_solver, master, sub);
+    
+    // 子问题递归
+    for (j = 0; j < sub->max_iteration; j++)
+    {
+        sub_solver->AntColony::run_aco_iteration();
+        
+        // 子问题获得更优解, 则更新最有信息素
+        if (sub->best_so_far_ant->tour_length < sub_best_length)
+        {
+            sub_best_length = sub->best_so_far_ant->tour_length;
+            ParallelAco::update_sub_best_pheromone(sub);
+            //                print_solution(sub, sub->best_so_far_ant->tour, sub->best_so_far_ant->tour_size);
+        }
+        sub->iteration++;
+    }
+    return NULL;
+}
 
 
 
