@@ -128,6 +128,9 @@ void ParallelAco::decompose_problem(AntStruct *ant)
     }
     
     build_sub_problems(ant, sub_problem_routes);
+    
+    TRACE(print_problem_decompositon(subs);)
+//    print_problem_decompositon(subs);
 }
 
 /*
@@ -140,7 +143,7 @@ void ParallelAco::build_sub_problems(AntStruct *ant, const vector< vector<RouteC
     Problem *sub, *master = instance;
     long int *tour = ant->tour;
     vector<RouteCenter *> routes;
-    long int sub_best_length, sub_best_size;
+    long int sub_best_length;
     
     for (int p = 0; p < sub_problem_routes.size(); p++)
     {
@@ -181,21 +184,52 @@ void ParallelAco::build_sub_problems(AntStruct *ant, const vector< vector<RouteC
 }
 
 /*
- * 子问题从主问题那里获取初始信息素
- * 由于信息素与tour_length相关，所以初始化子问题信息素时需要等比例转换
+ * 子问题信息素的初始化有两种策略:
+ * 1）子问题从主问题那里获取初始信息素，由于信息素与tour_length相关，所以初始化子问题信息素时需要等比例转换
+ * 2) 子问题的信息素初始化与主问题无关
+ * 第(1)种策略子问题容易随着主问题一起陷入局部最优解
  */
-void ParallelAco::init_sub_pheromone(Problem *master, Problem *sub, double ratio)
+void ParallelAco::init_sub_pheromone(AntColony *sub_solver, Problem *master, Problem *sub, double ratio)
 {
-    long int ri, rj;
+    TRACE( printf("init sub-problem %d pheromone...\n", sub->pid);)
     
-    for(long int i = 0; i < sub->num_node; i++) {
-        ri = sub->real_nodes[i];
-        for (long int j = 0; j < sub->num_node; j++) {
-            rj = sub->real_nodes[j];
-            sub->pheromone[i][j] = master->pheromone[ri][rj] / ratio;
-        }
+    /*
+     * 1)子问题从主问题那里获取初始信息素
+     */
+//    long int ri, rj;
+//    for(long int i = 0; i < sub->num_node; i++) {
+//        ri = sub->real_nodes[i];
+//        for (long int j = 0; j < sub->num_node; j++) {
+//            rj = sub->real_nodes[j];
+//            sub->pheromone[i][j] = master->pheromone[ri][rj] / ratio;
+//            // compute sub total information
+//            sub->total_info[i][j] = pow(sub->pheromone[i][j], alpha) * pow(HEURISTIC(i,j), beta);
+//        }
+//    }
+    
+    /*
+     * 2)子问题的信息素初始化与主问题无关
+     * 子问题的信息素初始化过程与主问题基本一致
+     */
+    double trail_0 = 0.5;
+    sub_solver->init_pheromone_trails(trail_0);
+    sub_solver->compute_total_information();
+    
+    // 第一次迭代用于设置一个合适的 pheromone init trail
+    sub_solver->construct_solutions();
+    if (ls_flag) {
+        sub_solver->local_search->do_local_search();
     }
+    sub_solver->update_statistics();
+    trail_0 =  1.0 / ((rho) * sub->best_so_far_ant->tour_length);
+    sub_solver->init_pheromone_trails(trail_0);
+    sub->iteration++;
     
+    /* Calculate combined information pheromone times heuristic information */
+    sub_solver->compute_total_information();
+    /***** end of (2) *****/
+    
+//    print_total_info(sub);
 //    print_pheromone(sub);
 }
 
@@ -224,7 +258,7 @@ void ParallelAco::update_sub_to_master(Problem *master, Problem *sub, double rat
     }
     
     // 更新主问题最优解
-    for ( int i = 0; i < master_sz; i++) {
+    for (int i = 0; i < master_sz; i++) {
         tmp[i] = master_tour[i];
     }
     
@@ -238,6 +272,7 @@ void ParallelAco::update_sub_to_master(Problem *master, Problem *sub, double rat
     for (int i = 0; i < master_sz; i++) {
         if (!visited[tmp[i]]) {
             while (tmp[i] != 0) {
+                DEBUG( assert(i < master_sz);)
                 master_tour[k++] = tmp[i++];
             }
             master_tour[k++] = 0;
@@ -245,16 +280,16 @@ void ParallelAco::update_sub_to_master(Problem *master, Problem *sub, double rat
     }
     master->best_so_far_ant->tour_length = compute_tour_length(master, master_tour, master_sz);
     
-    g_best_so_far_time = elapsed_time(VIRTUAL);
+    master->best_so_far_time = elapsed_time(VIRTUAL);
     write_best_so_far_report(master);
     
-    delete[] tmp;
-    delete[] visited;
-    
-    check_solution(master, master_tour, master_sz);
+    DEBUG(check_solution(master, master_tour, master_sz));
 //    print_solution(master, master_tour, master_sz);
     
 //    print_pheromone(master);
+    
+    delete[] tmp;
+    delete[] visited;
 }
 
 /*
@@ -291,7 +326,7 @@ void ParallelAco::run_aco_iteration()
         ratio = 1.0 * sub_best_length / master_best_length;
         
         // 根据主问题信息素初始化子问题信息素
-        init_sub_pheromone(master, sub, 1.0);
+        init_sub_pheromone(sub_solver, master, sub, ratio);
         
         // 子问题递归
         for (j = 0; j < sub->max_iteration; j++)
@@ -303,7 +338,7 @@ void ParallelAco::run_aco_iteration()
             {
                 sub_best_length = sub->best_so_far_ant->tour_length;
                 ratio =  1.0 * sub_best_length / master_best_length;
-                update_sub_to_master(master, sub, 1.0);
+                update_sub_to_master(master, sub, ratio);
                 
 //                print_solution(sub, sub->best_so_far_ant->tour, sub->best_so_far_ant->tour_size);
             }

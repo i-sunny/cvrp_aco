@@ -27,7 +27,7 @@ static bool parallel_flag  = TRUE;  /* 是否使用并行算法 */
 bool termination_condition(Problem *instance)
 {
     return ((instance->iteration >= instance->max_iteration) ||
-            (elapsed_time( VIRTUAL ) >= g_max_runtime) ||
+            (elapsed_time( VIRTUAL ) >= instance->max_runtime) ||
             (instance->best_so_far_ant->tour_length <= instance->optimum));
 }
 

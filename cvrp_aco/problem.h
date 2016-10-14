@@ -25,10 +25,6 @@ using namespace std;
 /*************** global variables *********************/
 extern long int seed;
 
-extern double   g_max_runtime;                    /* maximal allowed run time of a try  */
-extern double   g_best_so_far_time;               /* 最优解出现的时间 */
-extern long int g_best_solution_iter;             /* iteration in which best solution is found */
-
 extern long int g_master_problem_iteration_num;   /* 每次外循环，主问题蚁群的迭代的次数 */
 extern long int g_sub_problem_iteration_num;      /* 每次外循环，子问题蚁群的迭代次数 */
 extern long int g_num_sub_problems;               /* 拆分子问题个数 */
@@ -110,6 +106,11 @@ struct Problem {
     long int n_ants;                    /* number of ants */
     long int nn_ants;                   /* length of nearest neighbor lists for the ants'
                                          solution construction */
+    
+    double   max_runtime;               /* maximal allowed run time */
+    double   best_so_far_time;          /* 当前最优解出现的时间 */
+    long int best_solution_iter;        /* iteration in which best solution is found */
+    
     vector<long int> real_nodes;        /* 仅用于子问题，子问题nodes需要重新编号，因此需要额外数组记录nodes真实的编号 */
 };
 

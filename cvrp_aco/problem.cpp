@@ -25,10 +25,6 @@
 
 long int seed;
 
-double   g_max_runtime;             /* maximal allowed run time */
-double   g_best_so_far_time;        /* 当前最优解出现的时间 */
-long int g_best_solution_iter;      /* iteration in which best solution is found */
-
 /**** 用于parallel aco参数 ***/
 long int g_master_problem_iteration_num;   /* 每次外循环，主问题蚁群的迭代的次数 */
 long int g_sub_problem_iteration_num;      /* 每次外循环，子问题蚁群的迭代次数 */
@@ -210,7 +206,7 @@ void set_default_parameters (Problem *instance)
     ras_ranks      = 6;          /* number of ranked ants, top-{ras_ranks} ants */
     
     seed           = (long int) time(NULL);
-    g_max_runtime    = 20.0;
+    instance->max_runtime    = 20.0;
     
     // parallel aco
     g_master_problem_iteration_num    = 1;      /* 每次外循环，主问题蚁群的迭代次数 */

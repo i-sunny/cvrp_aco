@@ -29,21 +29,7 @@
 
 class AntColony {
 public:
-    AntColony(Problem *instance);
-    virtual ~AntColony();
     
-    virtual void run_aco_iteration(void);
-    void init_aco();
-    void exit_aco();
-    
-    void construct_ant_solution(AntStruct *ant);
-    void construct_solutions( void );
-    void do_local_search( void );
-    void ras_update( void );
-    void pheromone_trail_update( void );
-    void update_statistics( void );
-    
-protected:
     Problem *instance;
     LocalSearch *local_search;
     
@@ -66,6 +52,21 @@ protected:
     long int vehicle_capacity;
     
     bool ls_flag;               /* indicates whether and which local search is used */
+    
+    
+    AntColony(Problem *instance);
+    virtual ~AntColony();
+    
+    virtual void run_aco_iteration(void);
+    void init_aco();
+    void exit_aco();
+    
+    void construct_ant_solution(AntStruct *ant);
+    void construct_solutions( void );
+    void do_local_search( void );
+    void ras_update( void );
+    void pheromone_trail_update( void );
+    void update_statistics( void );
     
     /* Pheromone manipulation etc. */
     void init_pheromone_trails ( double initial_trail );

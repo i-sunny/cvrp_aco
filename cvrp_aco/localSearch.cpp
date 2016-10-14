@@ -181,7 +181,7 @@ void LocalSearch::two_opt_single_route(long int *tour, long int rbeg, long int r
     long int *random_vector;
 
     // debug
-//    print_single_route(0, tour + rbeg, num_route_node+1);
+//    print_single_route(instance, tour + rbeg, num_route_node+1);
 
     improvement_flag = TRUE;
     random_vector = generate_random_permutation(num_route_node);
@@ -270,7 +270,8 @@ exchange2opt:
                 i++; j--;
             }
             // debug
-//            print_single_route(0, tour + rbeg, num_route_node+1);
+//            printf("after ls. pid %d", instance->pid);
+//            print_single_route(instance, tour + rbeg, num_route_node+1);
         }
         if ( improvement_flag ) {
             n_improves++;

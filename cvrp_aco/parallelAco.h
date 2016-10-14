@@ -37,7 +37,7 @@ private:
     void get_solution_centers(AntStruct *ant);
     void sort_route_centers();
     void decompose_problem(AntStruct *best_so_far_ant);
-    void init_sub_pheromone(Problem *master, Problem *sub, double ratio);
+    void init_sub_pheromone(AntColony *sub_solver, Problem *master, Problem *sub, double ratio);
     void update_sub_to_master(Problem *master, Problem *sub, double ratio);
     void build_sub_problems(AntStruct *ant, const vector< vector<RouteCenter *> >& sub_problem_routes);
 };

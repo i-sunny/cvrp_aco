@@ -63,7 +63,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "/Users/sunny/Downloads/P/P-n70-k10.vrp"
+            argument = "/Users/sunny/Downloads/P/P-n20-k2.vrp"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

@@ -52,7 +52,7 @@ void print_solution(Problem *instance, long int *tour, long int tour_size)
         printf("%ld ", tour[i]);
     }
     printf("\n");
-    printf("Tour length = %ld", compute_tour_length(instance, tour, tour_size));
+    printf("Tour length = %ld, pid = %d", compute_tour_length(instance, tour, tour_size), instance->pid);
     
     printf("\n--------\n\n");
 }
@@ -76,9 +76,25 @@ void print_single_route(Problem *instance, long int *route, long int route_size)
         printf("%ld ", route[i]);
     }
     printf("\n");
-    printf("Route length = %ld", compute_tour_length(instance, route, route_size));
+    printf("Route length = %ld, pid = %d", compute_tour_length(instance, route, route_size), instance->pid);
     
     printf("\n--------\n");
+}
+
+void print_problem_decompositon(const vector<Problem *>& subs)
+{
+    Problem *sub;
+    printf("\n--------\n");
+    printf("Decompositons:\n");
+    for (int i = 0; i < subs.size(); i++) {
+        sub = subs[i];
+        printf("sub %d, length %ld:", i+1, sub->best_so_far_ant->tour_length);
+        for (int j = 0; j < sub->real_nodes.size(); j++) {
+            printf("%ld ", sub->real_nodes[j]);
+        }
+        printf("\n");
+    }
+   printf("--------\n");
 }
 
 /*
@@ -167,6 +183,30 @@ void print_pheromone(Problem *instance)
 }
 
 /*
+ FUNCTION:       print values of pheromone times heuristic information
+ INPUT:          none
+ OUTPUT:         none
+ */
+void print_total_info(Problem *instance)
+{
+    long int i, j, num_node =  instance->num_node;
+    double **total = instance->total_info;
+    
+    printf("combined pheromone and heuristic info\n\n");
+    for (i=0; i < num_node; i++) {
+        for (j = 0; j < num_node - 1 ; j++) {
+            printf(" %.15f &", total[i][j]);
+            if ( total[i][j] > 1.0 )
+                printf("XXXXX\n");
+        }
+        printf(" %.15f\n", total[i][num_node-1]);
+        if ( total[i][num_node-1] > 1.0 )
+            printf("XXXXX\n");
+    }
+    printf("\n");
+}
+
+/*
  * 问题开始时
  */
 void init_report(Problem *instance)
@@ -197,7 +237,7 @@ void exit_report(Problem *instance) {
     
     if (report) {
         fprintf(report, "Best Length: %ld\t Iterations: %ld\t At time %.2f\t Tot.time %.2f\n",
-                instance->best_so_far_ant->tour_length, instance->iteration, g_best_so_far_time, elapsed_time(VIRTUAL));
+                instance->best_so_far_ant->tour_length, instance->iteration, instance->best_so_far_time, elapsed_time(VIRTUAL));
         fflush(report);
     }
     
@@ -241,7 +281,7 @@ void write_best_so_far_report(Problem *instance)
            instance->best_so_far_ant->tour_length, instance->iteration, elapsed_time( VIRTUAL));
     if (best_so_far_report) {
         fprintf(best_so_far_report, "best %ld\t iteration %ld\t time %.3f\n",
-                instance->best_so_far_ant->tour_length, instance->iteration, g_best_so_far_time);
+                instance->best_so_far_ant->tour_length, instance->iteration, instance->best_so_far_time);
     }
 }
 
@@ -282,7 +322,7 @@ void write_params(Problem *instance)
 
 static void fprintf_parameters (FILE *stream, Problem *instance)
 {
-    fprintf(stream,"max_time\t\t %.2f\n", g_max_runtime);
+    fprintf(stream,"max_time\t\t %.2f\n", instance->max_runtime);
     fprintf(stream,"seed\t\t %ld\n", seed);
     fprintf(stream,"optimum\t\t\t %ld\n", instance->optimum);
     fprintf(stream,"n_ants\t\t\t %ld\n", instance->n_ants);
@@ -294,7 +334,6 @@ static void fprintf_parameters (FILE *stream, Problem *instance)
     fprintf(stream,"ls_flag\t\t\t %d\n", instance->ls_flag);
     fprintf(stream,"nn_ls\t\t\t %ld\n", instance->nn_ls);
     fprintf(stream,"dlb_flag\t\t %d\n", instance->dlb_flag);
-//    fprintf(stream, "parallel\t\t %ld\n", parallel_flag);
 }
 
 /*

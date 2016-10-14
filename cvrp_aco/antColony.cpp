@@ -73,7 +73,7 @@ Procedures implementing init/exit aco and aco steps:
  */
 void AntColony::init_aco()
 {
-    g_best_so_far_time = elapsed_time(VIRTUAL);
+    instance->best_so_far_time = elapsed_time(VIRTUAL);
     
     /* Initialize variables concerning statistics etc. */
     instance->iteration   = 0;
@@ -206,9 +206,7 @@ void AntColony::construct_ant_solution(AntStruct *ant)
     ant->tour_length = compute_tour_length(instance, ant->tour, ant->tour_size);
     
     // debug
-//    if(check_solution(instance, ant->tour, ant->tour_size)) {
-//        print_solution(instance, ant->tour, ant->tour_size);
-//    }
+    DEBUG(check_solution(instance, ant->tour, ant->tour_size));
 }
 
 
@@ -301,10 +299,10 @@ void AntColony::update_statistics()
     
     if (instance->iteration_best_ant->tour_length < best_so_far_ant->tour_length) {
         
-        g_best_so_far_time = elapsed_time( VIRTUAL );
+        instance->best_so_far_time = elapsed_time( VIRTUAL );
         copy_solution_from_to(instance->iteration_best_ant, best_so_far_ant );
         
-        g_best_solution_iter = instance->iteration;
+        instance->best_solution_iter = instance->iteration;
         if (instance->pid == 0) {
             write_best_so_far_report(instance);
         }
@@ -585,7 +583,7 @@ long int AntColony::choose_best_next( AntStruct *a, long int phase )
     double   value_best;
 
     next_node = num_node;
-    DEBUG( assert ( phase > 0 && phase < n ); );
+    DEBUG( assert ( phase > 0 && phase < 2*num_node-2 ); );
     current_node = a->tour[phase-1];
     value_best = -1.;             /* values in total matrix are always >= 0.0 */    
     for ( node = 0 ; node < num_node ; node++ ) {
@@ -600,7 +598,7 @@ long int AntColony::choose_best_next( AntStruct *a, long int phase )
             }
         }
     }
-    DEBUG( assert ( 0 <= next_node && next_node < n); );
+    DEBUG( assert ( 0 <= next_node && next_node < num_node));
     DEBUG( assert ( value_best > 0.0 ); )
     DEBUG( assert ( a->visited[next_node] == FALSE ); )
     a->tour[phase] = next_node;
@@ -624,7 +622,7 @@ long int AntColony::neighbour_choose_best_next( AntStruct *a, long int phase )
     double   value_best, help;
   
     next_node = num_node;
-    DEBUG( assert ( phase > 0 && phase < num_node ); );
+    DEBUG( assert ( phase > 0 && phase < 2*num_node-2 ); );
     current_node = a->tour[phase-1];
     DEBUG ( assert ( 0 <= current_node && current_node < num_node ); )
     value_best = -1.;             /* values in total matix are always >= 0.0 */    
@@ -668,7 +666,7 @@ void AntColony::choose_closest_next( AntStruct *a, long int phase )
     long int node, current_node, next_node, min_distance;
   
     next_node = num_node;
-    DEBUG( assert ( phase > 0 && phase < num_node ); );
+    DEBUG( assert ( phase > 0 && phase < 2*num_node-2 ); );
     current_node = a->tour[phase-1];
     min_distance = INFTY;             /* Search shortest edge */    
     for ( node = 0 ; node < num_node ; node++ ) {
@@ -746,7 +744,7 @@ long int AntColony::neighbour_choose_and_move_to_next(AntStruct *a, long int pha
         DEBUG( assert ( 0 <= i && i < nn_ants); );
         DEBUG( assert ( prob_ptr[i] >= 0.0); );
         help = nn_list[current_node][i];
-        DEBUG( assert ( help >= 0 && help < n ); )
+        assert ( help >= 0 && help < num_node );
         DEBUG( assert ( a->visited[help] == FALSE ); )
         a->tour[phase] = help; /* nn_list[current_node][i]; */
         a->visited[help] = TRUE;
