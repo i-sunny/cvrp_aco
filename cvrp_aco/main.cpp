@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
     
     printf("Initialization took %.10f seconds\n", elapsed_time(VIRTUAL));
 
-    if (parallel_flag) {
+    if (parallel_flag && g_num_sub_problems > 1) {
         solver = new ParallelAco(instance);
     } else {
         solver = new AntColony(instance);

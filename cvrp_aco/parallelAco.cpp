@@ -20,12 +20,24 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <pthread.h>
 
 #include "parallelAco.h"
 #include "vrpHelper.h"
 #include "utilities.h"
 #include "io.h"
 #include "timer.h"
+
+
+struct ThreadInfo
+{
+    Problem *master;
+    ParallelAco *master_solver;
+    Problem *sub;
+    long int master_best_length;
+};
+
+void *sub_problem_thread(void* in);
 
 
 ParallelAco::~ParallelAco()
@@ -110,6 +122,8 @@ void ParallelAco::decompose_problem(AntStruct *ant)
     vector<RouteCenter *> tmp;
 
     sort_route_centers();
+    
+    // 增加拆分的随机性
     for(int i = 0; i < rnd_beg; i++) {
         route_centers.insert(route_centers.begin(), *(route_centers.end()-1));
         route_centers.pop_back();
@@ -138,18 +152,19 @@ void ParallelAco::decompose_problem(AntStruct *ant)
  */
 void ParallelAco::build_sub_problems(AntStruct *ant, const vector< vector<RouteCenter *> >& sub_problem_routes)
 {
-    subs.clear();   //清空上一次迭代数据
     
     Problem *sub, *master = instance;
     long int *tour = ant->tour;
     vector<RouteCenter *> routes;
     long int sub_best_length;
+    long int i, j, k, t;
     
     for (int p = 0; p < sub_problem_routes.size(); p++)
     {
         sub = new Problem(p+1);         // 子问题从1开始编号!!
         routes = sub_problem_routes[p];
         sub_best_length = 0;
+        
         /*
          * 为了子问题能够直接使用串行蚁群算法，需要对nodes从0开始重新编号
          * i.e. nodes = {0,3,12,5,8} 重新编号后: {0,1,2,3,4}
@@ -157,27 +172,44 @@ void ParallelAco::build_sub_problems(AntStruct *ant, const vector< vector<RouteC
          */
         sub->real_nodes.push_back(0);   // the depot
         sub->num_node = 1;
-        for (long int  i = 0; i < routes.size(); i++)
-        {
-            for (long int j = routes[i]->beg; j < routes[i]->end; j++)
-            {
-                if (tour[j] != 0) {
+        for (i = 0; i < routes.size(); i++) {
+            for (j = routes[i]->beg + 1; j < routes[i]->end; j++) {
                     sub->real_nodes.push_back(tour[j]);
                     sub->num_node++;
-                }
-                sub_best_length += master->distance[tour[j]][tour[j+1]];
             }
         }
         
         // 获取子问题的num_node之后便可以初始化
         init_sub_problem(master, sub);
         
-        /* 
+        /*
          * 由主问题计算出来的解作为子问题当前最优解
          * 需要在init_sub_problem()之后，best_so_far_ant才分配内存
+         * 注意：由于对子问题进行了重新编号,所以:
+         * 子问题最初解的编号(除了0(depot))都是顺序递增的: i.e.{0,1,2,3,0,4,5,0}
          */
+        k = 0;
+        t = 0;
+        for (i = 0; i < routes.size(); i++) {
+            for (j = routes[i]->beg; j < routes[i]->end; j++) {
+                sub_best_length += master->distance[tour[j]][tour[j+1]];
+                if (tour[j] == 0) {
+                    sub->best_so_far_ant->tour[k++] = 0;
+                } else {
+                    sub->best_so_far_ant->tour[k++] = ++t;
+                }
+            }
+        }
+        sub->best_so_far_ant->tour[k++] = 0;   // tour最后以 0(depot)结尾
+        
+        DEBUG(assert(k == sub->num_node + routes.size());)
+        DEBUG(assert(t == sub->num_node - 1);)
+        
         sub->best_so_far_ant->tour_length = sub_best_length;
-        sub->best_so_far_ant->tour_size = routes.size() + sub->num_node;
+        sub->best_so_far_ant->tour_size = k;
+        
+        //debug
+//        print_solution(sub, sub->best_so_far_ant->tour, sub->best_so_far_ant->tour_size);
         
         subs.push_back(sub);
     }
@@ -187,7 +219,7 @@ void ParallelAco::build_sub_problems(AntStruct *ant, const vector< vector<RouteC
  * 子问题信息素的初始化有两种策略:
  * 1）子问题从主问题那里获取初始信息素，由于信息素与tour_length相关，所以初始化子问题信息素时需要等比例转换
  * 2) 子问题的信息素初始化与主问题无关
- * 第(1)种策略子问题容易随着主问题一起陷入局部最优解
+ * (1)策略子问题容易随着主问题一起陷入局部最优解
  */
 void ParallelAco::init_sub_pheromone(AntColony *sub_solver, Problem *master, Problem *sub, double ratio)
 {
@@ -233,8 +265,28 @@ void ParallelAco::init_sub_pheromone(AntColony *sub_solver, Problem *master, Pro
 //    print_pheromone(sub);
 }
 
+
 /*
- * 如果子问题获得更优解，则将子问题更新到主问题
+ * 如果sub获得更优解，则更新sub最优解信息素(best_pheromone).
+ * sub不会将当前最有优解立即更新至master, 只有在sub所有迭代完成时,
+ * 才将最优解更新至master,同时将sub best_pheromone 更新至master.
+ *
+ * 这要可以有效降低对master数据访问，减少大量同步操作, 但同时需要额外结构存储 best_pheromone
+ */
+void ParallelAco::update_sub_best_pheromone(Problem *sub)
+{
+    long int i, j;
+    for(i = 0; i < sub->num_node; i++) {
+        for (j = 0; j < sub->num_node; j++) {
+            sub->best_pheromone[i][j] = sub->pheromone[i][j];
+        }
+    }
+}
+
+/*
+ * sub 所有迭代结束时,
+ * 1）最有信息素(sub best_pheromone) 更新至master
+ * 2）更新最优解(sub best_so_far solution)
  */
 void ParallelAco::update_sub_to_master(Problem *master, Problem *sub, double ratio)
 {
@@ -248,7 +300,7 @@ void ParallelAco::update_sub_to_master(Problem *master, Problem *sub, double rat
     long int master_sz = master->best_so_far_ant->tour_size;
     long int sub_sz = sub->best_so_far_ant->tour_size;
     
-    // 更新主问题信息素
+    // 1)更新主问题信息素
     for(long int i = 0; i < sub->num_node; i++) {
         ri = sub->real_nodes[i];
         for (long int j = 0; j < sub->num_node; j++) {
@@ -257,7 +309,7 @@ void ParallelAco::update_sub_to_master(Problem *master, Problem *sub, double rat
         }
     }
     
-    // 更新主问题最优解
+    // 2)更新主问题最优解
     for (int i = 0; i < master_sz; i++) {
         tmp[i] = master_tour[i];
     }
@@ -340,13 +392,61 @@ void ParallelAco::run_aco_iteration()
                 ratio =  1.0 * sub_best_length / master_best_length;
                 update_sub_to_master(master, sub, ratio);
                 
-//                print_solution(sub, sub->best_so_far_ant->tour, sub->best_so_far_ant->tour_size);
+                //                print_solution(sub, sub->best_so_far_ant->tour, sub->best_so_far_ant->tour_size);
             }
             sub->iteration++;
         }
     }
+    
+    
+    
+    // 清空本次迭代子问题数据
+    for (int i = 0; i < subs.size(); i++) {
+        exit_sub_problem(subs[i]);
+    }
+    subs.clear();
 }
 
+
+//void *sub_problem_thread(void* in)
+//{
+//    ThreadInfo *info = (ThreadInfo *)in;
+//    Problem *sub, *master;
+//    AntColony *sub_solver;
+//    ParallelAco *master_solver;
+//    long int sub_best_length, master_best_length;
+//    double ratio;    // 主从问题信息素转换率
+//    
+//    master = info->master;
+//    sub = info->sub;
+//    master_solver = info->master_solver;
+//    sub_solver = new AntColony(sub);
+//    
+//    sub_best_length = sub->best_so_far_ant->tour_length;
+//    // 主问题的信息素给子问题时，需要根据tour length做一步转化
+//    ratio = 1.0 * sub_best_length / master_best_length;
+//    
+//    // 根据主问题信息素初始化子问题信息素
+//    master_solver->init_sub_pheromone(sub_solver, master, sub, ratio);
+//    
+//    // 子问题递归
+//    for (long int j = 0; j < sub->max_iteration; j++)
+//    {
+//        sub_solver->AntColony::run_aco_iteration();
+//        
+//        // 子问题获得更优解, 则更新主问题
+//        if (sub->best_so_far_ant->tour_length < sub_best_length)
+//        {
+//            sub_best_length = sub->best_so_far_ant->tour_length;
+//            ratio =  1.0 * sub_best_length / master_best_length;
+//            master_solver->update_sub_to_master(master, sub, ratio);
+//            
+//            //                print_solution(sub, sub->best_so_far_ant->tour, sub->best_so_far_ant->tour_size);
+//        }
+//        sub->iteration++;
+//    }
+//    return NULL;
+//}
 
 
 

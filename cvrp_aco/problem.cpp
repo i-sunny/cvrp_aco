@@ -118,6 +118,8 @@ void init_sub_problem(Problem *master, Problem *sub)
     }
     sub->nodeptr = nodeptr;
     
+    // sub 需要额外的结构存储当前最优解所对应的信息素
+    sub->best_pheromone = generate_double_matrix(sub->num_node, sub->num_node);
 //    print_distance(sub);
     
     init_problem(sub);
@@ -129,6 +131,7 @@ void init_sub_problem(Problem *master, Problem *sub)
 
 void exit_sub_problem(Problem *sub)
 {
+    free(sub->best_pheromone);
     exit_problem(sub);
 }
 

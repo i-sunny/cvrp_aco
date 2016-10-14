@@ -111,7 +111,10 @@ struct Problem {
     double   best_so_far_time;          /* 当前最优解出现的时间 */
     long int best_solution_iter;        /* iteration in which best solution is found */
     
-    vector<long int> real_nodes;        /* 仅用于子问题，子问题nodes需要重新编号，因此需要额外数组记录nodes真实的编号 */
+    /*----- sub problem only -----*/
+    vector<long int> real_nodes;        /* 仅用于sub-problem, sub nodes需要重新编号，因此需要额外数组记录nodes真实的编号 */
+    double   **best_pheromone;          /* 仅用于sub-problem, 记录sub 获得best_so_far_solution时候的信息素
+                                           用于sub 迭代结束时更新至master */
 };
 
 void init_problem(Problem *instance);
