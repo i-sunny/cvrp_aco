@@ -118,6 +118,9 @@ void LocalSearch::two_opt_solution(long int *tour, long int tour_size)
     long int *tour_node_pos;     /* positions of nodes in tour */
 
     long int route_beg = 0;
+    long int *path_load = new long int[num_node-1];  /* array of single route load */
+    long int p = 0;
+    long int load_tmp = 0;
     
     dlb = (long int *)malloc(num_node * sizeof(long int));
     for (int i = 0 ; i < num_node; i++) {
@@ -144,11 +147,19 @@ void LocalSearch::two_opt_solution(long int *tour, long int tour_size)
                 route_node_map[j] = FALSE;
             }
             route_beg = i;
+            
+            path_load[p++] = load_tmp;
+            load_tmp = 0;
         } else {
             route_node_map[tour[i]] = TRUE;
+            load_tmp += instance->nodeptr[tour[i]].demand;
         }
     }
     
+    DEBUG(assert(p < num_node));
+    swap(tour, tour_size, path_load);
+    
+    delete[] path_load;
     
     free( dlb );
     free(route_node_map);
@@ -279,3 +290,69 @@ exchange2opt:
     }
     free( random_vector );
 }
+
+
+/*
+ * The swap operation selects two customers at random and 
+ * then swaps these two customers in their positions.
+ */
+void LocalSearch::swap(long int *tour, long int tour_size, long int *path_load)
+{
+    long int i = 0, j = 0;
+    long int gain = 0;
+    long int n1, p_n1, s_n1, n2, p_n2, s_n2;
+    long int p1 = 0, p2 = 0;     /* path idx of node n1 and n2 */
+    long int load1 = 0, load2 = 0;
+    
+    for (i = 1; i < tour_size; i++) {
+        n1 = tour[i];
+        if (n1 == 0) {
+            p1++;
+            continue;
+        }
+        p_n1 = tour[i-1];
+        s_n1 = tour[i+1];
+        
+        p2 = p1;
+        for (j = i+1; j < tour_size; j++) {
+            n2 = tour[j];
+            if (n2 == 0) {
+                p2++;
+                continue;
+            }
+            p_n2 = tour[j-1];
+            s_n2 = tour[j+1];
+            
+            // node n1 and n2 not in the same route
+            if (p1 != p2) {
+                load1 = path_load[p1] - instance->nodeptr[n1].demand + instance->nodeptr[n2].demand;
+                load2 = path_load[p2] - instance->nodeptr[n2].demand + instance->nodeptr[n1].demand;
+                if (load1 > instance->vehicle_capacity || load2 > instance->vehicle_capacity) {
+                    continue;
+                }
+            }
+            
+            if (j == i+1) {
+               gain = -(distance[p_n1][n1] + distance[n2][s_n2]) +(distance[p_n1][n2] + distance[n1][s_n2]);
+            } else {
+                gain = -(distance[p_n1][n1] + distance[n1][s_n1] + distance[p_n2][n2] + distance[n2][s_n2])
+                +(distance[p_n1][n2] + distance[n2][s_n1] + distance[p_n2][n1] + distance[n1][s_n2]);
+            }
+            if (gain < 0) {
+                tour[i] = n2;
+                tour[j] = n1;
+
+                if (p1 != p2) {
+                    path_load[p1] = load1;
+                    path_load[p2] = load2;
+                }
+                
+                i--;
+//                check_solution(instance, tour, tour_size);
+//                print_solution(instance, tour, tour_size);
+                break;
+            }
+        }
+    }
+}
+

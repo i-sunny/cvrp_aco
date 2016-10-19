@@ -38,7 +38,6 @@ public:
     AntStruct *best_so_far_ant;
     
     long int **distance;
-    bool     *demand_meet_node_map;
     double   *prob_of_selection;
     double   **pheromone;
     double   **total_info;
@@ -65,6 +64,7 @@ public:
     void construct_solutions( void );
     void do_local_search( void );
     void ras_update( void );
+    void pheromone_disturbance(void);
     void pheromone_trail_update( void );
     void update_statistics( void );
     

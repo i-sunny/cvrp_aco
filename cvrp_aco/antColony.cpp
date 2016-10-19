@@ -36,7 +36,6 @@ AntColony::AntColony(Problem *instance)
     best_so_far_ant = instance->best_so_far_ant;
     
     distance = instance->distance;
-    demand_meet_node_map = instance->demand_meet_node_map;
     prob_of_selection = instance->prob_of_selection;
     pheromone = instance->pheromone;
     total_info = instance->total_info;
@@ -78,6 +77,9 @@ void AntColony::init_aco()
     /* Initialize variables concerning statistics etc. */
     instance->iteration   = 0;
     best_so_far_ant->tour_length = INFTY;
+    
+    instance->iter_stagnate_cnt = 0;
+    instance->best_stagnate_cnt = 0;
     
     /* Initialize the Pheromone trails */
     /* in the original papers on Ant System, Elitist Ant System, and
@@ -176,11 +178,11 @@ void AntColony::construct_ant_solution(AntStruct *ant)
         /* 查看所有可以派送的点 */
         demand_meet_cnt = 0;
         for (i = 0; i < num_node; i++) {
-            demand_meet_node_map[i] = FALSE;
+            ant->demand_meet_node[i] = FALSE;
         }
         for(i = 0; i < num_node; i++) {
             if (ant->visited[i] == FALSE && path_load + nodeptr[i].demand <= vehicle_capacity) {
-                demand_meet_node_map[i] = TRUE;
+                ant->demand_meet_node[i] = TRUE;
                 demand_meet_cnt++;
             }
         }
@@ -247,6 +249,40 @@ void AntColony::ras_update( void )
 }
 
 /*
+ * 蚁群停滞时，加入扰动跳出局部最优解
+ */
+void AntColony::pheromone_disturbance(void)
+{
+//    print_pheromone(instance);
+    
+    printf("pid %d start pheromone disturbance: iter %ld, best_stagnate %ld, iter_stagnate %ld\n",
+           instance->pid, instance->iteration, instance->best_stagnate_cnt, instance->iter_stagnate_cnt);
+    
+    long int i, j;
+    double sum_pheromone = 0, mean_pheromone;
+    double delta = 0.70;
+    
+    for (i = 0; i < num_node; i++) {
+        for (j = 0; j < num_node; j++) {
+            sum_pheromone += pheromone[i][j];
+        }
+    }
+    
+    mean_pheromone = sum_pheromone / (num_node * num_node);
+    
+    for (i = 0; i < num_node; i++) {
+        for (j = 0; j < num_node; j++) {
+            pheromone[i][j] = (1- delta) * mean_pheromone + delta * pheromone[i][j];
+        }
+    }
+    
+    instance->iter_stagnate_cnt -= 2;
+    
+//    print_pheromone(instance);
+}
+
+
+/*
  FUNCTION:       manage global pheromone trail update for the ACO algorithms
  INPUT:          none
  OUTPUT:         none
@@ -268,9 +304,14 @@ void AntColony::pheromone_trail_update( void )
         evaporation();
     }
     
-    /* Next, apply the pheromone deposit for the various ACO algorithms */
-    ras_update();
-    
+    if (instance->iter_stagnate_cnt >= 5 ||
+        instance->best_stagnate_cnt >= HUGE_VAL)
+    {
+        pheromone_disturbance();
+    } else {
+        /* Next, apply the pheromone deposit for the various ACO algorithms */
+        ras_update();
+    }
     /* Compute combined information pheromone times heuristic info after
      the pheromone update for all ACO algorithms except ACS; in the ACS case
      this is already done in the pheromone update procedures of ACS */
@@ -296,8 +337,10 @@ void AntColony::update_statistics()
     if (instance->pid == 0) {
         write_iter_report(instance);
     }
-    
+
     if (instance->iteration_best_ant->tour_length < best_so_far_ant->tour_length) {
+        // 获得更优解
+        instance->best_stagnate_cnt = 0;
         
         instance->best_so_far_time = elapsed_time( VIRTUAL );
         copy_solution_from_to(instance->iteration_best_ant, best_so_far_ant );
@@ -306,7 +349,16 @@ void AntColony::update_statistics()
         if (instance->pid == 0) {
             write_best_so_far_report(instance);
         }
+    } else {
+        instance->best_stagnate_cnt++;
+        if (instance->last_iter_solution == instance->iteration_best_ant->tour_length) {
+            instance->iter_stagnate_cnt++;
+        } else {
+            instance->iter_stagnate_cnt = 0;
+        }
     }
+    
+    instance->last_iter_solution = instance->iteration_best_ant->tour_length;
 }
 
 
@@ -589,7 +641,7 @@ long int AntColony::choose_best_next( AntStruct *a, long int phase )
     for ( node = 0 ; node < num_node ; node++ ) {
         if ( a->visited[node] ) {
             ; /* node already visited, do nothing */
-        } else if(demand_meet_node_map[node] == FALSE) {
+        } else if(a->demand_meet_node[node] == FALSE) {
             ;  /* 该点不满足要求 */
         } else {
             if ( total_info[current_node][node] > value_best ) {
@@ -630,7 +682,7 @@ long int AntColony::neighbour_choose_best_next( AntStruct *a, long int phase )
         help_node = nn_list[current_node][i];
         if ( a->visited[help_node] ) {
             ;   /* node already visited, do nothing */
-        } else if(demand_meet_node_map[help_node] == FALSE) {
+        } else if(a->demand_meet_node[help_node] == FALSE) {
             ;  /* 该点不满足要求 */
         } else {
             help = total_info[current_node][help_node];
@@ -672,7 +724,7 @@ void AntColony::choose_closest_next( AntStruct *a, long int phase )
     for ( node = 0 ; node < num_node ; node++ ) {
         if ( a->visited[node] ) {
             ; /* node already visited */
-        } else if(demand_meet_node_map[node] == FALSE) {
+        } else if(a->demand_meet_node[node] == FALSE) {
             ;  /* 该点不满足要求 */
         } else {
             if ( distance[current_node][node] < min_distance) {
@@ -712,7 +764,7 @@ long int AntColony::neighbour_choose_and_move_to_next(AntStruct *a, long int pha
         neighbour_node = nn_list[current_node][i];
         if ( a->visited[neighbour_node] ) {
             prob_ptr[i] = 0.0;   /* node already visited */
-        } else if(demand_meet_node_map[neighbour_node] == FALSE) {
+        } else if(a->demand_meet_node[neighbour_node] == FALSE) {
             prob_ptr[i] = 0.0;  /* 该点不满足要求 */
         } else {
             DEBUG( assert ( neighbour_node >= 0 && neighbour_node < num_node ); )

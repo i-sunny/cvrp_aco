@@ -6,18 +6,21 @@ WARN_FLAGS=-Wall -ansi -pedantic
 CFLAGS=$(WARN_FLAGS) $(OPTIM_FLAGS)
 # To change the default timer implementation, uncomment the line below
 # or call 'make TIMER=unix'
-TIMER=dos
-#TIMER=unix
+TIMER=unix
 LDLIBS=-lm
 
-acovrp: acovrp.o vrp.o utilities.o ants.o InOut.o $(TIMER)_timer.o ls.o
+cvrp_aco: vrpHelper.o utilities.o problem.o main.o $(TIMER)_timer.o parallelAco.o antColony.o io.o localSearch.o
 
-all: clean acovrp
+all: clean cvrp_aco
 
 clean:
-	@$(RM) *.o acovrp
+	@$(RM) *.o cvrp_aco
 
-acovrp: acovrp.o vrp.o utilities.o ants.o InOut.o $(TIMER)_timer.o ls.o
+cvrp_aco: vrpHelper.o utilities.o problem.o main.o $(TIMER)_timer.o parallelAco.o antColony.o io.o localSearch.o
+
+parallelAco.o: parallelAco.cpp parallelAco.h
+
+antColony.o: antColony.cpp antColony.h
 
 acovrp.o: acovrp.c
 

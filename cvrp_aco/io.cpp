@@ -235,6 +235,8 @@ void init_report(Problem *instance)
  */
 void exit_report(Problem *instance) {
     
+    check_solution(instance, instance->best_so_far_ant->tour, instance->best_so_far_ant->tour_size);
+    
     if (report) {
         fprintf(report, "Best Length: %ld\t Iterations: %ld\t At time %.2f\t Tot.time %.2f\n",
                 instance->best_so_far_ant->tour_length, instance->iteration, instance->best_so_far_time, elapsed_time(VIRTUAL));
@@ -242,7 +244,6 @@ void exit_report(Problem *instance) {
     }
     
     if (best_so_far_report){
-        check_solution(instance, instance->best_so_far_ant->tour, instance->best_so_far_ant->tour_size);
         print_solution_to_file(instance, best_so_far_report, instance->best_so_far_ant->tour, instance->best_so_far_ant->tour_size);
         fflush(best_so_far_report);
     }

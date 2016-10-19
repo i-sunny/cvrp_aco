@@ -52,7 +52,6 @@ void init_problem(Problem *instance)
     instance->nn_list = compute_nn_lists(instance);
     instance->pheromone = generate_double_matrix(instance->num_node, instance->num_node);
     instance->total_info = generate_double_matrix(instance->num_node, instance->num_node );
-    instance->demand_meet_node_map = (bool *)calloc(instance->num_node, sizeof(bool));
     allocate_ants(instance);
 }
 
@@ -67,12 +66,12 @@ void exit_problem(Problem *instance)
     for (int i = 0 ; i < instance->n_ants ; i++ ) {
         free( instance->ants[i].tour );
         free( instance->ants[i].visited );
+        free( instance->ants[i].demand_meet_node );
     }
     free( instance->ants );
     free( instance->best_so_far_ant->tour );
     free( instance->best_so_far_ant->visited );
     free( instance->prob_of_selection );
-    free(instance->demand_meet_node_map);
     free(instance);
 }
 
@@ -155,6 +154,7 @@ void allocate_ants (Problem *instance)
     for (i = 0 ; i < instance->n_ants ; i++) {
         ants[i].tour        = (long int *)calloc(2*instance->num_node-1, sizeof(long int));   // tour最长为2 * num_node - 1
         ants[i].visited     = (bool *)calloc(instance->num_node, sizeof(bool));
+        ants[i].demand_meet_node = (bool *)calloc(instance->num_node, sizeof(bool));
     }
     
     if((best_so_far_ant = (AntStruct *)malloc(sizeof(AntStruct))) == NULL){
@@ -184,9 +184,9 @@ void set_default_parameters (Problem *instance)
     /* number of ants */
     instance->n_ants         = instance->num_node;
     /* number of nearest neighbours in tour construction(neighbor不应该包括depot和自身) */
-    instance->nn_ants        = MIN(MAX(instance->n_ants>>2, 25), instance->num_node - 2);
+    instance->nn_ants        = instance->num_node - 2;//MIN(MAX(instance->n_ants>>2, 25), instance->num_node - 2);
     /* use fixed radius search in the 20 nearest neighbours */
-    instance->nn_ls          = MIN(instance->nn_ants, 20);
+    instance->nn_ls          = instance->nn_ants;//MIN(instance->nn_ants, 25);
     
     /* maximum number of iterations */
     instance->max_iteration  = 5000;
@@ -206,7 +206,7 @@ void set_default_parameters (Problem *instance)
     ras_ranks      = 6;          /* number of ranked ants, top-{ras_ranks} ants */
     
     instance->rnd_seed       = (long int) time(NULL);
-    instance->max_runtime    = 500.0;
+    instance->max_runtime    = 200.0;
     
     // parallel aco
     g_master_problem_iteration_num    = 1;      /* 每次外循环，主问题蚁群的迭代次数 */

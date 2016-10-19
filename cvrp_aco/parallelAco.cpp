@@ -241,6 +241,9 @@ void ParallelAco::init_sub_pheromone(AntColony *sub_solver, Problem *master, Pro
 //        }
 //    }
     
+    sub->iter_stagnate_cnt = 0;
+    sub->best_stagnate_cnt = 0;
+    
     /*
      * 2)子问题的信息素初始化与主问题无关
      * 子问题的信息素初始化过程与主问题基本一致

@@ -60,6 +60,7 @@ struct AntStruct {
     long int  tour_size;     /* 路程中经过的点个数（depot可能出现多次） */
     long int  tour_length;   /* 车辆路程行走长度 */
     bool      *visited;      /* mark nodes visited status */
+    bool      *demand_meet_node;  /** 所有可配送的点(单次route中，目前车辆可以仍可配送的点) */
 };
 
 
@@ -78,7 +79,6 @@ struct Problem {
     long int      **nn_list;              /* nearest neighbor list; contains for each node i a
                                            sorted list of n_near nearest neighbors */
     long int      vehicle_capacity;       /* 车辆最大装载量 */
-    bool          *demand_meet_node_map;  /** 所有可配送的点(单次route中，目前车辆可以仍可配送的点) */
     
     
     /*----- local search -----*/
@@ -110,6 +110,10 @@ struct Problem {
     long int best_solution_iter;        /* iteration in which best solution is found */
     
     long int rnd_seed;                  /* 用于生成随机数的种子 */
+    
+    long int last_iter_solution;        /* 上一次迭代的解 */
+    long int iter_stagnate_cnt;         /* 迭代停滞计数器，记录解迭代解停滞的次数 */
+    long int best_stagnate_cnt;         /* 最优解停滞计数器，最优解未更新的次数 */
     
     /*----- sub problem only -----*/
     long int num_subs;                  /* 仅用于parallel版本蚁群, 子问题个数 */
