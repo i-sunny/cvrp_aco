@@ -17,6 +17,9 @@
 		A34681391DAD0FC1004558C7 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A34681381DAD0FC1004558C7 /* main.cpp */; };
 		A34681421DAD3768004558C7 /* problem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A34681401DAD3768004558C7 /* problem.cpp */; };
 		A38F95C21DAC7F99003C86F6 /* parallelAco.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A38F95C11DAC7F99003C86F6 /* parallelAco.cpp */; };
+		A3BA05691DB72150009DE24A /* simulatedAnnealing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A3BA05671DB72150009DE24A /* simulatedAnnealing.cpp */; };
+		A3BA056D1DB723B0009DE24A /* neighbourSearch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A3BA056B1DB723B0009DE24A /* neighbourSearch.cpp */; };
+		A3BA05701DB73973009DE24A /* move.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A3BA056E1DB73973009DE24A /* move.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -51,6 +54,12 @@
 		A34681411DAD3768004558C7 /* problem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = problem.h; sourceTree = "<group>"; };
 		A38F95C11DAC7F99003C86F6 /* parallelAco.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = parallelAco.cpp; sourceTree = "<group>"; };
 		A38F95C41DACB79D003C86F6 /* parallelAco.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = parallelAco.h; sourceTree = "<group>"; };
+		A3BA05671DB72150009DE24A /* simulatedAnnealing.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simulatedAnnealing.cpp; sourceTree = "<group>"; };
+		A3BA05681DB72150009DE24A /* simulatedAnnealing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = simulatedAnnealing.h; sourceTree = "<group>"; };
+		A3BA056B1DB723B0009DE24A /* neighbourSearch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = neighbourSearch.cpp; sourceTree = "<group>"; };
+		A3BA056C1DB723B0009DE24A /* neighbourSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = neighbourSearch.h; sourceTree = "<group>"; };
+		A3BA056E1DB73973009DE24A /* move.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = move.cpp; sourceTree = "<group>"; };
+		A3BA056F1DB73973009DE24A /* move.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = move.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +92,7 @@
 		A320B0CE1DABCAC000F1E85D /* cvrp_aco */ = {
 			isa = PBXGroup;
 			children = (
+				A3BA056A1DB72390009DE24A /* sa */,
 				A38F95C01DAC7E90003C86F6 /* parallel */,
 				A34681381DAD0FC1004558C7 /* main.cpp */,
 				A34681401DAD3768004558C7 /* problem.cpp */,
@@ -111,6 +121,19 @@
 				A38F95C41DACB79D003C86F6 /* parallelAco.h */,
 			);
 			name = parallel;
+			sourceTree = "<group>";
+		};
+		A3BA056A1DB72390009DE24A /* sa */ = {
+			isa = PBXGroup;
+			children = (
+				A3BA05671DB72150009DE24A /* simulatedAnnealing.cpp */,
+				A3BA05681DB72150009DE24A /* simulatedAnnealing.h */,
+				A3BA056B1DB723B0009DE24A /* neighbourSearch.cpp */,
+				A3BA056C1DB723B0009DE24A /* neighbourSearch.h */,
+				A3BA056E1DB73973009DE24A /* move.cpp */,
+				A3BA056F1DB73973009DE24A /* move.h */,
+			);
+			name = sa;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -174,11 +197,14 @@
 				A320B0E81DABCB0C00F1E85D /* localSearch.cpp in Sources */,
 				A320B0E71DABCB0C00F1E85D /* io.cpp in Sources */,
 				A34681421DAD3768004558C7 /* problem.cpp in Sources */,
+				A3BA056D1DB723B0009DE24A /* neighbourSearch.cpp in Sources */,
 				A320B0EA1DABCB0C00F1E85D /* unix_timer.cpp in Sources */,
 				A38F95C21DAC7F99003C86F6 /* parallelAco.cpp in Sources */,
 				A320B0EC1DABCB0C00F1E85D /* vrpHelper.cpp in Sources */,
 				A34681391DAD0FC1004558C7 /* main.cpp in Sources */,
+				A3BA05701DB73973009DE24A /* move.cpp in Sources */,
 				A320B0E61DABCB0C00F1E85D /* antColony.cpp in Sources */,
+				A3BA05691DB72150009DE24A /* simulatedAnnealing.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

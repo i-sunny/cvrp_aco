@@ -212,6 +212,7 @@ void set_default_parameters (Problem *instance)
     g_master_problem_iteration_num    = 1;      /* 每次外循环，主问题蚁群的迭代次数 */
     g_sub_problem_iteration_num       = 75;     /* 每次外循环，子问题蚁群的迭代次数 */
     instance->num_subs                = instance->num_node/50;
+    
 }
 
 /*

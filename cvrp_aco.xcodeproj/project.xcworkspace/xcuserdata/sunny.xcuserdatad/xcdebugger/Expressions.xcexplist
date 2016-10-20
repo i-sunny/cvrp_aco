@@ -3,7 +3,34 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "ParallelAco::build_sub_problems(AntStruct*, std::__1::vector&lt;std::__1::vector&lt;RouteCenter*, std::__1::allocator&lt;RouteCenter*&gt; &gt;, std::__1::allocator&lt;std::__1::vector&lt;RouteCenter*, std::__1::allocator&lt;RouteCenter*&gt; &gt; &gt; &gt; const&amp;):parallelAco.cpp">
+         contextName = "AntColony::neighbour_choose_and_move_to_next(AntStruct*, long):antColony.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "ParallelAco::decompose_problem():parallelAco.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "NeighbourSearch::exchange(long*, long):neighbourSearch.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "AntColony::update_statistics():antColony.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "SimulatedAnnealing::step():simulatedAnnealing.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "SimulatedAnnealing::run():simulatedAnnealing.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "ParallelAco::pheromone_update_sub_to_master(Problem*, Problem*):parallelAco.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "main:main.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "ParallelAco::sort_route_centers():parallelAco.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "compute_tour_centers(Problem*, long*, RouteCenter*, long):vrpHelper.cpp">
       </ContextState>
       <ContextState
          contextName = "AntColony::ras_update():antColony.cpp">
@@ -14,31 +41,13 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "ParallelAco::decompose_problem():parallelAco.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "AntColony::update_statistics():antColony.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "main:main.cpp">
+         contextName = "init_sub_problem(Problem*, Problem*):problem.cpp">
       </ContextState>
       <ContextState
          contextName = "ParallelAco::update_sub_to_master(Problem*, Problem*, double):parallelAco.cpp">
       </ContextState>
       <ContextState
-         contextName = "ParallelAco::get_solution_centers(AntStruct*):parallelAco.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "AntColony::neighbour_choose_and_move_to_next(AntStruct*, long):antColony.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "init_sub_problem(Problem*, Problem*):problem.cpp">
-      </ContextState>
-      <ContextState
          contextName = "ParallelAco::decompose_problem(AntStruct*):parallelAco.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "ParallelAco::sort_route_centers():parallelAco.cpp">
       </ContextState>
       <ContextState
          contextName = "ParallelAco::sort_routes():parallelAco.cpp">
@@ -50,16 +59,30 @@
          contextName = "ParallelAco::run_aco_iteration():parallelAco.cpp">
       </ContextState>
       <ContextState
+         contextName = "ParallelAco::build_sub_problems(AntStruct*, std::__1::vector&lt;std::__1::vector&lt;RouteCenter*, std::__1::allocator&lt;RouteCenter*&gt; &gt;, std::__1::allocator&lt;std::__1::vector&lt;RouteCenter*, std::__1::allocator&lt;RouteCenter*&gt; &gt; &gt; &gt; const&amp;):parallelAco.cpp">
+      </ContextState>
+      <ContextState
          contextName = "ParallelAco::init_sub_pheromone(Problem*, Problem*, double):parallelAco.cpp">
       </ContextState>
       <ContextState
          contextName = "AntColony::init_aco():antColony.cpp">
       </ContextState>
       <ContextState
-         contextName = "ParallelAco::pheromone_update_sub_to_master(Problem*, Problem*):parallelAco.cpp">
+         contextName = "NeighbourSearch::inversion(long*, long):neighbourSearch.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "route">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "compute_tour_centers(Problem*, long*, RouteCenter*, long):vrpHelper.cpp">
+         contextName = "NeighbourSearch::random_pos_in_route(Route*):neighbourSearch.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "NeighbourSearch::insertion(long*, long):neighbourSearch.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "ParallelAco::get_solution_centers(AntStruct*):parallelAco.cpp">
       </ContextState>
    </ContextStates>
 </VariablesViewState>

@@ -24,6 +24,8 @@ public:
     ~LocalSearch(){}
     
     void do_local_search(void);
+    void do_local_search(AntStruct *ant);
+    
 private:
     Problem *instance;
     

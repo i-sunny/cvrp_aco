@@ -13,6 +13,7 @@
 #include "utilities.h"
 #include "antColony.h"
 #include "parallelAco.h"
+#include "simulatedAnnealing.h"
 #include "problem.h"
 #include "timer.h"
 #include "io.h"
@@ -60,6 +61,7 @@ int main(int argc, char *argv[])
 {
     Problem *instance = new Problem(0);
     AntColony *solver;
+    SimulatedAnnealing *annealer;
     
     start_timers();
     
@@ -82,6 +84,14 @@ int main(int argc, char *argv[])
     
         solver->run_aco_iteration();
         instance->iteration++;
+
+        if (instance->best_stagnate_cnt >= 2 * instance->num_node) {
+            annealer = new SimulatedAnnealing(instance, 2.0, 0.95, MAX(instance->num_node * 4, 250), 20);
+            annealer->run();
+            instance->best_stagnate_cnt = 0;
+            
+            delete annealer;
+        }
     }
 
     solver->exit_aco();

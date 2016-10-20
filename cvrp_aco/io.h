@@ -16,6 +16,7 @@ email: sunxq1991@gmail.com
 
 #include <stdio.h>
 #include "problem.h"
+#include "move.h"
 
 
 void read_instance_file(Problem *instance, const char *vrp_file_name);
@@ -34,5 +35,6 @@ void init_report(Problem *instance);
 void exit_report(Problem *instance);
 void write_best_so_far_report(Problem *instance);
 void write_iter_report(Problem *instance);
+void write_anneal_report(Problem *instance, Move *move);
 
 #endif /* ants_h */

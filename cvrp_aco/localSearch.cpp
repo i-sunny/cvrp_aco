@@ -74,6 +74,15 @@ void LocalSearch::do_local_search(void)
 }
 
 /*
+ * apply loacal search to a single ant
+ */
+void LocalSearch::do_local_search(AntStruct *ant)
+{
+    two_opt_solution(ant->tour, ant->tour_size);
+    ant->tour_length = compute_tour_length(instance, ant->tour, ant->tour_size);
+}
+
+/*
  FUNCTION:       generate a random permutation of the integers 0 .. n-1
  INPUT:          length of the array
  OUTPUT:         pointer to the random permutation
@@ -157,6 +166,8 @@ void LocalSearch::two_opt_solution(long int *tour, long int tour_size)
     }
     
     DEBUG(assert(p < num_node));
+    
+    // swap - exchange 2 nodes in the tour
     swap(tour, tour_size, path_load);
     
     delete[] path_load;

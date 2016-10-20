@@ -50,6 +50,13 @@ struct RouteCenter {
     short angle;                    /* 重心与depot的角度 -180~180 */
 };
 
+struct Route {
+    Route(long int beg_, long int end_, long int load_):beg(beg_), end(end_), load(load_){}
+    long int beg;                   /* route在tour中的开始位置,tour[beg] = 0(depot) */
+    long int end;                   /* route在tour中的结束位置,tour[end] = 0(depot) */
+    long int load;                  /* route load */
+};
+
 /*
  * ant tour consists of some single route.
  * a single route begin with depot(0) and end with depot(0),
