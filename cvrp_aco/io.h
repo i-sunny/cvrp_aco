@@ -35,6 +35,6 @@ void init_report(Problem *instance);
 void exit_report(Problem *instance);
 void write_best_so_far_report(Problem *instance);
 void write_iter_report(Problem *instance);
-void write_anneal_report(Problem *instance, Move *move);
+void write_anneal_report(Problem *instance, AntStruct *ant, Move *move);
 
 #endif /* ants_h */

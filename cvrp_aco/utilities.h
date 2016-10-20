@@ -64,3 +64,5 @@ long int random_number ( long *idum );
 long int ** generate_int_matrix( long int n, long int m);
 
 double ** generate_double_matrix( long int n, long int m);
+
+void swap(long int *i, long int *j);

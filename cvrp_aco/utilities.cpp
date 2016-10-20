@@ -172,6 +172,12 @@ double quantil(long int v[], double q, long int l)
 }
 
 
+void swap(long int *i, long int *j)
+{
+    long int tmp = *i;
+    *i = *j;
+    *j = tmp;
+}
 
 void swap(long int v[], long int i, long int j)
 /*    

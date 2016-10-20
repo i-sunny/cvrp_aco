@@ -18,7 +18,7 @@
 #include "timer.h"
 #include "io.h"
 
-static bool parallel_flag  = TRUE;  /* 是否使用并行算法 */
+static bool parallel_flag  = false;  /* 是否使用并行算法 */
 /*
  FUNCTION:       checks whether termination condition is met
  INPUT:          none
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
         instance->iteration++;
 
         if (instance->best_stagnate_cnt >= 2 * instance->num_node) {
-            annealer = new SimulatedAnnealing(instance, 2.0, 0.95, MAX(instance->num_node * 4, 250), 20);
+            annealer = new SimulatedAnnealing(instance, solver, 2.0, 0.97, MAX(instance->num_node * 4, 250), 30);
             annealer->run();
             instance->best_stagnate_cnt = 0;
             

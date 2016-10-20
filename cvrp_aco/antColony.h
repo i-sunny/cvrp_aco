@@ -88,7 +88,7 @@ public:
     /* Auxiliary procedures related to ants */
     long int find_best ( void );
     long int find_worst( void );
-    void copy_solution_from_to(AntStruct *a1, AntStruct *a2);
+    static void copy_solution_from_to(AntStruct *a1, AntStruct *a2);
 };
 
 #endif /* antColony_h */

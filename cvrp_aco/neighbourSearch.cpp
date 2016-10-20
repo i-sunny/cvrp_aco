@@ -21,6 +21,7 @@
 
 #include "neighbourSearch.h"
 #include "utilities.h"
+#include "io.h"
 
 using namespace std;
 
@@ -94,7 +95,7 @@ Move *NeighbourSearch::search(AntStruct *ant)
  */
 Move *NeighbourSearch::exchange(long int *tour, long int tour_size)
 {
-    long int n1 = 0, n2 = 0;   /* random node from route 1 and toure 2*/
+    long int n1, n2;          /* random node from route 1 and toure 2*/
     long int p_n1, p_n2, s_n1, s_n2;
     long int pos_n1 = 0, pos_n2 = 0;
     long int r1, r2;           /* idx of route 1 and route 2 */
@@ -105,15 +106,18 @@ Move *NeighbourSearch::exchange(long int *tour, long int tour_size)
     bool valid = true;
     
     r1 = random_route();
-    r2 = r1;
-    while (r1 == r2) {
-        r2 = random_route();
+    r2 = random_route();
+    if (r1 == r2) {
+        return exchange_1(tour, tour_size);
     }
     
+    n1 = 0;
     while (n1 == 0) {
         pos_n1 = random_pos_in_route(&routes[r1]);
         n1 = tour[pos_n1];
     }
+    
+    n2 = 0;
     while (n2 == 0) {
         pos_n2 = random_pos_in_route(&routes[r2]);
         n2 = tour[pos_n2];
@@ -141,45 +145,127 @@ Move *NeighbourSearch::exchange(long int *tour, long int tour_size)
 }
 
 /*
+ * function: randomly exchanging two non-zero nodes from one route
+ */
+Move *NeighbourSearch::exchange_1(long int *tour, long int tour_size)
+{
+    Route *route = NULL;
+    long int n1, n2;
+    long int p_n1, p_n2, s_n1, s_n2;
+    long int pos_n1, pos_n2;
+    long int gain;
+    long int **distance = instance->distance;
+    long int sz;
+    
+    sz = 0;
+    while (sz <= 3) {
+        route = &routes[random_route()];
+        sz = route->end - route->beg + 1;
+    }
+    
+    // non-zero n1
+    pos_n1 = route->beg;
+    while (pos_n1 == route->beg) {
+        pos_n1 = random_pos_in_route(route);
+    }
+    
+    // non-zero n2
+    pos_n2 = route->beg;
+    while (pos_n2 == route->beg || pos_n1 == pos_n2) {
+        pos_n2 = random_pos_in_route(route);
+    }
+    
+    if (pos_n1 > pos_n2) {
+        swap(&pos_n1, &pos_n2);
+    }
+    n1 = tour[pos_n1];
+    n2 = tour[pos_n2];
+    
+    DEBUG(assert(pos_n1 > 0 && pos_n2 > 0 && pos_n1 < pos_n2);)
+    DEBUG(assert(n1 != 0 && n2 != 0 && n1 != n2);)
+    
+    p_n1 = tour[pos_n1-1];
+    p_n2 = tour[pos_n2-1];
+    s_n1 = tour[pos_n1+1];
+    s_n2 = tour[pos_n2+1];
+    
+    if (pos_n2 - pos_n1 == 1) {
+        gain = -(distance[p_n1][n1] + distance[n2][s_n2]) +(distance[p_n1][n2] + distance[n1][s_n2]);
+    } else {
+        gain = -(distance[p_n1][n1] + distance[n1][s_n1] + distance[p_n2][n2] + distance[n2][s_n2])
+        +(distance[p_n1][n2] + distance[n2][s_n1] + distance[p_n2][n1] + distance[n1][s_n2]);
+    }
+    
+    return new ExchangeMove(ant, true, gain, pos_n1, pos_n2, route->load, route->load);
+}
+
+/*
  * function: randomly insert a node(n1) from route1 to route2 after pos_n2
+ * if pos_n1 < pos_n2, then insert node[pos_n1] after node[pos_n2]
+ * if pos_n1 > pos_n2, then insert node[pos_n1] before node[pos_n1]
  */
 Move *NeighbourSearch::insertion(long int *tour, long int tour_size)
 {
-    long int n1 = 0, n2 = 0;   /* random node from route 1 and toure 2*/
-    long int p_n1, s_n1, s_n2;
-    long int pos_n1 = 0, pos_n2 = 0;
-    long int r1, r2;           /* idx of route 1 and route 2 */
+    Route *route1, *route2;
+    long int n1, n2;   /* random node from route 1 and toure 2*/
+    long int p_n1, p_n2, s_n1, s_n2;
+    long int pos_n1, pos_n2;
+    long int r1 = 0, r2;           /* idx of route 1 and route 2 */
     long int gain;
     long int **distance = instance->distance;
     Point *nodes = instance->nodeptr;
     long int load_r1, load_r2;
     bool valid = true;
+    long int sz;
     
-    r1 = random_route();
-    r2 = r1;
-    while (r1 == r2) {
-        r2 = random_route();
+    sz = 0;
+    while (sz <= 3) {
+        r1 = random_route();
+        sz = routes[r1].end - routes[r1].beg + 1;
     }
     
-    while (n1 == 0) {
-        pos_n1 = random_pos_in_route(&routes[r1]);
-        n1 = tour[pos_n1];
+    r2 = random_route();
+    if (r1 == r2) {
+        return insertion_1(tour, tour_size);
+    }
+    
+    // r1 != r2
+    route1 = &routes[r1];
+    route2 = &routes[r2];
+    
+    // non-zero n1 from route 1
+    pos_n1 = route1->beg;
+    while (pos_n1 == route1->beg) {
+        pos_n1 = random_pos_in_route(route1);
     }
 
-    pos_n2 = random_pos_in_route(&routes[r2]);
+    // non-zero n2 from route 2
+    pos_n2 = route2->beg;
+    while (pos_n2 == route2->beg) {
+        pos_n2 = random_pos_in_route(route2);
+    }
+    
+    n1 = tour[pos_n1];
     n2 = tour[pos_n2];
 
     DEBUG(assert(r1 != r2);)
-    DEBUG(assert(n1 != 0);)
+    DEBUG(assert(n1 != 0 && n2 != 0);)
     
     p_n1 = tour[pos_n1-1];
+    p_n2 = tour[pos_n2-1];
     s_n1 = tour[pos_n1+1];
     s_n2 = tour[pos_n2+1];
     
-    gain = -(distance[p_n1][n1] + distance[n1][s_n1] + distance[n2][s_n2]) + (distance[n2][n1] + distance[n1][s_n2] + distance[p_n1][s_n1]);
+    if (pos_n1 > pos_n2) {
+        gain = -(distance[p_n1][n1] + distance[n1][s_n1] + distance[p_n2][n2])
+        + (distance[n1][n2] + distance[p_n2][n1] + distance[p_n1][s_n1]);
+    } else {
+        gain = -(distance[p_n1][n1] + distance[n1][s_n1] + distance[n2][s_n2])
+        + (distance[n2][n1] + distance[n1][s_n2] + distance[p_n1][s_n1]);
+    }
     
-    load_r1 = routes[r1].load - nodes[n1].demand;
-    load_r2 = routes[r2].load + nodes[n1].demand;
+    load_r1 = route1->load - nodes[n1].demand;
+    load_r2 = route2->load + nodes[n1].demand;
     
     if (load_r2 > instance->vehicle_capacity) {
         valid = false;
@@ -188,46 +274,114 @@ Move *NeighbourSearch::insertion(long int *tour, long int tour_size)
 }
 
 /*
- * chooses two nodes in a route randomly, and then inverts the substring between these two nodes(n1, n2)
+ * insert node n1 after n2 in the same route
+ * if pos_n1 < pos_n2, then insert node[pos_n1] after node[pos_n2]
+ * if pos_n1 > pos_n2, then insert node[pos_n1] before node[pos_n1]
  */
-Move *NeighbourSearch::inversion(long int *tour, long int tour_size)
+Move *NeighbourSearch::insertion_1(long int *tour, long int tour_size)
 {
     Route *route = NULL;
-    long int r_sz = 0;     /* route size */
-    long int n1, n2;   /* random node from route 1 and toure 2*/
-    long int pos_n1 = 0, pos_n2 = 0, tmp;
-    long int s_n1, p_n2;
+    long int n1, n2;
+    long int p_n1, p_n2, s_n1, s_n2;
+    long int pos_n1, pos_n2;
     long int gain;
     long int **distance = instance->distance;
+    long int load_r1, load_r2;
+    long int sz;
     
-    while (r_sz <= 5) {
+    sz = 0;
+    while (sz <= 3) {
         route = &routes[random_route()];
-        r_sz = route->end -route->beg + 1;
+        sz = route->end - route->beg + 1;
     }
     
-    pos_n1 = random_pos_in_route(route);
+    // non-zero n1
+    pos_n1 = route->beg;
+    while (pos_n1 == route->beg) {
+        pos_n1 = random_pos_in_route(route);
+    }
     
-    pos_n2 = pos_n1;
-    while (abs(pos_n2 - pos_n1) <= 1) {
+    // non-zero n2
+    pos_n2 = route->beg;
+    while (pos_n2 == route->beg || pos_n1 == pos_n2) {
         pos_n2 = random_pos_in_route(route);
-    }
-    
-    if (pos_n1 > pos_n2) {
-        tmp = pos_n1;
-        pos_n1 = pos_n2;
-        pos_n2 = tmp;
     }
     
     n1 = tour[pos_n1];
     n2 = tour[pos_n2];
     
-    s_n1 = tour[pos_n1+1];
+    DEBUG(assert(n1 != 0 && n2 != 0);)
+    
+    p_n1 = tour[pos_n1-1];
     p_n2 = tour[pos_n2-1];
+    s_n1 = tour[pos_n1+1];
+    s_n2 = tour[pos_n2+1];
+    
+    if (pos_n1 > pos_n2) {
+        gain = -(distance[p_n1][n1] + distance[n1][s_n1] + distance[p_n2][n2])
+        + (distance[n1][n2] + distance[p_n2][n1] + distance[p_n1][s_n1]);
+    } else {
+        gain = -(distance[p_n1][n1] + distance[n1][s_n1] + distance[n2][s_n2])
+        + (distance[n2][n1] + distance[n1][s_n2] + distance[p_n1][s_n1]);
+    }
+    
+    return new InsertionMove(ant, true, gain, pos_n1, pos_n2, load_r1, load_r2);
+}
+
+/*
+ * chooses two nodes in a route randomly, 
+ * and then inverts the substring between these two non-zero nodes[n1, n2],
+ * pos_n1 and pos_n2 included.
+ */
+Move *NeighbourSearch::inversion(long int *tour, long int tour_size)
+{
+    Route *route = NULL;
+    long int sz = 0;     /* route size */
+    long int n1, n2;   /* random node from route 1 and toure 2*/
+    long int pos_n1 = 0, pos_n2 = 0;
+    long int p_n1, s_n2;
+    long int gain;
+    long int **distance = instance->distance;
+    
+    sz = 0;
+    while (sz <= 3) {
+        route = &routes[random_route()];
+        sz = route->end -route->beg + 1;
+    }
+    
+    // non-zero n1
+    pos_n1 = route->beg;
+    while (pos_n1 == route->beg) {
+        pos_n1 = random_pos_in_route(route);
+        n1 = tour[pos_n1];
+    }
+    
+    // non-zero n2, n1 != n2
+    pos_n2 = route->beg;
+    while (pos_n2 == route->beg || pos_n1 == pos_n2) {
+        pos_n2 = random_pos_in_route(route);
+        n2 = tour[pos_n2];
+    }
+    
+    if (pos_n1 > pos_n2) {
+        swap(&pos_n1, &pos_n2);
+    }
+    
+    // useless
+    if (pos_n2 == route->end - 1 && pos_n1 == route->beg + 1) {
+        return NULL;
+    }
+    
+    n1 = tour[pos_n1];
+    n2 = tour[pos_n2];
+    
+    p_n1 = tour[pos_n1-1];
+    s_n2 = tour[pos_n2+1];
     
     DEBUG(assert(n1 != n2);)
-    DEBUG(assert(pos_n2 - pos_n1 > 1 && pos_n1 < route->end);)
+    DEBUG(assert(pos_n1 > 0 && pos_n2 > 0 && pos_n1 < pos_n2);)
     
-    gain = -(distance[n1][s_n1] + distance[p_n2][n2]) + (distance[n1][p_n2] + distance[s_n1][n2]);
+    gain = -(distance[p_n1][n1] + distance[n2][s_n2]) + (distance[p_n1][n2] + distance[n1][s_n2]);
     
     return new InversionMove(ant, true, gain, pos_n1, pos_n2);
 }

@@ -33,7 +33,9 @@ private:
     long int random_route();
     
     Move *exchange(long int *tour, long int tour_size);
+    Move *exchange_1(long int *tour, long int tour_size);
     Move *insertion(long int *tour, long int tour_size);
+    Move *insertion_1(long int *tour, long int tour_size);
     Move *inversion(long int *tour, long int tour_size);
 };
 
