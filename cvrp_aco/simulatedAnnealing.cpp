@@ -19,6 +19,8 @@
 #include "timer.h"
 #include "io.h"
 
+bool tabu_flag = true;
+
 SimulatedAnnealing::SimulatedAnnealing(Problem *instance, AntColony *ant_colony, double t0,
                                        double alpha, long int epoch_length, long int terminal_ratio)
 {
@@ -38,7 +40,7 @@ SimulatedAnnealing::SimulatedAnnealing(Problem *instance, AntColony *ant_colony,
     iter_ant->tour = new long int[2*instance->num_node-1];
     AntColony::copy_solution_from_to(best_ant, iter_ant);
     
-    ticks = 0;
+    iteration = 0;
     epoch_counter = 0;
     
     test_cnt = 0;
@@ -66,6 +68,8 @@ void SimulatedAnnealing::run(void)
 {
     printf("\n\n-----starting Simulated Annealing. pid: %d iter: %ld-----\n", instance->pid, instance->iteration);
     write_anneal_report(instance, iter_ant, NULL);
+    
+    tabu_list.clear();
     
     while (t > (t0 / terminal_ratio)) {
         step();
@@ -96,7 +100,7 @@ bool SimulatedAnnealing::step(void)
     if (move == NULL) {
         return false;
     }
-    ticks++;
+    iteration++;
     
     is_valid = move->valid;
     if (!is_valid) {
@@ -106,6 +110,9 @@ bool SimulatedAnnealing::step(void)
     if(acceptable(move)) {
         accept(move);
         accepted = true;
+        if (tabu_flag) {
+            update_tabu_list(move);
+        }
         write_anneal_report(instance, iter_ant, move);
         
         DEBUG(check_solution(instance, iter_ant->tour, iter_ant->tour_size);)
@@ -134,13 +141,41 @@ bool SimulatedAnnealing::step(void)
     return accepted;
 }
 
+bool SimulatedAnnealing::acceptable(Move *move)
+{
+    bool accepted = false;
+    test_cnt++;
+    long int delta = move->gain;
+    
+    if (tabu_flag) {
+        // this move is in tabu list
+        if (is_tabu(move)) {
+            return false;
+        }
+    }
+    
+    if (delta < 0) {
+        accepted = true;
+        improvement_cnt++;
+        //        printf("Time: %f, T: %f, improvement: %ld\n", elapsed_time(VIRTUAL), t, delta);
+    } else if (delta == 0) {
+        
+    }else {
+        accepted = ran01(&instance->rnd_seed) < exp(-delta / t);
+    }
+    
+    if (accepted){
+        accept_cnt++;
+    }
+    
+    return accepted;
+}
+
 /**
  * Accept this move
  */
 void SimulatedAnnealing::accept(Move *move)
 {
-//    print_solution(instance, iter_ant->tour, iter_ant->tour_size);
-    
     // apply this neighbourhood move
     move->apply();
     
@@ -152,8 +187,6 @@ void SimulatedAnnealing::accept(Move *move)
         // update pheromone
         ant_colony->global_update_pheromone_weighted(iter_ant, 2 * ras_ranks);
     }
-    
-//    print_solution(instance, iter_ant->tour, iter_ant->tour_size);
 }
 
 /*
@@ -164,23 +197,41 @@ void SimulatedAnnealing::reject(Move *move)
     
 }
 
-bool SimulatedAnnealing::acceptable(Move *move)
+
+bool SimulatedAnnealing::is_tabu(Move *move)
 {
-    bool accepted = false;
-    test_cnt++;
-    long int delta = move->gain;
+    Move *tabu_move;
+    long int i;
+    long int pos_n1, pos_n2;
     
-    if (delta < 0) {
-        accepted = true;
-        improvement_cnt++;
-//        printf("Time: %f, T: %f, improvement: %ld\n", elapsed_time(VIRTUAL), t, delta);
-    } else {
-        accepted = ran01(&instance->rnd_seed) < exp(-delta / t);
+    pos_n1 = move->pos_n1;
+    pos_n2 = move->pos_n2;
+    if (move->type == INSERTION_MOVE) {
+        pos_n1 = move->pos_n2;
+        pos_n2 = move->pos_n1;
     }
     
-    if (accepted){
-        accept_cnt++;
+    for (i = 0; i < tabu_list.size(); i++) {
+        tabu_move = &tabu_list[i].move;
+        if (tabu_move->type == move->type &&
+            tabu_move->pos_n1 == pos_n1 &&
+            tabu_move->pos_n2 == pos_n2 &&
+            tabu_move->gain == -move->gain &&
+            tabu_list[i].life > iteration)
+        {
+            return true;
+        }
     }
+    return false;
+}
+
+void SimulatedAnnealing::update_tabu_list(Move *move)
+{
+    Tabu tabu(*move, iteration + TABU_LENGTH);
+    tabu_list.push_back(tabu);
     
-    return accepted;
+    vector<Tabu>::iterator ibeg = tabu_list.begin();
+    while (ibeg->life <= iteration) {
+        tabu_list.erase(ibeg);
+    }
 }

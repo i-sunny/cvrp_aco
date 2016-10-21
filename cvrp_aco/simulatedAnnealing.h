@@ -10,9 +10,18 @@
 #define simulatedAnnealing_h
 
 #include <stdio.h>
+#include <vector>
 #include "problem.h"
 #include "neighbourSearch.h"
 #include "antColony.h"
+
+#define TABU_LENGTH  3
+
+struct Tabu {
+    Tabu(Move move_, long int life_):move(move_), life(life_){}
+    Move move;
+    long int life;   /* tabu life */
+};
 
 class SimulatedAnnealing {
 public:
@@ -29,10 +38,11 @@ private:
     AntColony *ant_colony;
     NeighbourSearch *neighbour_search;
     LocalSearch *local_search;
+    vector<Tabu> tabu_list;
     double alpha;
     double t0;
     double t;
-    long int ticks;
+    long int iteration;
     long int epoch_length;
     long int epoch_counter;
     long int terminal_ratio;
@@ -45,6 +55,11 @@ private:
     bool acceptable(Move *move);
     void accept(Move *move);
     void reject(Move *move);
+    
+    // tabu list
+    bool is_tabu(Move *move);
+    void update_tabu_list(Move *move);
+    
 };
 
 #endif /* simulatedAnnealing_h */

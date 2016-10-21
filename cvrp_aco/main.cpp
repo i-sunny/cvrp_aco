@@ -19,6 +19,7 @@
 #include "io.h"
 
 static bool parallel_flag  = false;  /* 是否使用并行算法 */
+static bool sa_flag = true;         /* 是否使用sa */
 /*
  FUNCTION:       checks whether termination condition is met
  INPUT:          none
@@ -85,12 +86,14 @@ int main(int argc, char *argv[])
         solver->run_aco_iteration();
         instance->iteration++;
 
-        if (instance->best_stagnate_cnt >= 2 * instance->num_node) {
-            annealer = new SimulatedAnnealing(instance, solver, 2.0, 0.97, MAX(instance->num_node * 4, 250), 30);
-            annealer->run();
-            instance->best_stagnate_cnt = 0;
-            
-            delete annealer;
+        if (sa_flag) {
+            if (instance->best_stagnate_cnt >= instance->num_node && instance->iter_stagnate_cnt > 0) {   // 2 * instance->num_node
+                annealer = new SimulatedAnnealing(instance, solver, 2.5, 0.97, MAX(instance->num_node * 4, 250), 20);
+                annealer->run();
+                instance->best_stagnate_cnt = 0;
+                
+                delete annealer;
+            }
         }
     }
 

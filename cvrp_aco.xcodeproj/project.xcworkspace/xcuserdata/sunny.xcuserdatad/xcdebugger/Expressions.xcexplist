@@ -67,10 +67,10 @@
          contextName = "compute_route_centers(Problem*, long*, std::__1::vector&lt;RouteCenter*, std::__1::allocator&lt;RouteCenter*&gt; &gt;):vrpHelper.cpp">
       </ContextState>
       <ContextState
-         contextName = "ParallelAco::init_sub_pheromone(Problem*, Problem*, double):parallelAco.cpp">
+         contextName = "ParallelAco::build_sub_problems(AntStruct*, std::__1::vector&lt;std::__1::vector&lt;RouteCenter*, std::__1::allocator&lt;RouteCenter*&gt; &gt;, std::__1::allocator&lt;std::__1::vector&lt;RouteCenter*, std::__1::allocator&lt;RouteCenter*&gt; &gt; &gt; &gt; const&amp;):parallelAco.cpp">
       </ContextState>
       <ContextState
-         contextName = "ParallelAco::build_sub_problems(AntStruct*, std::__1::vector&lt;std::__1::vector&lt;RouteCenter*, std::__1::allocator&lt;RouteCenter*&gt; &gt;, std::__1::allocator&lt;std::__1::vector&lt;RouteCenter*, std::__1::allocator&lt;RouteCenter*&gt; &gt; &gt; &gt; const&amp;):parallelAco.cpp">
+         contextName = "ParallelAco::init_sub_pheromone(Problem*, Problem*, double):parallelAco.cpp">
       </ContextState>
       <ContextState
          contextName = "ParallelAco::run_aco_iteration():parallelAco.cpp">
@@ -88,6 +88,14 @@
       </ContextState>
       <ContextState
          contextName = "NeighbourSearch::insertion(long*, long):neighbourSearch.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "SimulatedAnnealing::update_tabu_list(Move*):simulatedAnnealing.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "tabu_list">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "ParallelAco::get_solution_centers(AntStruct*):parallelAco.cpp">
