@@ -508,7 +508,7 @@ void AntColony::global_update_pheromone( AntStruct *a )
     TRACE ( printf("global pheromone update\n"); );
 
     d_tau = 1.0 / (double) a->tour_length;
-    for ( i = 0 ; i < a->tour_size ; i++ ) {
+    for ( i = 0 ; i < a->tour_size-1 ; i++ ) {
         j = a->tour[i];
         h = a->tour[i+1];
         pheromone[j][h] += d_tau;
@@ -531,7 +531,7 @@ void AntColony::global_update_pheromone_weighted( AntStruct *a, long int weight 
     TRACE ( printf("global pheromone update weighted\n"); );
 
     d_tau = (double) weight / (double) a->tour_length;
-    for ( i = 0 ; i < a->tour_size ; i++ ) {
+    for ( i = 0 ; i < a->tour_size-1 ; i++ ) {
         j = a->tour[i];
         h = a->tour[i+1];
         pheromone[j][h] += d_tau;
