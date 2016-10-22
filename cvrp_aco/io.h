@@ -31,8 +31,8 @@ void print_pheromone(Problem *instance);
 void print_total_info(Problem *instance);
 void print_solution_to_file(Problem *instance, FILE *file, long int *tour, long int tour_size);
 
-void init_report(Problem *instance);
-void exit_report(Problem *instance);
+void init_report(Problem *instance, long int ntry);
+void exit_report(Problem *instance, long int ntry);
 void write_best_so_far_report(Problem *instance);
 void write_iter_report(Problem *instance);
 void write_anneal_report(Problem *instance, AntStruct *ant, Move *move);

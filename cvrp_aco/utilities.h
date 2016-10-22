@@ -22,7 +22,7 @@
 #define MAX(x,y)        ((x)>=(y)?(x):(y))
 #define MIN(x,y)        ((x)<=(y)?(x):(y))
 
-#define DEBUG( x )  x
+#define DEBUG( x )
 
 #define TRACE( x )
 

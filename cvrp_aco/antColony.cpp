@@ -255,8 +255,8 @@ void AntColony::pheromone_disturbance(void)
 {
 //    print_pheromone(instance);
     
-    printf("pid %d start pheromone disturbance: iter %ld, best_stagnate %ld, iter_stagnate %ld\n",
-           instance->pid, instance->iteration, instance->best_stagnate_cnt, instance->iter_stagnate_cnt);
+    DEBUG(printf("pid %d start pheromone disturbance: iter %ld, best_stagnate %ld, iter_stagnate %ld\n",
+           instance->pid, instance->iteration, instance->best_stagnate_cnt, instance->iter_stagnate_cnt);)
     
     long int i, j;
     double sum_pheromone = 0, mean_pheromone;

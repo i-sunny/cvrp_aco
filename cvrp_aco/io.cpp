@@ -209,8 +209,10 @@ void print_total_info(Problem *instance)
 /*
  * 问题开始时
  */
-void init_report(Problem *instance)
+void init_report(Problem *instance, long int ntry)
 {
+    printf("\n############### start try %ld ###############\n", ntry);
+    
     char temp_buffer[LINE_BUF_LEN];
     
     if (report_flag) {
@@ -218,7 +220,7 @@ void init_report(Problem *instance)
         report = fopen(temp_buffer, "w");
         
         sprintf(temp_buffer,"best_so_far.%s",instance->name);
-        best_so_far_report = fopen(temp_buffer, "w");
+        best_so_far_report = fopen(temp_buffer, "a");
         
         sprintf(temp_buffer,"iter.%s",instance->name);
         iter_report = fopen(temp_buffer, "w");
@@ -226,17 +228,24 @@ void init_report(Problem *instance)
         sprintf(temp_buffer,"anneal.%s",instance->name);
         anneal_report = fopen(temp_buffer, "w");
     } else {
+        report = NULL;
+        anneal_report = NULL;
         best_so_far_report = NULL;
         iter_report = NULL;
     }
     
+    if (best_so_far_report) {
+        fprintf(best_so_far_report,"\n############### start try %ld ###############\n", ntry);
+    }
     write_params(instance);
 }
 
 /*
  * 问题结束时
  */
-void exit_report(Problem *instance) {
+void exit_report(Problem *instance, long int ntry) {
+    
+    printf("############### end try %ld ###############\n\n", ntry);
     
     check_solution(instance, instance->best_so_far_ant->tour, instance->best_so_far_ant->tour_size);
     
@@ -245,9 +254,10 @@ void exit_report(Problem *instance) {
                 instance->best_so_far_ant->tour_length, instance->iteration, instance->best_so_far_time, elapsed_time(VIRTUAL));
         fflush(report);
     }
-    
+
     if (best_so_far_report){
         print_solution_to_file(instance, best_so_far_report, instance->best_so_far_ant->tour, instance->best_so_far_ant->tour_size);
+        fprintf(best_so_far_report,"############### end try %ld ###############\n\n",ntry);
         fflush(best_so_far_report);
     }
     if (iter_report) {
@@ -284,8 +294,8 @@ void print_solution_to_file(Problem *instance, FILE *file, long int *tour, long 
  */
 void write_best_so_far_report(Problem *instance)
 {
-    printf("best so far length %ld, iteration: %ld, time %.2f\n",
-           instance->best_so_far_ant->tour_length, instance->iteration, elapsed_time( VIRTUAL));
+    DEBUG(printf("best so far length %ld, iteration: %ld, time %.2f\n",
+           instance->best_so_far_ant->tour_length, instance->iteration, elapsed_time( VIRTUAL));)
     if (best_so_far_report) {
         fprintf(best_so_far_report, "best %ld\t iteration %ld\t time %.3f\n",
                 instance->best_so_far_ant->tour_length, instance->iteration, instance->best_so_far_time);
@@ -300,8 +310,8 @@ void write_best_so_far_report(Problem *instance)
  */
 void write_iter_report(Problem *instance)
 {
-    printf("iteration: %ld, iter best length %ld, time %.2f\n",
-           instance->iteration, instance->iteration_best_ant->tour_length, elapsed_time( VIRTUAL));
+    DEBUG(printf("iteration: %ld, iter best length %ld, time %.2f\n",
+           instance->iteration, instance->iteration_best_ant->tour_length, elapsed_time( VIRTUAL));)
     if (iter_report) {
         fprintf(iter_report, "iteration %ld\t best %ld\t time %.3f\n",
                 instance->iteration, instance->iteration_best_ant->tour_length, elapsed_time( VIRTUAL));
@@ -314,22 +324,22 @@ void write_iter_report(Problem *instance)
 void write_anneal_report(Problem *instance, AntStruct *ant, Move *move)
 {
     if (InversionMove *p = dynamic_cast<InversionMove *>(move)) {
-        printf("[Inversion Move] moved length %ld, gain:%ld, pos_n1:%ld, pos_n2:%ld, time %.2f\n",
-               ant->tour_length, p->gain, p->pos_n1, p->pos_n2, elapsed_time( VIRTUAL));
+        DEBUG(printf("[Inversion Move] moved length %ld, gain:%ld, pos_n1:%ld, pos_n2:%ld, time %.2f\n",
+               ant->tour_length, p->gain, p->pos_n1, p->pos_n2, elapsed_time( VIRTUAL));)
         if (anneal_report) {
             fprintf(anneal_report, "[Inversion Move]: best length %ld, gain:%ld, pos_n1:%ld, pos_n2:%ld, time %.2f\n",
                     ant->tour_length, p->gain, p->pos_n1, p->pos_n2, elapsed_time( VIRTUAL));
         }
     } else if (InsertionMove *p = dynamic_cast<InsertionMove *>(move)) {
-        printf("[Insertion Move] moved length %ld, gain:%ld, pos_n1:%ld, pos_n2:%ld, load_r1:%ld, load_r2:%ld, time %.2f\n",
-               ant->tour_length, p->gain, p->pos_n1, p->pos_n2, p->load_r1, p->load_r2, elapsed_time( VIRTUAL));
+        DEBUG(printf("[Insertion Move] moved length %ld, gain:%ld, pos_n1:%ld, pos_n2:%ld, load_r1:%ld, load_r2:%ld, time %.2f\n",
+               ant->tour_length, p->gain, p->pos_n1, p->pos_n2, p->load_r1, p->load_r2, elapsed_time( VIRTUAL));)
         if (anneal_report) {
             fprintf(anneal_report, "[Insertion Move]: best length %ld, gain:%ld, pos_n1:%ld, pos_n2:%ld, time %.2f\n",
                     ant->tour_length, p->gain, p->pos_n1, p->pos_n2, elapsed_time( VIRTUAL));
         }
     } else if (ExchangeMove *p = dynamic_cast<ExchangeMove *>(move)) {
-        printf("[Exchange Move] moved length %ld, gain:%ld, pos_n1:%ld, pos_n2:%ld, load_r1:%ld, load_r2:%ld, time %.2f\n",
-               ant->tour_length, p->gain, p->pos_n1, p->pos_n2, p->load_r1, p->load_r2, elapsed_time( VIRTUAL));
+        DEBUG(printf("[Exchange Move] moved length %ld, gain:%ld, pos_n1:%ld, pos_n2:%ld, load_r1:%ld, load_r2:%ld, time %.2f\n",
+               ant->tour_length, p->gain, p->pos_n1, p->pos_n2, p->load_r1, p->load_r2, elapsed_time( VIRTUAL));)
         if (anneal_report) {
             fprintf(anneal_report, "[Exchange Move] moved length %ld, gain:%ld, pos_n1:%ld, pos_n2:%ld, load_r1:%ld, load_r2:%ld, time %.2f\n",
                     ant->tour_length, p->gain, p->pos_n1, p->pos_n2, p->load_r1, p->load_r2, elapsed_time( VIRTUAL));

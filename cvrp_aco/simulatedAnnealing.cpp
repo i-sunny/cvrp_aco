@@ -66,7 +66,7 @@ SimulatedAnnealing::~SimulatedAnnealing()
 
 void SimulatedAnnealing::run(void)
 {
-    printf("\n\n-----starting Simulated Annealing. pid: %d iter: %ld-----\n", instance->pid, instance->iteration);
+    printf("\n----- Start SA. length: %ld iter: %ld-----\n", best_ant->tour_length, instance->iteration);
     write_anneal_report(instance, iter_ant, NULL);
     
     tabu_list.clear();
@@ -82,7 +82,7 @@ void SimulatedAnnealing::run(void)
     
     ant_colony->compute_total_information();
     
-    printf("-----end Simulated Annealing. pid: %d iter: %ld-----\n\n", instance->pid, instance->iteration);
+    printf("----- End SA. length: %ld iter: %ld-----\n", best_ant->tour_length, instance->iteration);
     
 }
 
@@ -93,50 +93,45 @@ void SimulatedAnnealing::run(void)
 bool SimulatedAnnealing::step(void)
 {
     bool accepted = false;
-    bool is_valid;    /* mark if current move is valid */
     
     Move *move = neighbour_search->search(iter_ant);
 
-    if (move == NULL) {
-        return false;
-    }
-    iteration++;
-    
-    is_valid = move->valid;
-    if (!is_valid) {
-        return false;
-    }
-    
-    if(acceptable(move)) {
-        accept(move);
-        accepted = true;
-        if (tabu_flag) {
-            update_tabu_list(move);
+    if (move != NULL) {
+        iteration++;
+        if (move->valid) {
+            // valid move
+            if(acceptable(move)) {
+                accept(move);
+                accepted = true;
+                
+                if (tabu_flag) {
+                    update_tabu_list(move);
+                }
+                write_anneal_report(instance, iter_ant, move);
+                
+                DEBUG(check_solution(instance, iter_ant->tour, iter_ant->tour_size);)
+            } else {
+                accepted = false;
+                reject(move);
+            }
+            
+            epoch_counter++;
+            if (epoch_counter >= epoch_length) {
+                epoch_counter = 0;
+                t = t * alpha;
+                
+                float ar = accept_cnt / (float) test_cnt;
+                float ir = improvement_cnt / (float) test_cnt;
+                DEBUG(printf("Time: %f, T: %f, ar: %f, ir: %f moves:%ld\n", elapsed_time(VIRTUAL), t, ar, ir, test_cnt);)
+                test_cnt = accept_cnt = improvement_cnt = 0;
+            }
+            
+            // update pheromone
+        //    if (move->gain < 0) {
+        //        ant_colony->global_update_pheromone_weighted(iter_ant, 0.01);
+        //    }
         }
-        write_anneal_report(instance, iter_ant, move);
-        
-        DEBUG(check_solution(instance, iter_ant->tour, iter_ant->tour_size);)
-    } else {
-        accepted = false;
-        reject(move);
     }
-    
-    epoch_counter++;
-    if (epoch_counter >= epoch_length) {
-        epoch_counter = 0;
-        t = t * alpha;
-        
-        float ar = accept_cnt / (float) test_cnt;
-        float ir = improvement_cnt / (float) test_cnt;
-        printf("Time: %f, T: %f, ar: %f, ir: %f moves:%ld\n", elapsed_time(VIRTUAL), t, ar, ir, test_cnt);
-        test_cnt = accept_cnt = improvement_cnt = 0;
-    }
-    
-    // update pheromone
-//    if (move->gain < 0) {
-//        ant_colony->global_update_pheromone_weighted(iter_ant, 0.01);
-//    }
-    
     delete move;
     return accepted;
 }
@@ -186,6 +181,7 @@ void SimulatedAnnealing::accept(Move *move)
         AntColony::copy_solution_from_to(iter_ant, best_ant);
         // update pheromone
         ant_colony->global_update_pheromone_weighted(iter_ant, 2 * ras_ranks);
+        printf("SA better solution. length:%ld, sa_iter:%ld\n", iter_ant->tour_length, iteration);
     }
 }
 

@@ -20,6 +20,8 @@
 
 static bool parallel_flag  = false;  /* 是否使用并行算法 */
 static bool sa_flag = true;         /* 是否使用sa */
+static long int tries = 1;
+
 /*
  FUNCTION:       checks whether termination condition is met
  INPUT:          none
@@ -60,48 +62,52 @@ const char* parse_commandline (long int argc, char *argv [])
  */
 int main(int argc, char *argv[])
 {
-    Problem *instance = new Problem(0);
-    AntColony *solver;
-    SimulatedAnnealing *annealer;
-    
-    start_timers();
-    
-    const char *filename = parse_commandline(argc, argv);
-    read_instance_file(instance, filename);
-    init_problem(instance);
-    init_report(instance);
-    
-    printf("Initialization took %.10f seconds\n", elapsed_time(VIRTUAL));
+    for (int ntry = 0 ; ntry < tries; ntry++)
+    {
+        Problem *instance = new Problem(0);
+        AntColony *solver;
+        SimulatedAnnealing *annealer;
+        
+        start_timers();
+        
+        const char *filename = parse_commandline(argc, argv);
+        read_instance_file(instance, filename);
+        init_problem(instance);
+        init_report(instance, ntry);
+        
+        printf("Initialization took %.10f seconds\n", elapsed_time(VIRTUAL));
 
-    if (parallel_flag && instance->num_subs > 1) {
-        solver = new ParallelAco(instance);
-    } else {
-        solver = new AntColony(instance);
-    }
-    
-    solver->init_aco();
-    
-    while (!termination_condition(instance)) {
-    
-        solver->run_aco_iteration();
-        instance->iteration++;
+        if (parallel_flag && instance->num_subs > 1) {
+            solver = new ParallelAco(instance);
+        } else {
+            solver = new AntColony(instance);
+        }
+        
+        solver->init_aco();
+        
+        while (!termination_condition(instance)) {
+        
+            solver->run_aco_iteration();
+            instance->iteration++;
 
-        if (sa_flag) {
-            if (instance->best_stagnate_cnt >= instance->num_node && instance->iter_stagnate_cnt > 0) {   // 2 * instance->num_node
-                annealer = new SimulatedAnnealing(instance, solver, 2.5, 0.97, MAX(instance->num_node * 4, 250), 20);
-                annealer->run();
-                instance->best_stagnate_cnt = 0;
-                
-                delete annealer;
+            if (sa_flag) {
+                if (instance->best_stagnate_cnt >= instance->num_node) {   // 2 * instance->num_node
+                    annealer = new SimulatedAnnealing(instance, solver, 2.5, 0.97, MAX(instance->num_node * 4, 250), 20);
+                    annealer->run();
+                    instance->best_stagnate_cnt = 0;
+                    
+                    delete annealer;
+                }
             }
         }
-    }
 
-    solver->exit_aco();
-    
-    delete solver;
-    exit_report(instance);
-    exit_problem(instance);
+        solver->exit_aco();
+        
+        delete solver;
+        
+        exit_report(instance, ntry);
+        exit_problem(instance);
+    }
     
     return(0);
 }

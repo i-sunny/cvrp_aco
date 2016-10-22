@@ -353,14 +353,12 @@ Move *NeighbourSearch::inversion(long int *tour, long int tour_size)
     pos_n1 = route->beg;
     while (pos_n1 == route->beg) {
         pos_n1 = random_pos_in_route(route);
-        n1 = tour[pos_n1];
     }
     
     // non-zero n2, n1 != n2
     pos_n2 = route->beg;
     while (pos_n2 == route->beg || pos_n1 == pos_n2) {
         pos_n2 = random_pos_in_route(route);
-        n2 = tour[pos_n2];
     }
     
     if (pos_n1 > pos_n2) {

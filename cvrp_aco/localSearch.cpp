@@ -168,7 +168,7 @@ void LocalSearch::two_opt_solution(long int *tour, long int tour_size)
     DEBUG(assert(p < num_node));
     
     // swap - exchange 2 nodes in the tour
-    swap(tour, tour_size, path_load);
+//    swap(tour, tour_size, path_load);
     
     delete[] path_load;
     
