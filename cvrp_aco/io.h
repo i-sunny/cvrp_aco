@@ -20,7 +20,7 @@ email: sunxq1991@gmail.com
 
 
 void read_instance_file(Problem *instance, const char *vrp_file_name);
-const char* parse_commandline (long int argc, char *argv []);
+char* parse_commandline (long int argc, char *argv []);
 
 void print_solution(Problem *instance, long int *tour, long int tour_size);
 void print_single_route(Problem *instance, long int *route, long int route_size);

@@ -66,7 +66,7 @@ SimulatedAnnealing::~SimulatedAnnealing()
 
 void SimulatedAnnealing::run(void)
 {
-    printf("\n----- Start SA. length: %ld iter: %ld-----\n", best_ant->tour_length, instance->iteration);
+    printf("\n----- Start SA. length: %f iter: %ld-----\n", best_ant->tour_length, instance->iteration);
     write_anneal_report(instance, iter_ant, NULL);
     
     tabu_list.clear();
@@ -75,14 +75,14 @@ void SimulatedAnnealing::run(void)
         step();
     }
     
-    if (best_ant->tour_length < instance->best_so_far_ant->tour_length) {
+    if (best_ant->tour_length - instance->best_so_far_ant->tour_length < -EPSILON) {
         AntColony::copy_solution_from_to(best_ant, instance->best_so_far_ant);
         write_best_so_far_report(instance);
     }
     
     ant_colony->compute_total_information();
     
-    printf("----- End SA. length: %ld iter: %ld-----\n", best_ant->tour_length, instance->iteration);
+    printf("----- End SA. length: %f iter: %ld-----\n", best_ant->tour_length, instance->iteration);
     
 }
 
@@ -127,7 +127,7 @@ bool SimulatedAnnealing::step(void)
             }
             
             // update pheromone
-        //    if (move->gain < 0) {
+        //    if (move->gain < -EPSILON) {
         //        ant_colony->global_update_pheromone_weighted(iter_ant, 0.01);
         //    }
         }
@@ -140,7 +140,7 @@ bool SimulatedAnnealing::acceptable(Move *move)
 {
     bool accepted = false;
     test_cnt++;
-    long int delta = move->gain;
+    double delta = move->gain;
     
     if (tabu_flag) {
         // this move is in tabu list
@@ -149,12 +149,12 @@ bool SimulatedAnnealing::acceptable(Move *move)
         }
     }
     
-    if (delta < 0) {
+    if (delta < -EPSILON) {
         accepted = true;
         improvement_cnt++;
         //        printf("Time: %f, T: %f, improvement: %ld\n", elapsed_time(VIRTUAL), t, delta);
-    } else if (delta == 0) {
-        
+    } else if (fabs(delta) < EPSILON) {
+        accepted = true;
     }else {
         accepted = ran01(&instance->rnd_seed) < exp(-delta / t);
     }
@@ -177,11 +177,11 @@ void SimulatedAnnealing::accept(Move *move)
     // seem to have worse performance
 //    local_search->do_local_search(iter_ant);
     
-    if (iter_ant->tour_length < best_ant->tour_length) {
+    if (iter_ant->tour_length - best_ant->tour_length < -EPSILON) {
         AntColony::copy_solution_from_to(iter_ant, best_ant);
         // update pheromone
         ant_colony->global_update_pheromone_weighted(iter_ant, 2 * ras_ranks);
-        printf("SA better solution. length:%ld, sa_iter:%ld\n", iter_ant->tour_length, iteration);
+        printf("SA better solution. length:%f, sa_iter:%ld\n", iter_ant->tour_length, iteration);
     }
 }
 
@@ -212,7 +212,7 @@ bool SimulatedAnnealing::is_tabu(Move *move)
         if (tabu_move->type == move->type &&
             tabu_move->pos_n1 == pos_n1 &&
             tabu_move->pos_n2 == pos_n2 &&
-            tabu_move->gain == -move->gain &&
+            fabs(tabu_move->gain + move->gain) < EPSILON &&
             tabu_list[i].life > iteration)
         {
             return true;

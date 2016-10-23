@@ -82,17 +82,17 @@ void exit_problem(Problem *instance)
  */
 void init_sub_problem(Problem *master, Problem *sub)
 {
-    long int **sub_dis;
+    double **sub_dis;
     long int ri, rj;
     Point *nodeptr, *m_node;
     
     // 初始化 sub-problem distance矩阵
-    if((sub_dis = (long int **)malloc(sizeof(long int) * sub->num_node * sub->num_node +
-                                      sizeof(long int *) * sub->num_node)) == NULL) {
+    if((sub_dis = (double **)malloc(sizeof(double) * sub->num_node * sub->num_node +
+                                      sizeof(double *) * sub->num_node)) == NULL) {
         exit(EXIT_FAILURE);
     }
     for (long int i = 0; i < sub->num_node; i++ ) {
-        sub_dis[i] = (long int *)(sub_dis + sub->num_node) + i * sub->num_node;
+        sub_dis[i] = (double *)(sub_dis + sub->num_node) + i * sub->num_node;
         ri = sub->real_nodes[i];
         for (long int j = 0; j < sub->num_node; j++ ) {
             rj = sub->real_nodes[j];
@@ -191,7 +191,7 @@ void set_default_parameters (Problem *instance)
     /* maximum number of iterations */
     instance->max_iteration  = 5000;
     /* optimal tour length if known, otherwise a bound */
-    instance->optimum        = 1;
+//    instance->optimum        = 1;
     /* counter of number iterations */
     instance->iteration      = 0;
     
@@ -200,13 +200,13 @@ void set_default_parameters (Problem *instance)
     /* apply don't look bits in local search */
     instance->dlb_flag       = TRUE;
     
-    alpha          = 2.0;
-    beta           = 1.0;
-    rho            = 0.2;
+    alpha          = 1.0;
+    beta           = 2.0;
+    rho            = 0.1;
     ras_ranks      = 6;          /* number of ranked ants, top-{ras_ranks} ants */
     
     instance->rnd_seed       = (long int) time(NULL);
-    instance->max_runtime    = 60.0;
+    instance->max_runtime    = 250.0;
     
     // parallel aco
     g_master_problem_iteration_num    = 1;      /* 每次外循环，主问题蚁群的迭代次数 */
@@ -219,7 +219,7 @@ void set_default_parameters (Problem *instance)
  * 检查 ant vrp solution 的有效性
  * i.e. tour = [0,1,4,2,0,5,3,0] toute1 = [0,1,4,2,0] route2 = [0,5,3,0]
  */
-int check_solution(Problem *instance, const long int *tour, long int tour_size)
+int check_solution(Problem *instance, long int *tour, long int tour_size)
 {
     int i;
     int * used;
@@ -280,9 +280,10 @@ error:
  * 注意depot点出现两次（分别出现在首尾）
  * i.e. toute = [0,1,4,2,0]
  */
-int check_route(Problem *instance, const long int *tour, long int rbeg, long int rend)
+int check_route(Problem *instance, long int *tour, long int rbeg, long int rend)
 {
     long int load = 0;
+    double distance = 0;
     
     if (tour[rbeg] != 0 || tour[rend] != 0) {
         fprintf(stderr,"\n%s:error: 车辆路径没有形成一条回路\n", __FUNCTION__);
@@ -300,6 +301,16 @@ int check_route(Problem *instance, const long int *tour, long int rbeg, long int
                 __FUNCTION__, load, instance->vehicle_capacity, rbeg, rend);
         return FALSE;
     }
+    
+    distance = compute_route_length(instance, tour + rbeg, rend - rbeg + 1);
+    distance += instance->service_time * (rend - rbeg -1);
+    
+    if (distance > instance->max_distance) {
+        fprintf(stderr,"\n%s:error: 单条回路超过车辆最大路程 distance = %f, max_distance = %f rbeg = %ld rend = %ld\n",
+                __FUNCTION__, distance, instance->max_distance, rbeg, rend);
+        return FALSE;
+    }
+    
     return TRUE;
 }
 

@@ -157,7 +157,7 @@ void ParallelAco::build_sub_problems(AntStruct *ant, const vector< vector<RouteC
     Problem *sub, *master = instance;
     long int *tour = ant->tour;
     vector<RouteCenter *> routes;
-    long int sub_best_length;
+    double sub_best_length;
     long int i, j, k, t;
     
     for (int p = 0; p < sub_problem_routes.size(); p++)
@@ -314,7 +314,7 @@ void ParallelAco::update_subs_to_master(Problem *master, const vector<Problem *>
     long int *sub_tour, *master_tour;
     long int sub_sz;
     double ratio;
-    long int sub_best_length, master_best_length, tmp_length = 0;
+    double sub_best_length, master_best_length, tmp_length = 0;
     
     master_best_length = master->best_so_far_ant->tour_length;
     
@@ -322,8 +322,8 @@ void ParallelAco::update_subs_to_master(Problem *master, const vector<Problem *>
     for (i = 0; i <subs.size(); i++) {
         tmp_length += subs[i]->best_so_far_ant->tour_length;
     }
-    if (tmp_length >= master_best_length) {
-        TRACE(printf("no better solution from subs. best:%ld, subs best:%ld\n", master_best_length, tmp_length);)
+    if (tmp_length - master_best_length >= -EPSILON) {
+        TRACE(printf("no better solution from subs. best:%f, subs best:%f\n", master_best_length, tmp_length);)
         return;
     }
     
@@ -441,7 +441,7 @@ void *sub_thread_func(void* in)
     Problem *sub, *master;
     AntColony *sub_solver;
     ParallelAco *master_solver;
-    long int sub_best_length;
+    double sub_best_length;
     
     master = info->master;
     sub = info->sub;
@@ -459,7 +459,7 @@ void *sub_thread_func(void* in)
         sub_solver->AntColony::run_aco_iteration();
         
         // 子问题获得更优解, 则更新最有信息素
-        if (sub->best_so_far_ant->tour_length < sub_best_length)
+        if (sub->best_so_far_ant->tour_length - sub_best_length < -EPSILON)
         {
             sub_best_length = sub->best_so_far_ant->tour_length;
             ParallelAco::update_sub_best_pheromone(sub);

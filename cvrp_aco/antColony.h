@@ -22,8 +22,6 @@
 #include "problem.h"
 #include "localSearch.h"
 
-#define EPSILON            0.00000000000000000000000000000001
-
 #define MAX_ANTS       1024    /* max no. of ants */
 #define MAX_NEIGHBOURS 512     /* max. no. of nearest neighbours in candidate set */
 
@@ -37,7 +35,7 @@ public:
     AntStruct *ants;
     AntStruct *best_so_far_ant;
     
-    long int **distance;
+    double **distance;
     double   *prob_of_selection;
     double   **pheromone;
     double   **total_info;

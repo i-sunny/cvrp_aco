@@ -62,6 +62,10 @@ void LocalSearch::do_local_search(void)
         
         if (ls_flag) {
             two_opt_solution(ants[k].tour, ants[k].tour_size);    /* 2-opt local search */
+            
+            // swap - exchange 2 nodes in the tour
+            //    swap(tour, tour_size, path_load);
+            
             ants[k].tour_length = compute_tour_length(instance, ants[k].tour, ants[k].tour_size);
         }
         
@@ -167,9 +171,6 @@ void LocalSearch::two_opt_solution(long int *tour, long int tour_size)
     
     DEBUG(assert(p < num_node));
     
-    // swap - exchange 2 nodes in the tour
-//    swap(tour, tour_size, path_load);
-    
     delete[] path_load;
     
     free( dlb );
@@ -198,8 +199,8 @@ void LocalSearch::two_opt_single_route(long int *tour, long int rbeg, long int r
     long int i, j, h, l;
     long int improvement_flag, help, n_improves = 0, n_exchanges = 0;
     long int h1=0, h2=0, h3=0, h4=0;
-    long int radius;             /* radius of nn-search */
-    long int gain = 0;
+    double radius;             /* radius of nn-search */
+    double gain = 0;
     long int *random_vector;
 
     // debug
@@ -222,19 +223,19 @@ void LocalSearch::two_opt_single_route(long int *tour, long int rbeg, long int r
             
             s_n1 = pos_n1 == rend ? tour[rbeg] : tour[pos_n1+1];
             radius = distance[n1][s_n1];
-            /* First search for c1's nearest neighbours, use successor of c1 */
+            /* First search for c1's nearest neighbours, use successor of n1 */
             for ( h = 0 ; h < nn_ls ; h++ ) {
                 n2 = nn_list[n1][h]; /* exchange partner, determine its position */
                 if (route_node_map[n2] == FALSE) {
                     /* 该点不在本route中 */
                     continue;
                 }
-                if (radius > distance[n1][n2] ) {
+                if (radius - distance[n1][n2] > EPSILON) {
                     pos_n2 = tour_node_pos[n2];
                     s_n2 = pos_n2 == rend ? tour[rbeg] : tour[pos_n2+1];
                     gain =  - radius + distance[n1][n2] +
                             distance[s_n1][s_n2] - distance[n2][s_n2];
-                    if ( gain < 0 ) {
+                    if ( gain < -EPSILON ) {
                         h1 = n1; h2 = s_n1; h3 = n2; h4 = s_n2;
                         goto exchange2opt;
                     }
@@ -242,7 +243,7 @@ void LocalSearch::two_opt_single_route(long int *tour, long int rbeg, long int r
                 else break;
             }
             
-            /* Search one for next c1's h-nearest neighbours, use predecessor c1 */
+            /* Search one for next c1's h-nearest neighbours, use predecessor n1 */
             p_n1 = pos_n1 == rbeg ? tour[rend] : tour[pos_n1-1];
             radius = distance[p_n1][n1];
             for ( h = 0 ; h < nn_ls ; h++ ) {
@@ -251,7 +252,7 @@ void LocalSearch::two_opt_single_route(long int *tour, long int rbeg, long int r
                     /* 该点不在本route中 */
                     continue;
                 }
-                if ( radius > distance[n1][n2] ) {
+                if ( radius - distance[n1][n2] > EPSILON) {
                     pos_n2 = tour_node_pos[n2];
                     p_n2 = pos_n2 == rbeg ? tour[rend] : tour[pos_n2-1];
                     
@@ -259,7 +260,7 @@ void LocalSearch::two_opt_single_route(long int *tour, long int rbeg, long int r
                         continue;
                     gain =  - radius + distance[n1][n2] +
                             distance[p_n1][p_n2] - distance[p_n2][n2];
-                    if ( gain < 0 ) {
+                    if ( gain < -EPSILON ) {
                         h1 = p_n1; h2 = n1; h3 = p_n2; h4 = n2;
                         goto exchange2opt;
                     }
@@ -292,7 +293,7 @@ exchange2opt:
                 i++; j--;
             }
             // debug
-//            printf("after ls. pid %d", instance->pid);
+//            printf("after ls. pid %d gain %f\n", instance->pid, gain);
 //            print_single_route(instance, tour + rbeg, num_route_node+1);
         }
         if ( improvement_flag ) {
@@ -310,7 +311,7 @@ exchange2opt:
 void LocalSearch::swap(long int *tour, long int tour_size, long int *path_load)
 {
     long int i = 0, j = 0;
-    long int gain = 0;
+    double gain = 0;
     long int n1, p_n1, s_n1, n2, p_n2, s_n2;
     long int p1 = 0, p2 = 0;     /* path idx of node n1 and n2 */
     long int load1 = 0, load2 = 0;
@@ -349,7 +350,7 @@ void LocalSearch::swap(long int *tour, long int tour_size, long int *path_load)
                 gain = -(distance[p_n1][n1] + distance[n1][s_n1] + distance[p_n2][n2] + distance[n2][s_n2])
                 +(distance[p_n1][n2] + distance[n2][s_n1] + distance[p_n2][n1] + distance[n1][s_n2]);
             }
-            if (gain < 0) {
+            if (gain < -EPSILON) {
                 tour[i] = n2;
                 tour[j] = n1;
 

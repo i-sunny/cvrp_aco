@@ -45,21 +45,25 @@ void NeighbourSearch::reset_ant(AntStruct *ant)
     Point *nodes = instance->nodeptr;
     long int beg;
     long int load;
+    double dist;
     
     this->ant = ant;
     
     routes.clear();
     beg = 0;
     load = 0;
+    dist = 0;
     for (int i = 1; i < ant->tour_size; i++) {
+        load += nodes[tour[i]].demand;
+        dist += instance->distance[tour[i-1]][tour[i]];
+        
         if (tour[i] == 0) {
-            Route route(beg, i, load);
+            Route route(beg, i, load, dist);
             routes.push_back(route);
             
             beg = i;
             load = 0;
-        } else {
-            load += nodes[tour[i]].demand;
+            dist = 0;
         }
     }
 }
@@ -99,10 +103,11 @@ Move *NeighbourSearch::exchange(long int *tour, long int tour_size)
     long int p_n1, p_n2, s_n1, s_n2;
     long int pos_n1 = 0, pos_n2 = 0;
     long int r1, r2;           /* idx of route 1 and route 2 */
-    long int gain;
-    long int **distance = instance->distance;
+    double gain;
+    double **distance = instance->distance;
     Point *nodes = instance->nodeptr;
     long int load_r1, load_r2;
+    double dist_r1, dist_r2;
     bool valid = true;
     
     r1 = random_route();
@@ -135,10 +140,18 @@ Move *NeighbourSearch::exchange(long int *tour, long int tour_size)
     gain = -(distance[p_n1][n1] + distance[n1][s_n1] + distance[p_n2][n2] + distance[n2][s_n2])
     +(distance[p_n1][n2] + distance[n2][s_n1] + distance[p_n2][n1] + distance[n1][s_n2]);
     
+    dist_r1 = routes[r1].dist + (routes[r1].end - routes[r1].beg - 1) * instance->service_time
+    - (distance[p_n1][n1] + distance[n1][s_n1]) + (distance[p_n1][n2] + distance[n2][s_n1]);
+    
+    dist_r2 = routes[r2].dist + (routes[r2].end - routes[r2].beg - 1) * instance->service_time
+    - (distance[p_n2][n2] + distance[n2][s_n2]) + (distance[p_n2][n1] + distance[n1][s_n2]);
+    
     load_r1 = routes[r1].load - nodes[n1].demand + nodes[n2].demand;
     load_r2 = routes[r2].load - nodes[n2].demand + nodes[n1].demand;
     
-    if (load_r1 > instance->vehicle_capacity || load_r2 > instance->vehicle_capacity) {
+    if ((load_r1 > instance->vehicle_capacity || load_r2 > instance->vehicle_capacity)
+        ||(dist_r1 > instance->max_distance || dist_r2 > instance->max_distance))
+    {
         valid = false;
     }
     return new ExchangeMove(ant, valid, gain, pos_n1, pos_n2, load_r1, load_r2);
@@ -153,9 +166,11 @@ Move *NeighbourSearch::exchange_1(long int *tour, long int tour_size)
     long int n1, n2;
     long int p_n1, p_n2, s_n1, s_n2;
     long int pos_n1, pos_n2;
-    long int gain;
-    long int **distance = instance->distance;
+    double gain;
+    double **distance = instance->distance;
     long int sz;
+    double dist;
+    bool valid = true;
     
     sz = 0;
     while (sz <= 3) {
@@ -196,7 +211,12 @@ Move *NeighbourSearch::exchange_1(long int *tour, long int tour_size)
         +(distance[p_n1][n2] + distance[n2][s_n1] + distance[p_n2][n1] + distance[n1][s_n2]);
     }
     
-    return new ExchangeMove(ant, true, gain, pos_n1, pos_n2, route->load, route->load);
+    dist = route->dist + (route->end - route->beg - 1) * instance->service_time + gain;
+    if(dist > instance->max_distance) {
+        valid = false;
+    }
+    
+    return new ExchangeMove(ant, valid, gain, pos_n1, pos_n2, route->load, route->load);
 }
 
 /*
@@ -211,10 +231,11 @@ Move *NeighbourSearch::insertion(long int *tour, long int tour_size)
     long int p_n1, p_n2, s_n1, s_n2;
     long int pos_n1, pos_n2;
     long int r1 = 0, r2;           /* idx of route 1 and route 2 */
-    long int gain;
-    long int **distance = instance->distance;
+    double gain;
+    double **distance = instance->distance;
     Point *nodes = instance->nodeptr;
     long int load_r1, load_r2;
+    double dist_r2;
     bool valid = true;
     long int sz;
     
@@ -259,15 +280,23 @@ Move *NeighbourSearch::insertion(long int *tour, long int tour_size)
     if (pos_n1 > pos_n2) {
         gain = -(distance[p_n1][n1] + distance[n1][s_n1] + distance[p_n2][n2])
         + (distance[n1][n2] + distance[p_n2][n1] + distance[p_n1][s_n1]);
+        // r2多了一个元素
+        dist_r2 = route2->dist + (route2->end - route2->beg) * instance->service_time
+        - (distance[p_n2][n2]) + (distance[n1][n2] + distance[p_n2][n1]);
+        
     } else {
         gain = -(distance[p_n1][n1] + distance[n1][s_n1] + distance[n2][s_n2])
         + (distance[n2][n1] + distance[n1][s_n2] + distance[p_n1][s_n1]);
+        
+        dist_r2 = route2->dist + (route2->end - route2->beg) * instance->service_time
+        - (distance[n2][s_n2]) + (distance[n2][n1] + distance[n1][s_n2]);
+        
     }
     
     load_r1 = route1->load - nodes[n1].demand;
     load_r2 = route2->load + nodes[n1].demand;
     
-    if (load_r2 > instance->vehicle_capacity) {
+    if (load_r2 > instance->vehicle_capacity || dist_r2 > instance->max_distance) {
         valid = false;
     }
     return new InsertionMove(ant, valid, gain, pos_n1, pos_n2, load_r1, load_r2);
@@ -284,10 +313,12 @@ Move *NeighbourSearch::insertion_1(long int *tour, long int tour_size)
     long int n1, n2;
     long int p_n1, p_n2, s_n1, s_n2;
     long int pos_n1, pos_n2;
-    long int gain;
-    long int **distance = instance->distance;
+    double gain;
+    double **distance = instance->distance;
     long int load_r1, load_r2;
+    double dist;
     long int sz;
+    bool valid = true;
     
     sz = 0;
     while (sz <= 3) {
@@ -325,7 +356,12 @@ Move *NeighbourSearch::insertion_1(long int *tour, long int tour_size)
         + (distance[n2][n1] + distance[n1][s_n2] + distance[p_n1][s_n1]);
     }
     
-    return new InsertionMove(ant, true, gain, pos_n1, pos_n2, load_r1, load_r2);
+    dist = route->dist + (route->end - route->beg - 1) * instance->service_time + gain;
+    if(dist > instance->max_distance) {
+        valid = false;
+    }
+    
+    return new InsertionMove(ant, valid, gain, pos_n1, pos_n2, load_r1, load_r2);
 }
 
 /*
@@ -340,8 +376,10 @@ Move *NeighbourSearch::inversion(long int *tour, long int tour_size)
     long int n1, n2;   /* random node from route 1 and toure 2*/
     long int pos_n1 = 0, pos_n2 = 0;
     long int p_n1, s_n2;
-    long int gain;
-    long int **distance = instance->distance;
+    double gain;
+    double **distance = instance->distance;
+    double dist;
+    bool valid = true;
     
     sz = 0;
     while (sz <= 3) {
@@ -381,7 +419,12 @@ Move *NeighbourSearch::inversion(long int *tour, long int tour_size)
     
     gain = -(distance[p_n1][n1] + distance[n2][s_n2]) + (distance[p_n1][n2] + distance[n1][s_n2]);
     
-    return new InversionMove(ant, true, gain, pos_n1, pos_n2);
+    dist = route->dist + (route->end - route->beg - 1) * instance->service_time + gain;
+    if(dist > instance->max_distance) {
+        valid = false;
+    }
+    
+    return new InversionMove(ant, valid, gain, pos_n1, pos_n2);
 }
 
 

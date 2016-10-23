@@ -14,6 +14,8 @@
 #define INFTY                 LONG_MAX
 #define MAXIMUM_NO_TRIES      100
 
+const double EPSILON = 0.001;
+
 #define TRUE  1
 #define FALSE 0
 
@@ -22,7 +24,7 @@
 #define MAX(x,y)        ((x)>=(y)?(x):(y))
 #define MIN(x,y)        ((x)<=(y)?(x):(y))
 
-#define DEBUG( x )
+#define DEBUG( x ) x
 
 #define TRACE( x )
 
@@ -53,9 +55,9 @@ void sort ( long int v[], long int left, long int right );
 
 double quantil ( long int vector[], double q, long int numbers );
 
-void swap2(long int v[], long int v2[], long int i, long int j);
+void swap2(double v[], long int v2[], long int i, long int j);
 
-void sort2(long int v[], long int v2[], long int left, long int right);
+void sort2(double v[], long int v2[], long int left, long int right);
 
 double ran01 ( long *idum );
 

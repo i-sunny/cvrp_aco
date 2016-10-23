@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
 #include "utilities.h"
 #include "antColony.h"
@@ -20,7 +21,7 @@
 
 static bool parallel_flag  = false;  /* 是否使用并行算法 */
 static bool sa_flag = true;         /* 是否使用sa */
-static long int tries = 1;
+static long int tries = 20;
 
 /*
  FUNCTION:       checks whether termination condition is met
@@ -32,15 +33,15 @@ bool termination_condition(Problem *instance)
 {
     return ((instance->iteration >= instance->max_iteration) ||
             (elapsed_time( VIRTUAL ) >= instance->max_runtime) ||
-            (instance->best_so_far_ant->tour_length <= instance->optimum));
+            (fabs(instance->best_so_far_ant->tour_length - instance->optimum) < EPSILON));
 }
 
 /*
  * 解析命令行，获取文件名
  */
-const char* parse_commandline (long int argc, char *argv [])
+char* parse_commandline (long int argc, char *argv [])
 {
-    const char *filename;
+    char *filename;
     
     if (argc <= 1) {
         fprintf (stderr,"Error: No vrp instance file.\n");
@@ -62,6 +63,7 @@ const char* parse_commandline (long int argc, char *argv [])
  */
 int main(int argc, char *argv[])
 {
+    for (int i = 1; i < 15; i++) {
     for (int ntry = 0 ; ntry < tries; ntry++)
     {
         Problem *instance = new Problem(0);
@@ -70,7 +72,9 @@ int main(int argc, char *argv[])
         
         start_timers();
         
-        const char *filename = parse_commandline(argc, argv);
+        char *filename = parse_commandline(argc, argv);
+        sprintf(filename, "/Users/sunny/Downloads/CMT/CMT%d.vrp", i);
+        
         read_instance_file(instance, filename);
         init_problem(instance);
         init_report(instance, ntry);
@@ -92,7 +96,7 @@ int main(int argc, char *argv[])
 
             if (sa_flag) {
                 if (instance->best_stagnate_cnt >= instance->num_node) {   // 2 * instance->num_node
-                    annealer = new SimulatedAnnealing(instance, solver, 2.5, 0.97, MAX(instance->num_node * 4, 250), 20);
+                    annealer = new SimulatedAnnealing(instance, solver, 2.5, 0.97, MAX(instance->num_node * 4, 250), 25);
                     annealer->run();
                     instance->best_stagnate_cnt = 0;
                     
@@ -107,6 +111,7 @@ int main(int argc, char *argv[])
         
         exit_report(instance, ntry);
         exit_problem(instance);
+    }
     }
     
     return(0);

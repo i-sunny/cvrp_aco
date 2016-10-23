@@ -221,7 +221,7 @@ void sort(long int v[], long int left, long int right)
 
 
 
-void swap2(long int v[], long int v2[], long int i, long int j)
+void swap2(double v[], long int v2[], long int i, long int j)
 /*    
       FUNCTION:       auxiliary routine for sorting an integer array  
       INPUT:          two arraya, two indices
@@ -229,19 +229,21 @@ void swap2(long int v[], long int v2[], long int i, long int j)
       (SIDE)EFFECTS:  elements at position i and j of the two arrays are swapped
 */
 {
-  long int tmp;
+    double tmp1;
+    long int tmp2;
 
-  tmp = v[i];
-  v[i] = v[j];
-  v[j] = tmp;
-  tmp = v2[i];
-  v2[i] = v2[j];
-  v2[j] = tmp;
+    tmp1 = v[i];
+    v[i] = v[j];
+    v[j] = tmp1;
+
+    tmp2 = v2[i];
+    v2[i] = v2[j];
+    v2[j] = tmp2;
 }
 
 
 
-void sort2(long int v[], long int v2[], long int left, long int right)
+void sort2(double v[], long int v2[], long int left, long int right)
 /*    
       FUNCTION:       recursive routine (quicksort) for sorting one array; second 
                       arrays does the same sequence of swaps  

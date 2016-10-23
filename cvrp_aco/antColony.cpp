@@ -162,26 +162,31 @@ void AntColony::construct_ant_solution(AntStruct *ant)
     long int visited_node_cnt = 0;   /* count of visited node by this ant */
     
     long int path_load;          /* 单次从depot出发的送货量 */
-    long int next_node;
+    long int next_node, current_node;
     long int i, demand_meet_cnt, step;
+    double path_distance;
     
     /* Mark all nodes as unvisited */
     ant_empty_memory(ant);
     
     path_load = 0;
+    path_distance = 0;
     step = 0;
     init_ant_place(ant, step);
     
     while (visited_node_cnt < num_node - 1) {
-        
+        current_node = ant->tour[step];
         step++;
+        
         /* 查看所有可以派送的点 */
         demand_meet_cnt = 0;
         for (i = 0; i < num_node; i++) {
             ant->demand_meet_node[i] = FALSE;
         }
         for(i = 0; i < num_node; i++) {
-            if (ant->visited[i] == FALSE && path_load + nodeptr[i].demand <= vehicle_capacity) {
+            if (ant->visited[i] == FALSE
+                && path_load + nodeptr[i].demand <= vehicle_capacity
+                && path_distance + (distance[current_node][i] + instance->service_time) + distance[i][0] <= instance->max_distance) {
                 ant->demand_meet_node[i] = TRUE;
                 demand_meet_cnt++;
             }
@@ -193,10 +198,12 @@ void AntColony::construct_ant_solution(AntStruct *ant)
          */
         if (demand_meet_cnt == 0) {
             path_load = 0;
+            path_distance = 0;
             init_ant_place(ant, step);
         } else {
             next_node = neighbour_choose_and_move_to_next(ant, step);
             path_load += nodeptr[next_node].demand;
+            path_distance += distance[current_node][next_node] + instance->service_time;
             visited_node_cnt++;
         }
     }
@@ -225,11 +232,11 @@ void AntColony::construct_ant_solution(AntStruct *ant)
 void AntColony::ras_update( void )
 {
     long int i, k, b, target;
-    long int *help_b;
+    double *help_b;
     
     TRACE ( printf("Rank-based Ant System pheromone deposit\n"); );
     
-    help_b = (long int *)malloc( n_ants  * sizeof(long int) );
+    help_b = (double *)malloc( n_ants  * sizeof(double) );
     for ( k = 0 ; k < n_ants ; k++ )
         help_b[k] = ants[k].tour_length;
     
@@ -255,12 +262,12 @@ void AntColony::pheromone_disturbance(void)
 {
 //    print_pheromone(instance);
     
-    DEBUG(printf("pid %d start pheromone disturbance: iter %ld, best_stagnate %ld, iter_stagnate %ld\n",
-           instance->pid, instance->iteration, instance->best_stagnate_cnt, instance->iter_stagnate_cnt);)
+    printf("pid %d start pheromone disturbance: iter %ld, best_stagnate %ld, iter_stagnate %ld\n",
+           instance->pid, instance->iteration, instance->best_stagnate_cnt, instance->iter_stagnate_cnt);
     
     long int i, j;
     double sum_pheromone = 0, mean_pheromone;
-    double delta = 0.70;
+    double delta = 0.7;
     
     for (i = 0; i < num_node; i++) {
         for (j = 0; j < num_node; j++) {
@@ -275,8 +282,6 @@ void AntColony::pheromone_disturbance(void)
             pheromone[i][j] = (1- delta) * mean_pheromone + delta * pheromone[i][j];
         }
     }
-    
-    instance->iter_stagnate_cnt -= 2;
     
 //    print_pheromone(instance);
 }
@@ -308,6 +313,7 @@ void AntColony::pheromone_trail_update( void )
         instance->best_stagnate_cnt >= HUGE_VAL)
     {
         pheromone_disturbance();
+        instance->iter_stagnate_cnt -= 2;
     } else {
         /* Next, apply the pheromone deposit for the various ACO algorithms */
         ras_update();
@@ -338,7 +344,7 @@ void AntColony::update_statistics()
         write_iter_report(instance);
     }
 
-    if (instance->iteration_best_ant->tour_length < best_so_far_ant->tour_length) {
+    if (instance->iteration_best_ant->tour_length - best_so_far_ant->tour_length < -EPSILON) {
         // 获得更优解
         instance->best_stagnate_cnt = 0;
         
@@ -351,7 +357,7 @@ void AntColony::update_statistics()
         }
     } else {
         instance->best_stagnate_cnt++;
-        if (instance->last_iter_solution == instance->iteration_best_ant->tour_length) {
+        if (fabs(instance->last_iter_solution - instance->iteration_best_ant->tour_length) < EPSILON) {
             instance->iter_stagnate_cnt++;
         } else {
             instance->iter_stagnate_cnt = 0;
@@ -376,7 +382,7 @@ long int AntColony::find_best(void)
       (SIDE)EFFECTS:  none
 */
 {
-    long int   min;
+    double   min;
     long int   k, k_min;
 
     min = ants[0].tour_length;
@@ -400,7 +406,7 @@ long int AntColony::find_worst(void)
       (SIDE)EFFECTS:  none
 */
 {
-    long int   max;
+    double   max;
     long int   k, k_max;
 
     max = ants[0].tour_length;
@@ -508,7 +514,7 @@ void AntColony::global_update_pheromone( AntStruct *a )
     TRACE ( printf("global pheromone update\n"); );
 
     d_tau = 1.0 / (double) a->tour_length;
-    for ( i = 0 ; i < a->tour_size ; i++ ) {
+    for ( i = 0 ; i < a->tour_size-1 ; i++ ) {
         j = a->tour[i];
         h = a->tour[i+1];
         pheromone[j][h] += d_tau;
@@ -531,7 +537,7 @@ void AntColony::global_update_pheromone_weighted( AntStruct *a, long int weight 
     TRACE ( printf("global pheromone update weighted\n"); );
 
     d_tau = (double) weight / (double) a->tour_length;
-    for ( i = 0 ; i < a->tour_size ; i++ ) {
+    for ( i = 0 ; i < a->tour_size-1 ; i++ ) {
         j = a->tour[i];
         h = a->tour[i+1];
         pheromone[j][h] += d_tau;
@@ -715,7 +721,8 @@ void AntColony::choose_closest_next( AntStruct *a, long int phase )
       (SIDE)EFFECT:  ant moves to the chosen node
 */
 { 
-    long int node, current_node, next_node, min_distance;
+    long int node, current_node, next_node;
+    double min_distance;
   
     next_node = num_node;
     DEBUG( assert ( phase > 0 && phase < 2*num_node-2 ); );

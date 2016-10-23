@@ -25,8 +25,8 @@ email: sunxq1991@gmail.com
 #define M_PI 3.14159265358979323846264
 #endif
 
-long int distance(Point *nodeptr, long int i, long int j, DistanceTypeEnum type);
-long int round_distance (Point *nodeptr, long int i, long int j);
+double distance(Point *nodeptr, long int i, long int j, DistanceTypeEnum type);
+double round_distance (Point *nodeptr, long int i, long int j);
 long int ceil_distance (Point *nodeptr, long int i, long int j);
 long int geo_distance (Point *nodeptr, long int i, long int j);
 long int att_distance (Point *nodeptr, long int i, long int j);
@@ -45,7 +45,7 @@ static double dtrunc (double x)
 /*
  * 统一的距离计算入口
  */
-long int distance(Point *nodeptr, long int i, long int j, DistanceTypeEnum type)
+double distance(Point *nodeptr, long int i, long int j, DistanceTypeEnum type)
 {
     
     switch(type) {
@@ -64,7 +64,7 @@ long int distance(Point *nodeptr, long int i, long int j, DistanceTypeEnum type)
       OUTPUT:   distance between the two nodes
 */
 
-long int round_distance (Point *nodeptr, long int i, long int j)
+double round_distance (Point *nodeptr, long int i, long int j)
 /*    
       FUNCTION: compute Euclidean distances between two nodes rounded to next 
                 integer for VRPLIB instances
@@ -75,9 +75,9 @@ long int round_distance (Point *nodeptr, long int i, long int j)
 {
     double xd = nodeptr[i].x - nodeptr[j].x;
     double yd = nodeptr[i].y - nodeptr[j].y;
-    double r  = sqrt(xd*xd + yd*yd) + 0.5;
+    double r  = sqrt(xd*xd + yd*yd);
 
-    return (long int) r;
+    return r;
 }
 
 long int ceil_distance (Point *nodeptr, long int i, long int j)
@@ -157,7 +157,7 @@ long int att_distance (Point *nodeptr, long int i, long int j)
     return dij;
 }
 
-long int **compute_distances(Problem *instance)
+double **compute_distances(Problem *instance)
 /*    
       FUNCTION: computes the matrix of all intercity distances
       INPUT:    none
@@ -165,17 +165,17 @@ long int **compute_distances(Problem *instance)
 */
 {
     long int     i, j;
-    long int     **matrix;
+    double     **matrix;
     long int num_node = instance->num_node;
 
-    if((matrix = (long int **)malloc(sizeof(long int) * num_node * num_node +
-                                     sizeof(long int *) * num_node)) == NULL){
+    if((matrix = (double **)malloc(sizeof(double) * num_node * num_node +
+                                     sizeof(double *) * num_node)) == NULL){
         fprintf(stderr,"Out of memory, exit.");
         exit(1);
     }
 
     for ( i = 0 ; i < num_node ; i++ ) {
-        matrix[i] = (long int *)(matrix + num_node) + i*num_node;
+        matrix[i] = (double *)(matrix + num_node) + i*num_node;
         for ( j = 0  ; j < num_node ; j++ ) {
             matrix[i][j] = distance(instance->nodeptr, i, j, instance->dis_type);
         }
@@ -193,7 +193,7 @@ long int ** compute_nn_lists (Problem *instance)
 */
 {
     long int i, node, nn;
-    long int *distance_vector;
+    double *distance_vector;
     long int *help_vector;
     long int **m_nnear;
     long int num_node = instance->num_node;
@@ -212,7 +212,7 @@ long int ** compute_nn_lists (Problem *instance)
                                       + num_node * sizeof(long int *))) == NULL){
         exit(EXIT_FAILURE);
     }
-    distance_vector = (long int *)calloc(num_node, sizeof(long int));
+    distance_vector = (double *)calloc(num_node, sizeof(double));
     help_vector = (long int *)calloc(num_node, sizeof(long int));
  
     for ( node = 0 ; node < num_node ; node++ ) {  /* compute cnd-sets for all node */
@@ -241,15 +241,29 @@ long int ** compute_nn_lists (Problem *instance)
  INPUT:    pointer to tour tour, tour size tour_size
  OUTPUT:   tour length of tour t
  */
-long int compute_tour_length(Problem *instance, long int *tour, long int tour_size)
+double compute_tour_length(Problem *instance, long int *tour, long int tour_size)
 {
     int      i;
-    long int tour_length = 0;
+    double   tour_length = 0;
   
     for ( i = 0 ; i < tour_size-1; i++ ) {
         tour_length += instance->distance[tour[i]][tour[i+1]];
     }
     return tour_length;
+}
+
+/*
+ FUNCTION: compute the route length of route
+ */
+double compute_route_length(Problem *instance, long int *route, long int route_size)
+{
+    int      i;
+    double   route_length = 0;
+    
+    for ( i = 0 ; i < route_size-1; i++ ) {
+        route_length += instance->distance[route[i]][route[i+1]];
+    }
+    return route_length;
 }
 
 /*

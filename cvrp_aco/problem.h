@@ -51,10 +51,11 @@ struct RouteCenter {
 };
 
 struct Route {
-    Route(long int beg_, long int end_, long int load_):beg(beg_), end(end_), load(load_){}
+    Route(long int beg_, long int end_, long int load_, double dist_):beg(beg_), end(end_), load(load_), dist(dist_){}
     long int beg;                   /* route在tour中的开始位置,tour[beg] = 0(depot) */
     long int end;                   /* route在tour中的结束位置,tour[end] = 0(depot) */
     long int load;                  /* route load */
+    double dist;                    /* route distance */
 };
 
 /*
@@ -65,7 +66,7 @@ struct Route {
 struct AntStruct {
     long int  *tour;
     long int  tour_size;     /* 路程中经过的点个数（depot可能出现多次） */
-    long int  tour_length;   /* 车辆路程行走长度 */
+    double  tour_length;     /* 车辆路程行走长度 */
     bool      *visited;      /* mark nodes visited status */
     bool      *demand_meet_node;  /** 所有可配送的点(单次route中，目前车辆可以仍可配送的点) */
 };
@@ -78,14 +79,16 @@ struct Problem {
     char          name[LINE_BUF_LEN];      	 /* instance name */
     char          edge_weight_type[LINE_BUF_LEN];  /* selfexplanatory */
     DistanceTypeEnum dis_type;               /* 用于决定使用哪种距离方式 */
-    long int      optimum;                /* optimal tour length if known, otherwise a bound */
+    double        optimum;                /* optimal tour length if known, otherwise a bound */
     long int      num_node;               /* number of nodes, depot included, numd_node = 1(depot) + num of target nodes*/
     Point         *nodeptr;               /* array of structs containing coordinates of nodes */
-    long int      **distance;             /* distance matrix: distance[i][j] gives distance
+    double        **distance;             /* distance matrix: distance[i][j] gives distance
                                            between node i und j */
     long int      **nn_list;              /* nearest neighbor list; contains for each node i a
                                            sorted list of n_near nearest neighbors */
     long int      vehicle_capacity;       /* 车辆最大装载量 */
+    double        max_distance;           /* 最大行驶距离 */
+    double        service_time;           /*  service time needed for node */
     
     
     /*----- local search -----*/
@@ -118,7 +121,7 @@ struct Problem {
     
     long int rnd_seed;                  /* 用于生成随机数的种子 */
     
-    long int last_iter_solution;        /* 上一次迭代的解 */
+    double last_iter_solution;          /* 上一次迭代的解 */
     long int iter_stagnate_cnt;         /* 迭代停滞计数器，记录解迭代解停滞的次数 */
     long int best_stagnate_cnt;         /* 最优解停滞计数器，最优解未更新的次数 */
     
@@ -133,7 +136,7 @@ void init_problem(Problem *instance);
 void exit_problem(Problem *instance);
 void init_sub_problem(Problem *master, Problem *sub);
 void exit_sub_problem(Problem *sub);
-int check_solution(Problem *instance, const long int *tour, long int tour_size);
-int check_route(Problem *instance, const long int *tour, long int rbeg, long int rend);
+int check_solution(Problem *instance, long int *tour, long int tour_size);
+int check_route(Problem *instance, long int *tour, long int rbeg, long int rend);
 
 #endif /* Problem_h */
