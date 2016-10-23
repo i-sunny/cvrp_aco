@@ -1876,6 +1876,7 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
+<<<<<<< HEAD
             filePath = "cvrp_aco/neighbourSearch.cpp"
             timestampString = "498881639.492663"
             startingColumnNumber = "9223372036854775807"
@@ -1915,6 +1916,15 @@
             startingLineNumber = "152"
             endingLineNumber = "152"
             landmarkName = "NeighbourSearch::exchange(long int *tour, long int tour_size)"
+=======
+            filePath = "cvrp_aco/antColony.cpp"
+            timestampString = "498801135.226833"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "514"
+            endingLineNumber = "514"
+            landmarkName = "AntColony::global_update_pheromone( AntStruct *a )"
+>>>>>>> 5d37e52baba242d417a0b997da52c7f8a3abd585
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1925,6 +1935,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "cvrp_aco/antColony.cpp"
+<<<<<<< HEAD
             timestampString = "498882735.108246"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
@@ -1961,6 +1972,14 @@
             startingLineNumber = "69"
             endingLineNumber = "69"
             landmarkName = "NeighbourSearch::reset_ant(AntStruct *ant)"
+=======
+            timestampString = "498801136.806127"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "537"
+            endingLineNumber = "537"
+            landmarkName = "AntColony::global_update_pheromone_weighted( AntStruct *a, long int weight )"
+>>>>>>> 5d37e52baba242d417a0b997da52c7f8a3abd585
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1970,6 +1989,7 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
+<<<<<<< HEAD
             filePath = "cvrp_aco/neighbourSearch.cpp"
             timestampString = "498885220.275473"
             startingColumnNumber = "9223372036854775807"
@@ -2076,5 +2096,17 @@
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
+=======
+            filePath = "cvrp_aco/antColony.cpp"
+            timestampString = "498801259.18464"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "538"
+            endingLineNumber = "538"
+            landmarkName = "AntColony::global_update_pheromone_weighted( AntStruct *a, long int weight )"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+>>>>>>> 5d37e52baba242d417a0b997da52c7f8a3abd585
    </Breakpoints>
 </Bucket>
