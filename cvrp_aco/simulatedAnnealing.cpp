@@ -67,7 +67,7 @@ SimulatedAnnealing::~SimulatedAnnealing()
 
 void SimulatedAnnealing::run(void)
 {
-    printf("\n----- Start SA. length: %f iter: %ld-----\n", best_ant->tour_length, instance->iteration);
+    printf("\n----- Start SA. length: %f iter: %ld time: %f-----\n", best_ant->tour_length, instance->iteration, elapsed_time( VIRTUAL));
     write_anneal_report(instance, iter_ant, NULL);
     
     tabu_list.clear();
@@ -79,13 +79,14 @@ void SimulatedAnnealing::run(void)
     if (best_ant->tour_length - instance->best_so_far_ant->tour_length < -EPSILON) {
         AntColony::copy_solution_from_to(best_ant, instance->best_so_far_ant);
         if (instance->pid == 0) {
+            instance->best_so_far_time = elapsed_time(VIRTUAL);
             write_best_so_far_report(instance);
         }
     }
     
     ant_colony->compute_total_information();
     
-    printf("----- End SA. length: %f iter: %ld-----\n", best_ant->tour_length, instance->iteration);
+    printf("----- End SA. length: %f iter: %ld time: %f-----\n", best_ant->tour_length, instance->iteration, elapsed_time( VIRTUAL));
     
 }
 

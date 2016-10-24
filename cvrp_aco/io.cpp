@@ -299,7 +299,7 @@ void print_solution_to_file(Problem *instance, FILE *file, long int *tour, long 
 void write_best_so_far_report(Problem *instance)
 {
     printf("best so far length %f, iteration: %ld, time %.2f\n",
-           instance->best_so_far_ant->tour_length, instance->iteration, elapsed_time( VIRTUAL));
+           instance->best_so_far_ant->tour_length, instance->iteration, instance->best_so_far_time);
     if (best_so_far_report) {
         fprintf(best_so_far_report, "%f\t %ld\t %.3f\n",
                 instance->best_so_far_ant->tour_length, instance->iteration, instance->best_so_far_time);

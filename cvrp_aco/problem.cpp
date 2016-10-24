@@ -193,7 +193,7 @@ void set_default_parameters (Problem *instance)
     instance->nn_ls          = instance->nn_ants;//MIN(instance->nn_ants, 25);
     
     /* maximum number of iterations */
-    instance->max_iteration  = 10000;
+    instance->max_iteration  = 20000;
     /* optimal tour length if known, otherwise a bound */
 //    instance->optimum        = 1;
     /* counter of number iterations */
@@ -210,7 +210,7 @@ void set_default_parameters (Problem *instance)
     ras_ranks      = 6;          /* number of ranked ants, top-{ras_ranks} ants */
     
     instance->rnd_seed       = (long int) time(NULL);
-    instance->max_runtime    = 250.0;
+    instance->max_runtime    = 600.0;
     
     // parallel aco
     g_master_problem_iteration_num    = 1;      /* 每次外循环，主问题蚁群的迭代次数 */
