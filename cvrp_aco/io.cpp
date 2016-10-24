@@ -216,16 +216,16 @@ void init_report(Problem *instance, long int ntry)
     char temp_buffer[LINE_BUF_LEN];
     
     if (report_flag) {
-        sprintf(temp_buffer,"best.%s",instance->name);
+        sprintf(temp_buffer,"./report/best.%s",instance->name);
         report = fopen(temp_buffer, "w");
         
-        sprintf(temp_buffer,"best_so_far.%s",instance->name);
+        sprintf(temp_buffer,"./report/best_so_far.%s",instance->name);
         best_so_far_report = fopen(temp_buffer, "a");
         
-        sprintf(temp_buffer,"iter.%s",instance->name);
+        sprintf(temp_buffer,"./report/iter.%s",instance->name);
         iter_report = fopen(temp_buffer, "w");
         
-        sprintf(temp_buffer,"anneal.%s",instance->name);
+        sprintf(temp_buffer,"./report/anneal.%s",instance->name);
         anneal_report = fopen(temp_buffer, "w");
     } else {
         report = NULL;
@@ -245,9 +245,13 @@ void init_report(Problem *instance, long int ntry)
  */
 void exit_report(Problem *instance, long int ntry) {
     
-    printf("############### end try %ld ###############\n\n", ntry);
+    if(!check_solution(instance, instance->best_so_far_ant->tour, instance->best_so_far_ant->tour_size)) {
+        exit(EXIT_FAILURE);
+    }
     
-    check_solution(instance, instance->best_so_far_ant->tour, instance->best_so_far_ant->tour_size);
+    printf("\n\nBest Length: %f\t Iterations: %ld\t At time %.2f\t Tot.time %.2f\n",
+            instance->best_so_far_ant->tour_length, instance->iteration, instance->best_so_far_time, elapsed_time(VIRTUAL));
+    printf("############### end try %ld ###############\n\n", ntry);
     
     if (report) {
         fprintf(report, "Best Length: %f\t Iterations: %ld\t At time %.2f\t Tot.time %.2f\n",
@@ -405,7 +409,7 @@ void read_instance_file(Problem *instance, const char *vrp_file_name)
     }
     printf("\nreading vrp-file %s ... \n\n", vrp_file_name);
     
-    instance->max_distance = MAXFLOAT;
+    instance->max_distance = LONG_MAX;
     instance->service_time = 0;
     instance->optimum = 0;
     

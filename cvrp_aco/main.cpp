@@ -19,8 +19,7 @@
 #include "timer.h"
 #include "io.h"
 
-static bool parallel_flag  = false;  /* 是否使用并行算法 */
-static bool sa_flag = true;         /* 是否使用sa */
+static bool parallel_flag  = true;  /* 是否使用并行算法 */
 static long int tries = 20;
 
 /*
@@ -33,7 +32,7 @@ bool termination_condition(Problem *instance)
 {
     return ((instance->iteration >= instance->max_iteration) ||
             (elapsed_time( VIRTUAL ) >= instance->max_runtime) ||
-            (fabs(instance->best_so_far_ant->tour_length - instance->optimum) < EPSILON));
+            (fabs(instance->best_so_far_ant->tour_length - instance->optimum) < 10 * EPSILON));
 }
 
 /*
@@ -63,17 +62,19 @@ char* parse_commandline (long int argc, char *argv [])
  */
 int main(int argc, char *argv[])
 {
-    for (int i = 1; i < 15; i++) {
+    for (int i = 9; i < 10; i++) {
     for (int ntry = 0 ; ntry < tries; ntry++)
     {
         Problem *instance = new Problem(0);
         AntColony *solver;
-        SimulatedAnnealing *annealer;
         
         start_timers();
         
         char *filename = parse_commandline(argc, argv);
-        sprintf(filename, "/Users/sunny/Downloads/CMT/CMT%d.vrp", i);
+        sprintf(filename, "/Users/sunny/Desktop/cvrp_proj/src/cvrp_aco/cvrp_aco/CMT/CMT%d.vrp", i);
+//        linux
+//        sprintf(filename, "./CMT/CMT%d.vrp", i);
+        
         
         read_instance_file(instance, filename);
         init_problem(instance);
@@ -93,16 +94,6 @@ int main(int argc, char *argv[])
         
             solver->run_aco_iteration();
             instance->iteration++;
-
-            if (sa_flag) {
-                if (instance->best_stagnate_cnt >= instance->num_node) {   // 2 * instance->num_node
-                    annealer = new SimulatedAnnealing(instance, solver, 2.5, 0.97, MAX(instance->num_node * 4, 250), 25);
-                    annealer->run();
-                    instance->best_stagnate_cnt = 0;
-                    
-                    delete annealer;
-                }
-            }
         }
 
         solver->exit_aco();

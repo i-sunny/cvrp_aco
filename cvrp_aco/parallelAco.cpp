@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <pthread.h>
+#include <algorithm>
 
 #include "parallelAco.h"
 #include "vrpHelper.h"
@@ -372,11 +373,11 @@ void ParallelAco::update_subs_to_master(Problem *master, const vector<Problem *>
     master->best_so_far_ant->tour_size = k;
     master->best_so_far_ant->tour_length = compute_tour_length(master, master_tour, k);
     
+    DEBUG(assert(check_solution(master, master_tour, k));)
+    
     // 记录-report
     master->best_so_far_time = elapsed_time(VIRTUAL);
     write_best_so_far_report(master);
-    
-    DEBUG(check_solution(master, master_tour, k));
     
 //    print_solution(master, master_tour, k);
     

@@ -31,6 +31,7 @@ extern double rho;           /* parameter for evaporation */
 extern double alpha;         /* importance of trail */
 extern double beta;          /* importance of heuristic evaluate */
 extern long int ras_ranks;   /* additional parameter for rank-based version of ant system */
+extern bool sa_flag;
 
 /****************** data struct ***********************/
 enum DistanceTypeEnum {

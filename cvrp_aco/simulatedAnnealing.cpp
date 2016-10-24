@@ -13,6 +13,7 @@
 // *********************************/
 
 #include <math.h>
+#include <assert.h>
 
 #include "simulatedAnnealing.h"
 #include "utilities.h"
@@ -77,7 +78,9 @@ void SimulatedAnnealing::run(void)
     
     if (best_ant->tour_length - instance->best_so_far_ant->tour_length < -EPSILON) {
         AntColony::copy_solution_from_to(best_ant, instance->best_so_far_ant);
-        write_best_so_far_report(instance);
+        if (instance->pid == 0) {
+            write_best_so_far_report(instance);
+        }
     }
     
     ant_colony->compute_total_information();
@@ -109,7 +112,7 @@ bool SimulatedAnnealing::step(void)
                 }
                 write_anneal_report(instance, iter_ant, move);
                 
-                DEBUG(check_solution(instance, iter_ant->tour, iter_ant->tour_size);)
+                DEBUG(assert(check_solution(instance, iter_ant->tour, iter_ant->tour_size));)
             } else {
                 accepted = false;
                 reject(move);
@@ -181,7 +184,7 @@ void SimulatedAnnealing::accept(Move *move)
         AntColony::copy_solution_from_to(iter_ant, best_ant);
         // update pheromone
         ant_colony->global_update_pheromone_weighted(iter_ant, 2 * ras_ranks);
-        printf("SA better solution. length:%f, sa_iter:%ld\n", iter_ant->tour_length, iteration);
+        printf("[%d]SA better solution. length:%f, sa_iter:%ld\n", instance->pid,iter_ant->tour_length, iteration);
     }
 }
 

@@ -1,5 +1,5 @@
-# Makefile for acovrp
-VERSION=1.03
+# Makefile for cvrp_aco
+VERSION=1.0
 
 OPTIM_FLAGS=-O
 WARN_FLAGS=-Wall -ansi -pedantic
@@ -9,38 +9,44 @@ CFLAGS=$(WARN_FLAGS) $(OPTIM_FLAGS)
 TIMER=unix
 LDLIBS=-lm
 
-cvrp_aco: vrpHelper.o utilities.o problem.o main.o $(TIMER)_timer.o parallelAco.o antColony.o io.o localSearch.o
 
 all: clean cvrp_aco
 
 clean:
 	@$(RM) *.o cvrp_aco
 
-cvrp_aco: vrpHelper.o utilities.o problem.o main.o $(TIMER)_timer.o parallelAco.o antColony.o io.o localSearch.o
-
-parallelAco.o: parallelAco.cpp parallelAco.h
+cvrp_aco: antColony.o io.o localSearch.o main.o $(TIMER)_timer.o move.o neighbourSearch.o parallelAco.o problem.o simulatedAnnealing.o utilities.o vrpHelper.o
 
 antColony.o: antColony.cpp antColony.h
 
-acovrp.o: acovrp.c
+io.o: io.cpp io.h
 
-vrp.o: vrp.c vrp.h
+localSearch.o: localSearch.cpp localSearch.h
 
-ants.o: ants.c ants.h
+main.o: main.cpp
 
-InOut.o: InOut.c InOut.h
+$(TIMER)_timer.o: $(TIMER)_timer.cpp timer.h
 
-utilities.o: utilities.c utilities.h
+move.o: move.cpp move.h
 
-ls.o: ls.c ls.h
+neighbourSearch.o: neighbourSearch.cpp neighbourSearch.h
 
-$(TIMER)_timer.o: $(TIMER)_timer.c timer.h
+parallelAco.o: parallelAco.cpp parallelAco.h
 
-dist : DIST_SRC_FILES=*.c *.h *.vrp Makefile gpl.txt
+problem.o: problem.cpp problem.h
+
+simulatedAnnealing.o: simulatedAnnealing.cpp simulatedAnnealing.h
+
+utilities.o: utilities.cpp utilities.h
+
+vrpHelper.o: vrpHelper.cpp vrpHelper.h
+
+
+dist : DIST_SRC_FILES=*.cpp *.h Makefile
 dist : all
-	@(mkdir -p ../acovrp-$(VERSION)			\
-	&& rsync -rlpC --exclude=.svn $(DIST_SRC_FILES) ../acovrp-$(VERSION)/ \
+	@(mkdir -p ../cvrp_aco-$(VERSION)			\
+	&& rsync -rlpC --exclude=.svn $(DIST_SRC_FILES) ../cvrp_aco-$(VERSION)/ \
         && cd .. 	\
-	&& tar cf - acovrp-$(VERSION) | gzip -f9 > acovrp-$(VERSION).tar.gz \
-	&& rm -rf ./acovrp-$(VERSION)					\
-	&& echo "acovrp-$(VERSION).tar.gz created." && cd $(CWD) )
+	&& tar cf - cvrp_aco-$(VERSION) | gzip -f9 > cvrp_aco-$(VERSION).tar.gz \
+	&& rm -rf ./cvrp_aco-$(VERSION)					\
+	&& echo "cvrp_aco-$(VERSION).tar.gz created." && cd $(CWD) )

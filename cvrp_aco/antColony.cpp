@@ -21,6 +21,7 @@
 #include <time.h>
 
 #include "antColony.h"
+#include "simulatedAnnealing.h"
 #include "utilities.h"
 #include "vrpHelper.h"
 #include "problem.h"
@@ -119,7 +120,6 @@ void AntColony::exit_aco()
  */
 void AntColony::run_aco_iteration()
 {
-    
     construct_solutions();
     
     if (ls_flag) {
@@ -129,6 +129,18 @@ void AntColony::run_aco_iteration()
     update_statistics();
     
     pheromone_trail_update();
+    
+    if (sa_flag) {
+        if ((instance == 0 && instance->best_stagnate_cnt >= instance->num_node)
+            || (instance != 0 && instance->best_stagnate_cnt >= 30))
+        {   // 2 * instance->num_node
+            SimulatedAnnealing *annealer = new SimulatedAnnealing(instance, this, 5.0, 0.97, MAX(instance->num_node * 4, 250), 50);
+            annealer->run();
+            instance->best_stagnate_cnt = 0;
+            
+            delete annealer;
+        }
+    }
     
 //    print_probabilities(instance);
 }

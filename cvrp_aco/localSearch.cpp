@@ -16,6 +16,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <assert.h>
 
 #include "localSearch.h"
 #include "utilities.h"
@@ -61,19 +62,18 @@ void LocalSearch::do_local_search(void)
 //        }
         
         if (ls_flag) {
-            two_opt_solution(ants[k].tour, ants[k].tour_size);    /* 2-opt local search */
+             // 1) 2-opt local search
+            two_opt_solution(ants[k].tour, ants[k].tour_size);
             
-            // swap - exchange 2 nodes in the tour
-            //    swap(tour, tour_size, path_load);
+            //2) swap - exchange 2 nodes in the tour
+            swap(ants[k].tour, ants[k].tour_size);
             
             ants[k].tour_length = compute_tour_length(instance, ants[k].tour, ants[k].tour_size);
         }
         
         //debug
 //        printf("\n--After local search:");
-//        if(check_solution(instance, ants[k].tour, ants[k].tour_size)) {
-//            print_solution(instance, ants[k].tour, ants[k].tour_size);
-//        }
+        DEBUG(assert(check_solution(instance, ants[k].tour, ants[k].tour_size));)
     }
 }
 
@@ -131,9 +131,7 @@ void LocalSearch::two_opt_solution(long int *tour, long int tour_size)
     long int *tour_node_pos;     /* positions of nodes in tour */
 
     long int route_beg = 0;
-    long int *path_load = new long int[num_node-1];  /* array of single route load */
     long int p = 0;
-    long int load_tmp = 0;
     
     dlb = (long int *)malloc(num_node * sizeof(long int));
     for (int i = 0 ; i < num_node; i++) {
@@ -161,17 +159,12 @@ void LocalSearch::two_opt_solution(long int *tour, long int tour_size)
             }
             route_beg = i;
             
-            path_load[p++] = load_tmp;
-            load_tmp = 0;
         } else {
             route_node_map[tour[i]] = TRUE;
-            load_tmp += instance->nodeptr[tour[i]].demand;
         }
     }
     
     DEBUG(assert(p < num_node));
-    
-    delete[] path_load;
     
     free( dlb );
     free(route_node_map);
@@ -308,14 +301,45 @@ exchange2opt:
  * The swap operation selects two customers at random and 
  * then swaps these two customers in their positions.
  */
-void LocalSearch::swap(long int *tour, long int tour_size, long int *path_load)
+void LocalSearch::swap(long int *tour, long int tour_size)
 {
-    long int i = 0, j = 0;
+    /* array of single route load */
+    long int *route_load = new long int[num_node-1];
+    /* array of single route distance */
+    double *route_dist = new double[num_node-1];
+    long int beg;
+    long int load = 0, load1 = 0, load2 = 0;
+    double dist = 0, dist1 = 0, dist2 = 0;
+    
+    Point *nodes = instance->nodeptr;
+    
+    long int i = 0, j = 0, k = 0;
     double gain = 0;
     long int n1, p_n1, s_n1, n2, p_n2, s_n2;
     long int p1 = 0, p2 = 0;     /* path idx of node n1 and n2 */
-    long int load1 = 0, load2 = 0;
     
+    
+    // 1) step 1: 获取load/distance array
+    load = 0;
+    dist = 0;
+    k = 0;
+    beg = 0;
+    for (i = 1; i < tour_size; i++) {
+        load += nodes[tour[i]].demand;
+        dist += distance[tour[i-1]][tour[i]];
+        
+        if (tour[i] == 0) {
+            route_load[k] = load;
+            route_dist[k] = dist + instance->service_time * (i - beg - 1);
+            DEBUG(assert(route_dist[k] == compute_route_length(instance, tour + beg, i - beg + 1) + instance->service_time * (i - beg - 1));)
+            k++;
+            load = 0;
+            dist = 0;
+            beg = i;
+        }
+    }
+    
+    // 2）step 2: swap
     for (i = 1; i < tour_size; i++) {
         n1 = tour[i];
         if (n1 == 0) {
@@ -325,6 +349,7 @@ void LocalSearch::swap(long int *tour, long int tour_size, long int *path_load)
         p_n1 = tour[i-1];
         s_n1 = tour[i+1];
         
+        DEBUG(assert(n1 > 0);)
         p2 = p1;
         for (j = i+1; j < tour_size; j++) {
             n2 = tour[j];
@@ -335,36 +360,55 @@ void LocalSearch::swap(long int *tour, long int tour_size, long int *path_load)
             p_n2 = tour[j-1];
             s_n2 = tour[j+1];
             
-            // node n1 and n2 not in the same route
-            if (p1 != p2) {
-                load1 = path_load[p1] - instance->nodeptr[n1].demand + instance->nodeptr[n2].demand;
-                load2 = path_load[p2] - instance->nodeptr[n2].demand + instance->nodeptr[n1].demand;
-                if (load1 > instance->vehicle_capacity || load2 > instance->vehicle_capacity) {
-                    continue;
-                }
-            }
-            
-            if (j == i+1) {
-               gain = -(distance[p_n1][n1] + distance[n2][s_n2]) +(distance[p_n1][n2] + distance[n1][s_n2]);
+            // calulate gain
+            if (j == i + 1) {
+                gain = -(distance[p_n1][n1] + distance[n2][s_n2]) + (distance[p_n1][n2] + distance[n1][s_n2]);
             } else {
                 gain = -(distance[p_n1][n1] + distance[n1][s_n1] + distance[p_n2][n2] + distance[n2][s_n2])
                 +(distance[p_n1][n2] + distance[n2][s_n1] + distance[p_n2][n1] + distance[n1][s_n2]);
             }
             if (gain < -EPSILON) {
+                
+                // node n1 and n2 not in the same route
+                if (p1 != p2) {
+                    load1 = route_load[p1] - nodes[n1].demand + nodes[n2].demand;
+                    load2 = route_load[p2] - nodes[n2].demand + nodes[n1].demand;
+                    
+                    dist1 = route_dist[p1] - (distance[p_n1][n1] + distance[n1][s_n1]) + (distance[p_n1][n2] + distance[n2][s_n1]);
+                    dist2 = route_dist[p2] - (distance[p_n2][n2] + distance[n2][s_n2]) + (distance[p_n2][n1] + distance[n1][s_n2]);
+                    
+                    if ((load1 > instance->vehicle_capacity || load2 > instance->vehicle_capacity)
+                        || (dist1 > instance->max_distance || dist2 > instance->max_distance)) {
+                        continue;
+                    }
+                } else {
+                    load1 = route_load[p1];
+                    load2 = load1;
+                    
+                    dist1 = route_dist[p1] + gain;   // gain < 0, so dont need to check max_distance limit
+                    dist2 = dist1;
+                }
+                
+                
                 tour[i] = n2;
                 tour[j] = n1;
 
-                if (p1 != p2) {
-                    path_load[p1] = load1;
-                    path_load[p2] = load2;
-                }
+                route_load[p1] = load1;
+                route_load[p2] = load2;
+                
+                route_dist[p1] = dist1;
+                route_dist[p2] = dist2;
                 
                 i--;
-//                check_solution(instance, tour, tour_size);
-//                print_solution(instance, tour, tour_size);
+                
+                DEBUG(assert(check_solution(instance, tour, tour_size));)
+                
+    //                print_solution(instance, tour, tour_size);
                 break;
             }
         }
     }
+    delete[] route_load;
+    delete[] route_dist;
 }
 

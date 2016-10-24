@@ -26,6 +26,7 @@
 /**** 用于parallel aco参数 ***/
 long int g_master_problem_iteration_num;   /* 每次外循环，主问题蚁群的迭代的次数 */
 long int g_sub_problem_iteration_num;      /* 每次外循环，子问题蚁群的迭代次数 */
+bool sa_flag = true;                        /* 是否使用sa */
 
 double rho;           /* parameter for evaporation */
 double alpha;         /* importance of trail */
@@ -123,6 +124,9 @@ void init_sub_problem(Problem *master, Problem *sub)
     sub->max_iteration = g_sub_problem_iteration_num;
     sub->dis_type = master->dis_type;
     sub->vehicle_capacity = master->vehicle_capacity;
+    
+    sub->max_distance = master->max_distance;
+    sub->service_time = master->service_time;
 }
 
 void exit_sub_problem(Problem *sub)
@@ -189,7 +193,7 @@ void set_default_parameters (Problem *instance)
     instance->nn_ls          = instance->nn_ants;//MIN(instance->nn_ants, 25);
     
     /* maximum number of iterations */
-    instance->max_iteration  = 5000;
+    instance->max_iteration  = 10000;
     /* optimal tour length if known, otherwise a bound */
 //    instance->optimum        = 1;
     /* counter of number iterations */
@@ -303,7 +307,7 @@ int check_route(Problem *instance, long int *tour, long int rbeg, long int rend)
     }
     
     distance = compute_route_length(instance, tour + rbeg, rend - rbeg + 1);
-    distance += instance->service_time * (rend - rbeg -1);
+    distance += instance->service_time * (rend - rbeg - 1);
     
     if (distance > instance->max_distance) {
         fprintf(stderr,"\n%s:error: 单条回路超过车辆最大路程 distance = %f, max_distance = %f rbeg = %ld rend = %ld\n",

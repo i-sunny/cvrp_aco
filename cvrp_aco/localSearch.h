@@ -40,7 +40,7 @@ private:
     bool dlb_flag;
     
     void two_opt_solution(long int *tour, long int tour_size);
-    void swap(long int *tour, long int tour_size, long int *path_load);
+    void swap(long int *tour, long int tour_size);
     long int * generate_random_permutation( long int n );
     void two_opt_single_route(long int *tour, long int rbeg, long int rend, long int *dlb,
                               long int *route_node_map, long int *tour_node_pos);
