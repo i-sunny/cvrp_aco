@@ -1,9 +1,6 @@
 # cvrp_aco
 A new hybrid algorithm, consists of ACO and SA, is provided to solve CVP. We also present a parallel version to improve both e ciency and effectiveness. 
 
-######################################################
-######    Hybrid ACO algorithms for the CVRP ########
-######################################################
 =========
 CONTENTS
 =========
