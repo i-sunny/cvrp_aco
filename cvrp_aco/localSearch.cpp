@@ -131,7 +131,6 @@ void LocalSearch::two_opt_solution(long int *tour, long int tour_size)
     long int *tour_node_pos;     /* positions of nodes in tour */
 
     long int route_beg = 0;
-    long int p = 0;
     
     dlb = (long int *)malloc(num_node * sizeof(long int));
     for (int i = 0 ; i < num_node; i++) {

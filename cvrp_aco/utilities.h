@@ -17,7 +17,7 @@
 #define INFTY                 LONG_MAX
 #define MAXIMUM_NO_TRIES      100
 
-const double EPSILON = 0.01;
+const double EPSILON = 0.001;
 
 #define TRUE  1
 #define FALSE 0
