@@ -131,8 +131,8 @@ void AntColony::run_aco_iteration()
     pheromone_trail_update();
     
     if (sa_flag) {
-        if ((instance == 0 && instance->best_stagnate_cnt >= instance->num_node)
-            || (instance != 0 && instance->best_stagnate_cnt >= 30))
+        if ((instance->pid == 0 && instance->best_stagnate_cnt >= instance->num_node)
+            || (instance->pid != 0 && instance->best_stagnate_cnt >= 30))
         {   // 2 * instance->num_node
             SimulatedAnnealing *annealer = new SimulatedAnnealing(instance, this, 5.0, 0.97, MAX(instance->num_node * 4, 250), 50);
             annealer->run();
