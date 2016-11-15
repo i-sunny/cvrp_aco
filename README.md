@@ -1,5 +1,5 @@
 # cvrp_aco
-A new hybrid algorithm, consists of ACO and SA, is provided to solve CVP. We also present a parallel version to improve both e ciency and effectiveness. 
+A new hybrid algorithm, consists of ACO and SA, is provided to solve CVP. We also present a decomposition version to improve both efficiency and effectiveness. 
 
 =========
 CONTENTS
