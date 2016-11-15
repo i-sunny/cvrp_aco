@@ -18,15 +18,15 @@
 #define TABU_LENGTH  3
 
 struct Tabu {
-    Tabu(Move move_, long int life_):move(move_), life(life_){}
+    Tabu(Move move_, int life_):move(move_), life(life_){}
     Move move;
-    long int life;   /* tabu life */
+    int life;   /* tabu life */
 };
 
 class SimulatedAnnealing {
 public:
     SimulatedAnnealing(Problem *instance, AntColony *ant_colony, double t0,
-                       double alpha, long int epoch_length, long int terminal_ratio);
+                       double alpha, int epoch_length, int terminal_ratio);
     ~SimulatedAnnealing();
     void run(void);
     bool step(void);
@@ -42,15 +42,15 @@ private:
     double alpha;
     double t0;
     double t;
-    long int iteration;
-    long int epoch_length;
-    long int epoch_counter;
-    long int terminal_ratio;
+    int iteration;
+    int epoch_length;
+    int epoch_counter;
+    int terminal_ratio;
     
     // 用于统计
-    long int test_cnt;
-    long int improvement_cnt;
-    long int accept_cnt;
+    int test_cnt;
+    int improvement_cnt;
+    int accept_cnt;
     
     bool acceptable(Move *move);
     void accept(Move *move);

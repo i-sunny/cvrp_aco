@@ -50,7 +50,7 @@ LocalSearch::LocalSearch(Problem *instance) {
  */
 void LocalSearch::do_local_search(void)
 {
-    long int k;
+    int k;
     
     TRACE ( printf("apply local search to all ants\n"); );
     
@@ -94,13 +94,13 @@ void LocalSearch::do_local_search(AntStruct *ant)
  function. Don't forget to free again the memory!
  COMMENTS:       only needed by the local search procedures
  */
-long int * LocalSearch::generate_random_permutation( long int n )
+int * LocalSearch::generate_random_permutation( int n )
 {
-   long int  i, help, node, tot_assigned = 0;
+   int  i, help, node, tot_assigned = 0;
    double    rnd;
-   long int  *r;
+   int  *r;
 
-   r = (long int *)malloc(n * sizeof(long int));
+   r = (int *)malloc(n * sizeof(int));
 
    for ( i = 0 ; i < n; i++) 
      r[i] = i;
@@ -108,7 +108,7 @@ long int * LocalSearch::generate_random_permutation( long int n )
    for ( i = 0 ; i < n ; i++ ) {
      /* find (randomly) an index for a free unit */ 
      rnd  = ran01 ( &instance->rnd_seed );
-     node = (long int) (rnd  * (n - tot_assigned)); 
+     node = (int) (rnd  * (n - tot_assigned)); 
      assert( i + node < n );
      help = r[i];
      r[i] = r[i+node];
@@ -124,25 +124,25 @@ long int * LocalSearch::generate_random_permutation( long int n )
                  depotId
  OUTPUT:         none
  */
-void LocalSearch::two_opt_solution(long int *tour, long int tour_size)
+void LocalSearch::two_opt_solution(int *tour, int tour_size)
 {
-    long int *dlb;               /* vector containing don't look bits */
-    long int *route_node_map;    /* mark for all nodes in a single route */
-    long int *tour_node_pos;     /* positions of nodes in tour */
+    bool *dlb;               /* vector containing don't look bits */
+    bool *route_node_map;    /* mark for all nodes in a single route */
+    int *tour_node_pos;     /* positions of nodes in tour */
 
-    long int route_beg = 0;
+    int route_beg = 0;
     
-    dlb = (long int *)malloc(num_node * sizeof(long int));
+    dlb = (bool *)malloc(num_node * sizeof(bool));
     for (int i = 0 ; i < num_node; i++) {
         dlb[i] = FALSE;
     }
     
-    route_node_map =  (long int *)malloc(num_node * sizeof(long int));
+    route_node_map =  (bool *)malloc(num_node * sizeof(bool));
     for (int j = 0; j < num_node; j++) {
         route_node_map[j] = FALSE;
     }
     
-    tour_node_pos =  (long int *)malloc(num_node * sizeof(long int));
+    tour_node_pos =  (int *)malloc(num_node * sizeof(int));
     for (int j = 0; j < tour_size; j++) {
         tour_node_pos[tour[j]] = j;
     }
@@ -163,8 +163,6 @@ void LocalSearch::two_opt_solution(long int *tour, long int tour_size)
         }
     }
     
-    DEBUG(assert(p < num_node));
-    
     free( dlb );
     free(route_node_map);
     free(tour_node_pos);
@@ -179,27 +177,27 @@ void LocalSearch::two_opt_solution(long int *tour, long int tour_size)
  OUTPUT:         none
  COMMENTS:       the neighbourhood is scanned in random order
  */
-void LocalSearch::two_opt_single_route(long int *tour, long int rbeg, long int rend,
-                          long int *dlb, long int *route_node_map, long int *tour_node_pos)
+void LocalSearch::two_opt_single_route(int *tour, int rbeg, int rend,
+                          bool *dlb, bool *route_node_map, int *tour_node_pos)
 {
-    long int n1, n2;                            /* nodes considered for an exchange */
-    long int s_n1, s_n2;                        /* successor nodes of n1 and n2     */
-    long int p_n1, p_n2;                        /* predecessor nodes of n1 and n2   */
-    long int pos_n1, pos_n2;                    /* positions of nodes n1, n2        */
-    long int num_route_node = rend - rbeg + 1;  /* number of nodes in a single route(depot只计一次) */
+    int n1, n2;                            /* nodes considered for an exchange */
+    int s_n1, s_n2;                        /* successor nodes of n1 and n2     */
+    int p_n1, p_n2;                        /* predecessor nodes of n1 and n2   */
+    int pos_n1, pos_n2;                    /* positions of nodes n1, n2        */
+    int num_route_node = rend - rbeg + 1;  /* number of nodes in a single route(depot只计一次) */
     
-    long int i, j, h, l;
-    long int improvement_flag, help, n_improves = 0, n_exchanges = 0;
-    long int h1=0, h2=0, h3=0, h4=0;
+    int i, j, h, l;
+    int improvement_flag, help, n_improves = 0, n_exchanges = 0;
+    int h1=0, h2=0, h3=0, h4=0;
     double radius;             /* radius of nn-search */
     double gain = 0;
-    long int *random_vector;
+//    int *random_vector;
 
     // debug
 //    print_single_route(instance, tour + rbeg, num_route_node+1);
 
     improvement_flag = TRUE;
-    random_vector = generate_random_permutation(num_route_node);
+//    random_vector = generate_random_permutation(num_route_node);
 
     while ( improvement_flag ) {
 
@@ -207,15 +205,18 @@ void LocalSearch::two_opt_single_route(long int *tour, long int rbeg, long int r
 
         for (l = 0 ; l < num_route_node; l++) {
 
-            /* the neighbourhood is scanned in random order */
-            pos_n1 = rbeg + random_vector[l];
+            /* 1)the neighbourhood is scanned in random order */
+//            pos_n1 = rbeg + random_vector[l];
+            /* 2)the neighbourhood is scanned in sequence order */
+            pos_n1 = rbeg + l;
+            
             n1 = tour[pos_n1];
             if (dlb_flag && dlb[n1])
                 continue;
             
             s_n1 = pos_n1 == rend ? tour[rbeg] : tour[pos_n1+1];
             radius = distance[n1][s_n1];
-            /* First search for c1's nearest neighbours, use successor of n1 */
+            /* First search for n1's nearest neighbours, use successor of n1 */
             for ( h = 0 ; h < nn_ls ; h++ ) {
                 n2 = nn_list[n1][h]; /* exchange partner, determine its position */
                 if (route_node_map[n2] == FALSE) {
@@ -235,7 +236,7 @@ void LocalSearch::two_opt_single_route(long int *tour, long int rbeg, long int r
                 else break;
             }
             
-            /* Search one for next c1's h-nearest neighbours, use predecessor n1 */
+            /* Search one for next n1's h-nearest neighbours, use predecessor n1 */
             p_n1 = pos_n1 == rbeg ? tour[rend] : tour[pos_n1-1];
             radius = distance[p_n1][n1];
             for ( h = 0 ; h < nn_ls ; h++ ) {
@@ -292,7 +293,7 @@ exchange2opt:
             n_improves++;
         }
     }
-    free( random_vector );
+//    free( random_vector );
 }
 
 
@@ -300,22 +301,22 @@ exchange2opt:
  * The swap operation selects two customers at random and 
  * then swaps these two customers in their positions.
  */
-void LocalSearch::swap(long int *tour, long int tour_size)
+void LocalSearch::swap(int *tour, int tour_size)
 {
     /* array of single route load */
-    long int *route_load = new long int[num_node-1];
+    int *route_load = new int[num_node-1];
     /* array of single route distance */
     double *route_dist = new double[num_node-1];
-    long int beg;
-    long int load = 0, load1 = 0, load2 = 0;
+    int beg;
+    int load = 0, load1 = 0, load2 = 0;
     double dist = 0, dist1 = 0, dist2 = 0;
     
     Point *nodes = instance->nodeptr;
     
-    long int i = 0, j = 0, k = 0;
+    int i = 0, j = 0, k = 0;
     double gain = 0;
-    long int n1, p_n1, s_n1, n2, p_n2, s_n2;
-    long int p1 = 0, p2 = 0;     /* path idx of node n1 and n2 */
+    int n1, p_n1, s_n1, n2, p_n2, s_n2;
+    int p1 = 0, p2 = 0;     /* path idx of node n1 and n2 */
     
     
     // 1) step 1: 获取load/distance array

@@ -31,19 +31,19 @@ private:
     
     // 直接引入，减少一次指针使用，加快执行速度
     AntStruct *ants;
-    long int n_ants;
+    int n_ants;
     bool ls_flag;
     double **distance;
-    long int num_node;
-    long int **nn_list;
-    long int nn_ls;
+    int num_node;
+    int **nn_list;
+    int nn_ls;
     bool dlb_flag;
     
-    void two_opt_solution(long int *tour, long int tour_size);
-    void swap(long int *tour, long int tour_size);
-    long int * generate_random_permutation( long int n );
-    void two_opt_single_route(long int *tour, long int rbeg, long int rend, long int *dlb,
-                              long int *route_node_map, long int *tour_node_pos);
+    void two_opt_solution(int *tour, int tour_size);
+    void swap(int *tour, int tour_size);
+    int * generate_random_permutation( int n );
+    void two_opt_single_route(int *tour, int rbeg, int rend, bool *dlb,
+                              bool *route_node_map, int *tour_node_pos);
 };
 
 #endif /* localSearch_h */

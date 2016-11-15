@@ -14,7 +14,6 @@
 #ifndef   utilities_h
 #define   utilities_h
 
-#define INFTY                 LONG_MAX
 #define MAXIMUM_NO_TRIES      100
 
 const double EPSILON = 0.001;
@@ -40,36 +39,36 @@ const double EPSILON = 0.001;
 #define IR 2836
 #define MASK 123459876
 
-double mean ( long int *values, long int max);
+double mean ( int *values, int max);
 
-double meanr ( double *values, long int max );
+double meanr ( double *values, int max );
 
-double std_deviation ( long int *values, long int i, double mean );
+double std_deviation ( int *values, int i, double mean );
 
-double std_deviationr ( double *values, long int i, double mean );
+double std_deviationr ( double *values, int i, double mean );
 
-long int best_of_vector ( long int *values, long int i );
+int best_of_vector ( int *values, int i );
 
-long int worst_of_vector ( long int *values, long int i );
+int worst_of_vector ( int *values, int i );
 
-void swap ( long int v[], long int i, long int j );
+void swap ( int v[], int i, int j );
 
-void sort ( long int v[], long int left, long int right );
+void sort ( int v[], int left, int right );
 
-double quantil ( long int vector[], double q, long int numbers );
+double quantil ( int vector[], double q, int numbers );
 
-void swap2(double v[], long int v2[], long int i, long int j);
+void swap2(double v[], int v2[], int i, int j);
 
-void sort2(double v[], long int v2[], long int left, long int right);
+void sort2(double v[], int v2[], int left, int right);
 
-double ran01 ( long *idum );
+double ran01 ( int *idum );
 
-long int random_number ( long *idum );
+int random_number ( int *idum );
 
-long int ** generate_int_matrix( long int n, long int m);
+int ** generate_int_matrix( int n, int m);
 
-double ** generate_double_matrix( long int n, long int m);
+double ** generate_double_matrix( int n, int m);
 
-void swap(long int *i, long int *j);
+void swap(int *i, int *j);
 
 #endif

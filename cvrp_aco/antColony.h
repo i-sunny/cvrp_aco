@@ -39,14 +39,14 @@ public:
     double   *prob_of_selection;
     double   **pheromone;
     double   **total_info;
-    long int num_node;
-    long int n_ants;               /* number of ants */
-    long int nn_ants;              /* length of nearest neighbor lists for the ants'
+    int num_node;
+    int n_ants;               /* number of ants */
+    int nn_ants;              /* length of nearest neighbor lists for the ants'
                                     solution construction */
-    long int **nn_list;
+    int **nn_list;
     
     Point    *nodeptr;
-    long int vehicle_capacity;
+    int vehicle_capacity;
     
     bool ls_flag;               /* indicates whether and which local search is used */
     
@@ -71,21 +71,21 @@ public:
     void evaporation ( void );
     void evaporation_nn_list ( void );
     void global_update_pheromone ( AntStruct *a );
-    void global_update_pheromone_weighted ( AntStruct *a, long int weight );
+    void global_update_pheromone_weighted ( AntStruct *a, int weight );
     void compute_total_information( void );
     void compute_nn_list_total_information( void );
     
     /* Ants' solution construction */
     void ant_empty_memory( AntStruct *a );
-    void init_ant_place( AntStruct *a , long int phase);
-    long int choose_best_next( AntStruct *a, long int phase );
-    long int neighbour_choose_best_next( AntStruct *a, long int phase );
-    void choose_closest_next( AntStruct *a, long int phase );
-    long int neighbour_choose_and_move_to_next( AntStruct *a, long int phase);
+    void init_ant_place( AntStruct *a , int phase);
+    int choose_best_next( AntStruct *a, int phase );
+    int neighbour_choose_best_next( AntStruct *a, int phase );
+    void choose_closest_next( AntStruct *a, int phase );
+    int neighbour_choose_and_move_to_next( AntStruct *a, int phase);
     
     /* Auxiliary procedures related to ants */
-    long int find_best ( void );
-    long int find_worst( void );
+    int find_best ( void );
+    int find_worst( void );
     static void copy_solution_from_to(AntStruct *a1, AntStruct *a2);
 };
 

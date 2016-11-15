@@ -26,17 +26,17 @@ private:
     Problem *instance;
     AntStruct *ant;
     vector<Route> routes;
-    long int rnd_seed;
+    int rnd_seed;
     
     
-    long int random_pos_in_route(Route *route);
-    long int random_route();
+    int random_pos_in_route(Route *route);
+    int random_route();
     
-    Move *exchange(long int *tour, long int tour_size);
-    Move *exchange_1(long int *tour, long int tour_size);
-    Move *insertion(long int *tour, long int tour_size);
-    Move *insertion_1(long int *tour, long int tour_size);
-    Move *inversion(long int *tour, long int tour_size);
+    Move *exchange(int *tour, int tour_size);
+    Move *exchange_1(int *tour, int tour_size);
+    Move *insertion(int *tour, int tour_size);
+    Move *insertion_1(int *tour, int tour_size);
+    Move *inversion(int *tour, int tour_size);
 };
 
 #endif /* neighbourSearch_h */

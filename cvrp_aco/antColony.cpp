@@ -77,7 +77,7 @@ void AntColony::init_aco()
     
     /* Initialize variables concerning statistics etc. */
     instance->iteration   = 0;
-    best_so_far_ant->tour_length = INFTY;
+    best_so_far_ant->tour_length = INFINITY;
     
     instance->iter_stagnate_cnt = 0;
     instance->best_stagnate_cnt = 0;
@@ -133,7 +133,7 @@ void AntColony::run_aco_iteration()
     if (sa_flag) {
         if ((instance->pid == 0 && instance->best_stagnate_cnt >= instance->num_node)
             || (instance->pid != 0 && instance->best_stagnate_cnt >= 30))
-        {   // 2 * instance->num_node
+        {
             SimulatedAnnealing *annealer = new SimulatedAnnealing(instance, this, 5.0, 0.97, MAX(instance->num_node * 4, 250), 50);
             annealer->run();
             instance->best_stagnate_cnt = 0;
@@ -153,10 +153,10 @@ void AntColony::run_aco_iteration()
  */
 void AntColony::construct_solutions( void )
 {
-    long int k;
+    int k;
     
     TRACE ( printf("construct solutions for all ants\n"); );
-    
+
     for(k = 0; k < n_ants; k++) {
         construct_ant_solution(&ants[k]);
     }
@@ -171,11 +171,11 @@ void AntColony::construct_solutions( void )
 
 void AntColony::construct_ant_solution(AntStruct *ant)
 {
-    long int visited_node_cnt = 0;   /* count of visited node by this ant */
+    int visited_node_cnt = 0;   /* count of visited node by this ant */
     
-    long int path_load;          /* 单次从depot出发的送货量 */
-    long int next_node, current_node;
-    long int i, demand_meet_cnt, step;
+    int path_load;          /* 单次从depot出发的送货量 */
+    int next_node, current_node;
+    int i, candidate_cnt, step;
     double path_distance;
     
     /* Mark all nodes as unvisited */
@@ -191,16 +191,16 @@ void AntColony::construct_ant_solution(AntStruct *ant)
         step++;
         
         /* 查看所有可以派送的点 */
-        demand_meet_cnt = 0;
+        candidate_cnt = 0;
         for (i = 0; i < num_node; i++) {
-            ant->demand_meet_node[i] = FALSE;
+            ant->candidate[i] = FALSE;
         }
         for(i = 0; i < num_node; i++) {
             if (ant->visited[i] == FALSE
                 && path_load + nodeptr[i].demand <= vehicle_capacity
                 && path_distance + (distance[current_node][i] + instance->service_time) + distance[i][0] <= instance->max_distance) {
-                ant->demand_meet_node[i] = TRUE;
-                demand_meet_cnt++;
+                ant->candidate[i] = TRUE;
+                candidate_cnt++;
             }
         }
         
@@ -208,7 +208,7 @@ void AntColony::construct_ant_solution(AntStruct *ant)
          1)如果没有可行的配送点,则蚂蚁回到depot，重新开始新的路径
          2）否则，选择下一个配送点
          */
-        if (demand_meet_cnt == 0) {
+        if (candidate_cnt == 0) {
             path_load = 0;
             path_distance = 0;
             init_ant_place(ant, step);
@@ -243,8 +243,8 @@ void AntColony::construct_ant_solution(AntStruct *ant)
  */
 void AntColony::ras_update( void )
 {
-    long int i, k, b, target;
-    double *help_b;
+    int i, k, target;
+    double *help_b, b;
     
     TRACE ( printf("Rank-based Ant System pheromone deposit\n"); );
     
@@ -260,7 +260,7 @@ void AntColony::ras_update( void )
                 target = k;
             }
         }
-        help_b[target] = LONG_MAX;
+        help_b[target] = INFINITY;
         global_update_pheromone_weighted(&ants[target], ras_ranks-i-1);
     }
     global_update_pheromone_weighted(best_so_far_ant, ras_ranks);
@@ -274,10 +274,10 @@ void AntColony::pheromone_disturbance(void)
 {
 //    print_pheromone(instance);
     
-    printf("pid %d start pheromone disturbance: iter %ld, best_stagnate %ld, iter_stagnate %ld\n",
+    printf("pid %d start pheromone disturbance: iter %d, best_stagnate %d, iter_stagnate %d\n",
            instance->pid, instance->iteration, instance->best_stagnate_cnt, instance->iter_stagnate_cnt);
     
-    long int i, j;
+    int i, j;
     double sum_pheromone = 0, mean_pheromone;
     double delta = 0.7;
     
@@ -386,7 +386,7 @@ void AntColony::update_statistics()
  ****************************************************************
  ****************************************************************/
 
-long int AntColony::find_best(void)
+int AntColony::find_best(void)
 /*    
       FUNCTION:       find the best ant of the current iteration
       INPUT:          none
@@ -395,7 +395,7 @@ long int AntColony::find_best(void)
 */
 {
     double   min;
-    long int   k, k_min;
+    int   k, k_min;
 
     min = ants[0].tour_length;
     k_min = 0;
@@ -410,7 +410,7 @@ long int AntColony::find_best(void)
 
 
 
-long int AntColony::find_worst(void)
+int AntColony::find_worst(void)
 /*    
       FUNCTION:       find the worst ant of the current iteration
       INPUT:          none
@@ -419,7 +419,7 @@ long int AntColony::find_worst(void)
 */
 {
     double   max;
-    long int   k, k_max;
+    int   k, k_max;
 
     max = ants[0].tour_length;
     k_max = 0;
@@ -450,7 +450,7 @@ void AntColony::init_pheromone_trails( double initial_trail )
       (SIDE)EFFECTS: pheromone matrix is reinitialized
 */
 {
-    long int i, j;
+    int i, j;
 
     TRACE ( printf(" init trails with %.15f\n",initial_trail); );
 
@@ -473,7 +473,7 @@ void AntColony::evaporation( void )
       (SIDE)EFFECTS: pheromones are reduced by factor rho
 */
 { 
-    long int    i, j;
+    int    i, j;
 
     TRACE ( printf("pheromone evaporation\n"); );
 
@@ -498,7 +498,7 @@ void AntColony::evaporation_nn_list( void )
 		     of its candidate list
 */
 { 
-    long int    i, j, help_node;
+    int    i, j, help_node;
 
     TRACE ( printf("pheromone evaporation nn_list\n"); );
 
@@ -520,7 +520,7 @@ void AntColony::global_update_pheromone( AntStruct *a )
       (SIDE)EFFECTS: pheromones of arcs in ant k's tour are increased
 */
 {  
-    long int i, j, h;
+    int i, j, h;
     double   d_tau;
 
     TRACE ( printf("global pheromone update\n"); );
@@ -535,7 +535,7 @@ void AntColony::global_update_pheromone( AntStruct *a )
 
 
 
-void AntColony::global_update_pheromone_weighted( AntStruct *a, long int weight )
+void AntColony::global_update_pheromone_weighted( AntStruct *a, int weight )
 /*    
       FUNCTION:      reinforces edges of the ant's tour with weight "weight"
       INPUT:         pointer to ant that updates pheromones and its weight  
@@ -543,7 +543,7 @@ void AntColony::global_update_pheromone_weighted( AntStruct *a, long int weight 
       (SIDE)EFFECTS: pheromones of arcs in the ant's tour are increased
 */
 {  
-    long int      i, j, h;
+    int      i, j, h;
     double        d_tau;
 
     TRACE ( printf("global pheromone update weighted\n"); );
@@ -565,7 +565,7 @@ void AntColony::compute_total_information( void )
       OUTPUT:   none
 */
 {
-    long int     i, j;
+    int     i, j;
 
     TRACE ( printf("compute total information\n"); );
 
@@ -586,7 +586,7 @@ void AntColony::compute_nn_list_total_information( void )
       OUTPUT:   none
 */
 { 
-    long int    i, j, h;
+    int    i, j, h;
 
     TRACE ( printf("compute total information nn_list\n"); );
 
@@ -616,7 +616,7 @@ void AntColony::ant_empty_memory( AntStruct *a )
       (SIDE)EFFECTS:  vector of visited nodes is reinitialized to FALSE
 */
 {
-    long int   i;
+    int   i;
 
     for( i = 0 ; i < num_node ; i++ ) {
         a->visited[i]=FALSE;
@@ -626,7 +626,7 @@ void AntColony::ant_empty_memory( AntStruct *a )
 
 
 
-void AntColony::init_ant_place( AntStruct *a , long int phase)
+void AntColony::init_ant_place( AntStruct *a , int phase)
 /*    
       FUNCTION:      place an ant on the single depot
       INPUT:         pointer to ant and the number of construction steps 
@@ -640,7 +640,7 @@ void AntColony::init_ant_place( AntStruct *a , long int phase)
 
 
 
-long int AntColony::choose_best_next( AntStruct *a, long int phase )
+int AntColony::choose_best_next( AntStruct *a, int phase )
 /*    
       FUNCTION:      chooses for an ant as the next node the one with
                      maximal value of heuristic information times pheromone 
@@ -649,7 +649,7 @@ long int AntColony::choose_best_next( AntStruct *a, long int phase )
       (SIDE)EFFECT:  ant moves to the chosen node
 */
 { 
-    long int node, current_node, next_node;
+    int node, current_node, next_node;
     double   value_best;
 
     next_node = num_node;
@@ -659,7 +659,7 @@ long int AntColony::choose_best_next( AntStruct *a, long int phase )
     for ( node = 0 ; node < num_node ; node++ ) {
         if ( a->visited[node] ) {
             ; /* node already visited, do nothing */
-        } else if(a->demand_meet_node[node] == FALSE) {
+        } else if(a->candidate[node] == FALSE) {
             ;  /* 该点不满足要求 */
         } else {
             if ( total_info[current_node][node] > value_best ) {
@@ -679,7 +679,7 @@ long int AntColony::choose_best_next( AntStruct *a, long int phase )
 
 
 
-long int AntColony::neighbour_choose_best_next( AntStruct *a, long int phase )
+int AntColony::neighbour_choose_best_next( AntStruct *a, int phase )
 /*    
       FUNCTION:      chooses for an ant as the next node the one with
                      maximal value of heuristic information times pheromone 
@@ -688,7 +688,7 @@ long int AntColony::neighbour_choose_best_next( AntStruct *a, long int phase )
       (SIDE)EFFECT:  ant moves to the chosen node
 */
 { 
-    long int i, current_node, next_node, help_node;
+    int i, current_node, next_node, help_node;
     double   value_best, help;
   
     next_node = num_node;
@@ -700,7 +700,7 @@ long int AntColony::neighbour_choose_best_next( AntStruct *a, long int phase )
         help_node = nn_list[current_node][i];
         if ( a->visited[help_node] ) {
             ;   /* node already visited, do nothing */
-        } else if(a->demand_meet_node[help_node] == FALSE) {
+        } else if(a->candidate[help_node] == FALSE) {
             ;  /* 该点不满足要求 */
         } else {
             help = total_info[current_node][help_node];
@@ -725,7 +725,7 @@ long int AntColony::neighbour_choose_best_next( AntStruct *a, long int phase )
 
 
 
-void AntColony::choose_closest_next( AntStruct *a, long int phase )
+void AntColony::choose_closest_next( AntStruct *a, int phase )
 /*    
       FUNCTION:      Chooses for an ant the closest node as the next one 
       INPUT:         pointer to ant and the construction step "phase" 
@@ -733,17 +733,17 @@ void AntColony::choose_closest_next( AntStruct *a, long int phase )
       (SIDE)EFFECT:  ant moves to the chosen node
 */
 { 
-    long int node, current_node, next_node;
+    int node, current_node, next_node;
     double min_distance;
   
     next_node = num_node;
     DEBUG( assert ( phase > 0 && phase < 2*num_node-2 ); );
     current_node = a->tour[phase-1];
-    min_distance = INFTY;             /* Search shortest edge */    
+    min_distance = INFINITY;             /* Search shortest edge */    
     for ( node = 0 ; node < num_node ; node++ ) {
         if ( a->visited[node] ) {
             ; /* node already visited */
-        } else if(a->demand_meet_node[node] == FALSE) {
+        } else if(a->candidate[node] == FALSE) {
             ;  /* 该点不满足要求 */
         } else {
             if ( distance[current_node][node] < min_distance) {
@@ -758,7 +758,7 @@ void AntColony::choose_closest_next( AntStruct *a, long int phase )
 }
 
 
-long int AntColony::neighbour_choose_and_move_to_next(AntStruct *a, long int phase)
+int AntColony::neighbour_choose_and_move_to_next(AntStruct *a, int phase)
 /*    
      FUNCTION:      Choose for an ant probabilistically a next node among all
      unvisited and possible nodes in the current node's candidate list.
@@ -768,8 +768,8 @@ long int AntColony::neighbour_choose_and_move_to_next(AntStruct *a, long int pha
      (SIDE)EFFECT:  ant moves to the chosen node
 */
 {
-    long int i, help;
-    long int current_node, neighbour_node;
+    int i, help;
+    int current_node, neighbour_node;
     double   rnd, partial_sum = 0., sum_prob = 0.0;
     /*  double   *prob_of_selection; */ /* stores the selection probabilities 
 	of the nearest neighbor nodes */
@@ -783,7 +783,7 @@ long int AntColony::neighbour_choose_and_move_to_next(AntStruct *a, long int pha
         neighbour_node = nn_list[current_node][i];
         if ( a->visited[neighbour_node] ) {
             prob_ptr[i] = 0.0;   /* node already visited */
-        } else if(a->demand_meet_node[neighbour_node] == FALSE) {
+        } else if(a->candidate[neighbour_node] == FALSE) {
             prob_ptr[i] = 0.0;  /* 该点不满足要求 */
         } else {
             DEBUG( assert ( neighbour_node >= 0 && neighbour_node < num_node ); )

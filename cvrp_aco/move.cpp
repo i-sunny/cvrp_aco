@@ -16,9 +16,9 @@
  */
 void ExchangeMove::apply()
 {
-    long int *tour = ant->tour;
+    int *tour = ant->tour;
     
-    long int tmp = tour[pos_n1];
+    int tmp = tour[pos_n1];
     tour[pos_n1] = tour[pos_n2];
     tour[pos_n2] = tmp;
     
@@ -31,9 +31,9 @@ void ExchangeMove::apply()
  */
 void InsertionMove::apply()
 {
-    long int *tour = ant->tour;
-    long int tmp = tour[pos_n1];
-    long int i;
+    int *tour = ant->tour;
+    int tmp = tour[pos_n1];
+    int i;
     
     if (pos_n1 < pos_n2) {
         for (i = pos_n1; i < pos_n2; i++) {
@@ -56,9 +56,9 @@ void InsertionMove::apply()
  */
 void InversionMove::apply()
 {
-    long int *tour = ant->tour;
-    long int i, j;
-    long int tmp;
+    int *tour = ant->tour;
+    int i, j;
+    int tmp;
     
     if (pos_n1 > pos_n2) {
         tmp = pos_n1;
@@ -79,3 +79,4 @@ void InversionMove::apply()
     
     ant->tour_length += gain;
 }
+

@@ -20,7 +20,7 @@
 #include "timer.h"
 
 
-double mean( long int *values, long int max ) 
+double mean( int *values, int max ) 
 /*    
       FUNCTION:       compute the average value of an integer array of length max 
       INPUT:          pointer to array, length of array
@@ -28,7 +28,7 @@ double mean( long int *values, long int max )
       (SIDE)EFFECTS:  none
 */
 {
-  long int j;
+  int j;
   double   m;
 
   m = 0.;
@@ -41,7 +41,7 @@ double mean( long int *values, long int max )
 
 
 
-double meanr( double *values, long int max ) 
+double meanr( double *values, int max ) 
 /*    
       FUNCTION:       compute the average value of a floating number array of length max 
       INPUT:          pointer to array, length of array
@@ -49,7 +49,7 @@ double meanr( double *values, long int max )
       (SIDE)EFFECTS:  none
 */
 {
-  long int j;
+  int j;
   double   m;
 
   m = 0.;
@@ -62,7 +62,7 @@ double meanr( double *values, long int max )
 
 
 
-double std_deviation( long int *values, long int max, double mean ) 
+double std_deviation( int *values, int max, double mean ) 
 /*    
       FUNCTION:       compute the standard deviation of an integer array  
       INPUT:          pointer to array, length of array, mean 
@@ -70,7 +70,7 @@ double std_deviation( long int *values, long int max, double mean )
       (SIDE)EFFECTS:  none
 */
 {
-  long int j;
+  int j;
   double   dev = 0.;
 
   if (max <= 1)
@@ -83,7 +83,7 @@ double std_deviation( long int *values, long int max, double mean )
 
 
 
-double std_deviationr( double *values, long int max, double mean ) 
+double std_deviationr( double *values, int max, double mean ) 
 /*    
       FUNCTION:       compute the standard deviation of a floating number array  
       INPUT:          pointer to array, length of array, mean 
@@ -91,7 +91,7 @@ double std_deviationr( double *values, long int max, double mean )
       (SIDE)EFFECTS:  none
 */
 {
-  long int j;
+  int j;
   double   dev;
 
   if (max <= 1)
@@ -105,7 +105,7 @@ double std_deviationr( double *values, long int max, double mean )
 
 
 
-long int best_of_vector( long int *values, long int l ) 
+int best_of_vector( int *values, int l ) 
 /*    
       FUNCTION:       return the minimum value in an integer value  
       INPUT:          pointer to array, length of array
@@ -113,7 +113,7 @@ long int best_of_vector( long int *values, long int l )
       (SIDE)EFFECTS:  none
 */
 {
-  long int min, k;
+  int min, k;
 
   k = 0;
   min = values[k];
@@ -127,7 +127,7 @@ long int best_of_vector( long int *values, long int l )
 
 
 
-long int worst_of_vector( long int *values, long int l ) 
+int worst_of_vector( int *values, int l ) 
 /*    
       FUNCTION:       return the maximum value in an integer value  
       INPUT:          pointer to array, length of array
@@ -135,7 +135,7 @@ long int worst_of_vector( long int *values, long int l )
       (SIDE)EFFECTS:  none
 */
 {
-  long int max, k;
+  int max, k;
 
   k = 0;
   max = values[k];
@@ -149,7 +149,7 @@ long int worst_of_vector( long int *values, long int l )
 
 
 
-double quantil(long int v[], double q, long int l)
+double quantil(int v[], double q, int l)
 /*    
       FUNCTION:       return the q-quantil of an ordered integer array  
       INPUT:          one array, desired quantil q, length of array
@@ -157,29 +157,29 @@ double quantil(long int v[], double q, long int l)
       (SIDE)EFFECTS:  none
 */
 {
-  long int i,j;
+  int i,j;
   double tmp;
 
   tmp = q * (double)l;
-  if ((double)((long int)tmp) == tmp) {  
-    i = (long int)tmp;
-    j = (long int)(tmp + 1.);
+  if ((double)((int)tmp) == tmp) {  
+    i = (int)tmp;
+    j = (int)(tmp + 1.);
     return ((double)v[i-1] + (double)v[j-1]) / 2.;
   } else {
-    i = (long int)(tmp +1.);
+    i = (int)(tmp +1.);
     return v[i-1];
   }
 }
 
 
-void swap(long int *i, long int *j)
+void swap(int *i, int *j)
 {
-    long int tmp = *i;
+    int tmp = *i;
     *i = *j;
     *j = tmp;
 }
 
-void swap(long int v[], long int i, long int j)
+void swap(int v[], int i, int j)
 /*    
       FUNCTION:       auxiliary routine for sorting an integer array  
       INPUT:          array, two indices
@@ -187,7 +187,7 @@ void swap(long int v[], long int i, long int j)
       (SIDE)EFFECTS:  elements at position i and j of array are swapped
 */
 {
-  long int tmp;
+  int tmp;
 
   tmp = v[i];
   v[i] = v[j];
@@ -197,7 +197,7 @@ void swap(long int v[], long int i, long int j)
 
 
 
-void sort(long int v[], long int left, long int right)
+void sort(int v[], int left, int right)
 /*    
       FUNCTION:       recursive routine (quicksort) for sorting an array  
       INPUT:          one array, two indices
@@ -205,7 +205,7 @@ void sort(long int v[], long int left, long int right)
       (SIDE)EFFECTS:  elements at position i and j of the two arrays are swapped
 */
 {
-  long int k, last;
+  int k, last;
 
   if (left >= right) 
     return;
@@ -221,7 +221,7 @@ void sort(long int v[], long int left, long int right)
 
 
 
-void swap2(double v[], long int v2[], long int i, long int j)
+void swap2(double v[], int v2[], int i, int j)
 /*    
       FUNCTION:       auxiliary routine for sorting an integer array  
       INPUT:          two arraya, two indices
@@ -230,7 +230,7 @@ void swap2(double v[], long int v2[], long int i, long int j)
 */
 {
     double tmp1;
-    long int tmp2;
+    int tmp2;
 
     tmp1 = v[i];
     v[i] = v[j];
@@ -243,7 +243,7 @@ void swap2(double v[], long int v2[], long int i, long int j)
 
 
 
-void sort2(double v[], long int v2[], long int left, long int right)
+void sort2(double v[], int v2[], int left, int right)
 /*    
       FUNCTION:       recursive routine (quicksort) for sorting one array; second 
                       arrays does the same sequence of swaps  
@@ -252,7 +252,7 @@ void sort2(double v[], long int v2[], long int left, long int right)
       (SIDE)EFFECTS:  elements at position i and j of the two arrays are swapped
 */
 {
-  long int k, last;
+  int k, last;
 
   if (left >= right) 
     return;
@@ -268,7 +268,7 @@ void sort2(double v[], long int v2[], long int left, long int right)
 
 
 
-double ran01( long *idum )
+double ran01( int *idum )
 /*    
       FUNCTION:       generate a random number that is uniformly distributed in [0,1]
       INPUT:          pointer to variable with the current seed
@@ -277,7 +277,7 @@ double ran01( long *idum )
       ORIGIN:         numerical recipes in C
 */
 {
-  long k;
+  int k;
   double ans;
 
   k =(*idum)/IQ;
@@ -289,7 +289,7 @@ double ran01( long *idum )
 
 
 
-long int random_number( long *idum )
+int random_number( int *idum )
 /*    
       FUNCTION:       generate an integer random number
       INPUT:          pointer to variable containing random number seed
@@ -298,7 +298,7 @@ long int random_number( long *idum )
       ORIGIN:         numerical recipes in C
 */
 {
-  long k;
+  int k;
 
   k =(*idum)/IQ;
   *idum = IA * (*idum - k * IQ) - IR * k;
@@ -308,7 +308,7 @@ long int random_number( long *idum )
 
 
 
-long int ** generate_int_matrix( long int n, long int m)
+int ** generate_int_matrix( int n, int m)
 /*    
       FUNCTION:       malloc a matrix and return pointer to it
       INPUT:          size of matrix as n x m 
@@ -316,16 +316,16 @@ long int ** generate_int_matrix( long int n, long int m)
       (SIDE)EFFECTS:  
 */
 {
-  long int i;
-  long int **matrix;
+  int i;
+  int **matrix;
 
-  if((matrix = (long int **)malloc(sizeof(long int) * n * m +
-                                   sizeof(long int *) * n	 )) == NULL){
+  if((matrix = (int **)malloc(sizeof(int) * n * m +
+                                   sizeof(int *) * n	 )) == NULL){
     printf("Out of memory, exit.");
     exit(1);
   }
   for ( i = 0 ; i < n ; i++ ) {
-    matrix[i] = (long int *)(matrix + n) + i*m;
+    matrix[i] = (int *)(matrix + n) + i*m;
   }
 
   return matrix;
@@ -333,7 +333,7 @@ long int ** generate_int_matrix( long int n, long int m)
 
 
 
-double ** generate_double_matrix( long int n, long int m)
+double ** generate_double_matrix( int n, int m)
 /*    
       FUNCTION:       malloc a matrix and return pointer to it
       INPUT:          size of matrix as n x m 
@@ -342,7 +342,7 @@ double ** generate_double_matrix( long int n, long int m)
 */
 {
 
-  long int i;
+  int i;
   double **matrix;
 
   if((matrix = (double **)malloc(sizeof(double) * n * m +

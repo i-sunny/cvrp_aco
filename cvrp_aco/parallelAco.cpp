@@ -37,7 +37,7 @@ struct ThreadInfo
     Problem *sub;
 };
 
-void *sub_thread_func(void* in);
+void *handle(void* in);
 
 
 ParallelAco::~ParallelAco()
@@ -53,7 +53,7 @@ ParallelAco::~ParallelAco()
  */
 void ParallelAco::get_solution_centers(AntStruct *ant)
 {
-    long int route_beg = 0;
+    int route_beg = 0;
     RouteCenter * center;
     route_centers.clear();   // 清空前一次迭代的数据
     for (int i = 1; i < ant->tour_size; i++) {
@@ -78,7 +78,7 @@ bool cmp(const RouteCenter* ra, const RouteCenter* rb)
  */
 void ParallelAco::sort_route_centers()
 {
-    long int x0 = nodeptr[0].x, y0 = nodeptr[0].y, dx, dy;
+    int x0 = nodeptr[0].x, y0 = nodeptr[0].y, dx, dy;
     
     for (int i = 0; i < route_centers.size(); i++) {
         dx = route_centers[i]->coord->x - x0;
@@ -110,15 +110,15 @@ void ParallelAco::decompose_problem(AntStruct *ant)
     Problem *master = instance;
     
     // random start pos from [0, route_num)
-    long int rnd_beg = (long int)(ran01(&instance->rnd_seed) * (route_centers.size() - 1));
+    int rnd_beg = (int)(ran01(&instance->rnd_seed) * (route_centers.size() - 1));
     /* 一个子问题包含的routes数目 */
-    long int sub_problem_route_num = (long int)(route_centers.size() / master->num_subs);
+    int sub_problem_route_num = (int)(route_centers.size() / master->num_subs);
     /* 
      * 剩余的routes, 前remainder个子问题，每个子问题多分配一个，
      * 如此尽量保证分配均匀. 
      * 每个子问题分配的子routes数量为: sub_problem_route_num 或 sub_problem_route_num + 1
      */
-    long int remainder = route_centers.size() % master->num_subs;
+    int remainder = route_centers.size() % master->num_subs;
     
     vector< vector<RouteCenter *> > sub_problem_routes;
     vector<RouteCenter *> tmp;
@@ -156,10 +156,10 @@ void ParallelAco::build_sub_problems(AntStruct *ant, const vector< vector<RouteC
 {
     
     Problem *sub, *master = instance;
-    long int *tour = ant->tour;
+    int *tour = ant->tour;
     vector<RouteCenter *> routes;
     double sub_best_length;
-    long int i, j, k, t;
+    int i, j, k, t;
     
     for (int p = 0; p < sub_problem_routes.size(); p++)
     {
@@ -227,7 +227,7 @@ void ParallelAco::init_sub_pheromone(AntColony *sub_solver, Problem *master, Pro
 {
     TRACE( printf("init sub-problem %d pheromone...\n", sub->pid);)
     
-    long int i, j, ri, rj;
+    int i, j, ri, rj;
     double ratio = 1.0 * sub->best_so_far_ant->tour_length / master->best_so_far_ant->tour_length;
     /*
      * 1)子问题从主问题那里获取初始信息素
@@ -295,7 +295,7 @@ void ParallelAco::update_sub_best_pheromone(Problem *sub)
 {
     TRACE(printf("update sub best pheromone. (pid,iter)=(%d,%ld)\n", sub->pid, sub->iteration);)
     
-    long int i, j;
+    int i, j;
     for(i = 0; i < sub->num_node; i++) {
         for (j = 0; j < sub->num_node; j++) {
             sub->best_pheromone[i][j] = sub->pheromone[i][j];
@@ -311,9 +311,9 @@ void ParallelAco::update_sub_best_pheromone(Problem *sub)
 void ParallelAco::update_subs_to_master(Problem *master, const vector<Problem *> &subs)
 {
     Problem *sub;
-    long int i, j,h, rj, rh, k;
-    long int *sub_tour, *master_tour;
-    long int sub_sz;
+    int i, j,h, rj, rh, k;
+    int *sub_tour, *master_tour;
+    int sub_sz;
     double ratio;
     double sub_best_length, master_best_length, tmp_length = 0;
     
@@ -390,7 +390,7 @@ void ParallelAco::update_subs_to_master(Problem *master, const vector<Problem *>
  */
 void ParallelAco::run_aco_iteration()
 {
-    long int i;
+    int i;
     Problem *master = instance;
     
     //1)computer master problem
@@ -413,7 +413,7 @@ void ParallelAco::run_aco_iteration()
         info->master_solver = this;
         info->sub = subs[i];
         
-        int ret = pthread_create(&tids[i], NULL, sub_thread_func, (void *)info);
+        int ret = pthread_create(&tids[i], NULL, handle, (void *)info);
         if(ret) {
             printf("create pthread error!\n");
             exit(EXIT_FAILURE);
@@ -435,9 +435,9 @@ void ParallelAco::run_aco_iteration()
 }
 
 
-void *sub_thread_func(void* in)
+void *handle(void* in)
 {
-    long int j;
+    int j;
     ThreadInfo *info = (ThreadInfo *)in;
     Problem *sub, *master;
     AntColony *sub_solver;

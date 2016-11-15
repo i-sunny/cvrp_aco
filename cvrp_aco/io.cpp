@@ -38,9 +38,9 @@ static void fprintf_parameters (FILE *stream, Problem *instance);
  INPUT:          pointer to a tour
  OUTPUT:         none
  */
-void print_solution(Problem *instance, long int *tour, long int tour_size)
+void print_solution(Problem *instance, int *tour, int tour_size)
 {
-    long int   i;
+    int   i;
     
     printf("\n--------\n");
     
@@ -49,7 +49,7 @@ void print_solution(Problem *instance, long int *tour, long int tour_size)
         if (!i%25) {
             printf("\n");
         }
-        printf("%ld ", tour[i]);
+        printf("%d ", tour[i]);
     }
     printf("\n");
     printf("Tour length = %f, pid = %d", compute_tour_length(instance, tour, tour_size), instance->pid);
@@ -62,9 +62,9 @@ void print_solution(Problem *instance, long int *tour, long int tour_size)
  INPUT:          pointer to a route
  OUTPUT:         none
  */
-void print_single_route(Problem *instance, long int *route, long int route_size)
+void print_single_route(Problem *instance, int *route, int route_size)
 {
-    long int   i;
+    int   i;
     
     printf("\n--------\n");
     
@@ -73,7 +73,7 @@ void print_single_route(Problem *instance, long int *route, long int route_size)
         if (i!= 0 && !i%25) {
             printf("\n");
         }
-        printf("%ld ", route[i]);
+        printf("%d ", route[i]);
     }
     printf("\n");
     printf("Route length = %f, pid = %d", compute_tour_length(instance, route, route_size), instance->pid);
@@ -90,7 +90,7 @@ void print_problem_decompositon(const vector<Problem *>& subs)
         sub = subs[i];
         printf("sub %d, length %f:", i+1, sub->best_so_far_ant->tour_length);
         for (int j = 0; j < sub->real_nodes.size(); j++) {
-            printf("%ld ", sub->real_nodes[j]);
+            printf("%d ", sub->real_nodes[j]);
         }
         printf("\n");
     }
@@ -105,16 +105,16 @@ void print_problem_decompositon(const vector<Problem *>& subs)
  */
 void print_probabilities(Problem *instance)
 {
-    long int i, j;
+    int i, j;
     double   *p;
     double   sum_prob;
-    long int num_node = instance->num_node;
+    int num_node = instance->num_node;
     
-    printf("Selection Probabilities, iteration: %ld\n",instance->iteration);
+    printf("Selection Probabilities, iteration: %d\n",instance->iteration);
     p = (double *)calloc(num_node, sizeof(double) );
     
     for (i=0; i < num_node; i++) {
-        printf("From %ld:  ",i);
+        printf("From %d:  ",i);
         sum_prob = 0.;
         for ( j = 0 ; j < num_node ; j++) {
             if ( i == j )
@@ -146,11 +146,11 @@ void print_probabilities(Problem *instance)
  */
 void print_distance(Problem *instance)
 {
-    long int i,j;
+    int i,j;
     
     printf("Distance Matrix:\n");
     for ( i = 0 ; i < instance->num_node ; i++) {
-        printf("From %ld:  ",i);
+        printf("From %d:  ",i);
         for ( j = 0 ; j < instance->num_node - 1 ; j++ ) {
             printf(" %f", instance->distance[i][j]);
         }
@@ -167,11 +167,11 @@ void print_distance(Problem *instance)
  */
 void print_pheromone(Problem *instance)
 {
-    long int i,j;
+    int i,j;
     
-    printf("pheromone Trail matrix, iteration: %ld\n\n",instance->iteration);
+    printf("pheromone Trail matrix, iteration: %d\n\n",instance->iteration);
     for ( i = 0 ; i < instance->num_node ; i++) {
-        printf("From %ld:  ",i);
+        printf("From %d:  ",i);
         for ( j = 0 ; j < instance->num_node ; j++ ) {
             printf(" %.10f ", instance->pheromone[i][j]);
             if (instance->pheromone[i][j] > 1.0)
@@ -189,7 +189,7 @@ void print_pheromone(Problem *instance)
  */
 void print_total_info(Problem *instance)
 {
-    long int i, j, num_node =  instance->num_node;
+    int i, j, num_node =  instance->num_node;
     double **total = instance->total_info;
     
     printf("combined pheromone and heuristic info\n\n");
@@ -209,23 +209,23 @@ void print_total_info(Problem *instance)
 /*
  * 问题开始时
  */
-void init_report(Problem *instance, long int ntry)
+void init_report(Problem *instance, int ntry)
 {
-    printf("\n############### start try %ld ###############\n", ntry);
+    printf("\n############### start try %d ###############\n", ntry);
     
     char temp_buffer[LINE_BUF_LEN];
     
     if (report_flag) {
-        sprintf(temp_buffer,"./report/best.%s",instance->name);
+        sprintf(temp_buffer,"../report/best.%s",instance->name);
         report = fopen(temp_buffer, "w");
         
-        sprintf(temp_buffer,"./report/best_so_far.%s",instance->name);
+        sprintf(temp_buffer,"../report/best_so_far.%s",instance->name);
         best_so_far_report = fopen(temp_buffer, "a");
         
-        sprintf(temp_buffer,"./report/iter.%s",instance->name);
+        sprintf(temp_buffer,"../report/iter.%s",instance->name);
         iter_report = fopen(temp_buffer, "w");
         
-        sprintf(temp_buffer,"./report/anneal.%s",instance->name);
+        sprintf(temp_buffer,"../report/anneal.%s",instance->name);
         anneal_report = fopen(temp_buffer, "w");
     } else {
         report = NULL;
@@ -235,7 +235,7 @@ void init_report(Problem *instance, long int ntry)
     }
     
     if (best_so_far_report) {
-        fprintf(best_so_far_report,"\n############### start try %ld ###############\n", ntry);
+        fprintf(best_so_far_report,"\n############### start try %d, time %s ###############\n", ntry, get_format_time());
     }
     write_params(instance);
 }
@@ -243,25 +243,25 @@ void init_report(Problem *instance, long int ntry)
 /*
  * 问题结束时
  */
-void exit_report(Problem *instance, long int ntry) {
+void exit_report(Problem *instance, int ntry) {
     
     if(!check_solution(instance, instance->best_so_far_ant->tour, instance->best_so_far_ant->tour_size)) {
         exit(EXIT_FAILURE);
     }
     
-    printf("\n\nBest Length: %f\t Iterations: %ld\t At time %.2f\t Tot.time %.2f\n",
+    printf("\n\nBest Length: %f\t Iterations: %d\t At time %.2f\t Tot.time %.2f\n",
             instance->best_so_far_ant->tour_length, instance->iteration, instance->best_so_far_time, elapsed_time(VIRTUAL));
-    printf("############### end try %ld ###############\n\n", ntry);
+    printf("############### end try %d ###############\n\n", ntry);
     
     if (report) {
-        fprintf(report, "Best Length: %f\t Iterations: %ld\t At time %.2f\t Tot.time %.2f\n",
+        fprintf(report, "Best Length: %f\t Iterations: %d\t At time %.2f\t Tot.time %.2f\n",
                 instance->best_so_far_ant->tour_length, instance->iteration, instance->best_so_far_time, elapsed_time(VIRTUAL));
         fflush(report);
     }
 
     if (best_so_far_report){
         print_solution_to_file(instance, best_so_far_report, instance->best_so_far_ant->tour, instance->best_so_far_ant->tour_size);
-        fprintf(best_so_far_report,"############### end try %ld ###############\n\n",ntry);
+        fprintf(best_so_far_report,"############### end try %d, time %s ###############\n\n",ntry, get_format_time());
         fflush(best_so_far_report);
     }
     if (iter_report) {
@@ -277,12 +277,12 @@ void exit_report(Problem *instance, long int ntry) {
  INPUT:          pointer to a tour
  OUTPUT:         none
  */
-void print_solution_to_file(Problem *instance, FILE *file, long int *tour, long int tour_size)
+void print_solution_to_file(Problem *instance, FILE *file, int *tour, int tour_size)
 {
     if (file){
         fprintf(file,"Begin Solution\n");
         for(int i = 0 ; i < tour_size ; i++ ) {
-            fprintf(file, "%ld ", tour[i]);
+            fprintf(file, "%d ", tour[i]);
         }
         fprintf(file,"\n");
         fprintf(file,"Solution Length %f\n", compute_tour_length(instance, tour, tour_size));
@@ -298,10 +298,10 @@ void print_solution_to_file(Problem *instance, FILE *file, long int *tour, long 
  */
 void write_best_so_far_report(Problem *instance)
 {
-    printf("best so far length %f, iteration: %ld, time %.2f\n",
+    printf("best so far length %f, iteration: %d, time %.2f\n",
            instance->best_so_far_ant->tour_length, instance->iteration, instance->best_so_far_time);
     if (best_so_far_report) {
-        fprintf(best_so_far_report, "%f\t %ld\t %.3f\n",
+        fprintf(best_so_far_report, "%f\t %d\t %.3f\n",
                 instance->best_so_far_ant->tour_length, instance->iteration, instance->best_so_far_time);
     }
 }
@@ -317,7 +317,7 @@ void write_iter_report(Problem *instance)
     DEBUG(printf("iteration: %ld, iter best length %f, time %.2f\n",
            instance->iteration, instance->iteration_best_ant->tour_length, elapsed_time( VIRTUAL));)
     if (iter_report) {
-        fprintf(iter_report, "%f\t %ld\t %.3f\n",
+        fprintf(iter_report, "%f\t %d\t %.3f\n",
                 instance->iteration_best_ant->tour_length, instance->iteration, elapsed_time( VIRTUAL));
     }
 }
@@ -331,21 +331,21 @@ void write_anneal_report(Problem *instance, AntStruct *ant, Move *move)
         DEBUG(printf("[Inversion Move] moved length %f, gain:%f, pos_n1:%ld, pos_n2:%ld, time %.2f\n",
                ant->tour_length, p->gain, p->pos_n1, p->pos_n2, elapsed_time( VIRTUAL));)
         if (anneal_report) {
-            fprintf(anneal_report, "[Inversion Move]: best length %f, gain:%f, pos_n1:%ld, pos_n2:%ld, time %.2f\n",
+            fprintf(anneal_report, "[Inversion Move]: best length %f, gain:%f, pos_n1:%d, pos_n2:%d, time %.2f\n",
                     ant->tour_length, p->gain, p->pos_n1, p->pos_n2, elapsed_time( VIRTUAL));
         }
     } else if (InsertionMove *p = dynamic_cast<InsertionMove *>(move)) {
         DEBUG(printf("[Insertion Move] moved length %f, gain:%f, pos_n1:%ld, pos_n2:%ld, load_r1:%ld, load_r2:%ld, time %.2f\n",
                ant->tour_length, p->gain, p->pos_n1, p->pos_n2, p->load_r1, p->load_r2, elapsed_time( VIRTUAL));)
         if (anneal_report) {
-            fprintf(anneal_report, "[Insertion Move]: best length %f, gain:%f, pos_n1:%ld, pos_n2:%ld, time %.2f\n",
+            fprintf(anneal_report, "[Insertion Move]: best length %f, gain:%f, pos_n1:%d, pos_n2:%d, time %.2f\n",
                     ant->tour_length, p->gain, p->pos_n1, p->pos_n2, elapsed_time( VIRTUAL));
         }
     } else if (ExchangeMove *p = dynamic_cast<ExchangeMove *>(move)) {
         DEBUG(printf("[Exchange Move] moved length %f, gain:%f, pos_n1:%ld, pos_n2:%ld, load_r1:%ld, load_r2:%ld, time %.2f\n",
                ant->tour_length, p->gain, p->pos_n1, p->pos_n2, p->load_r1, p->load_r2, elapsed_time( VIRTUAL));)
         if (anneal_report) {
-            fprintf(anneal_report, "[Exchange Move] moved length %f, gain:%f, pos_n1:%ld, pos_n2:%ld, load_r1:%ld, load_r2:%ld, time %.2f\n",
+            fprintf(anneal_report, "[Exchange Move] moved length %f, gain:%f, pos_n1:%d, pos_n2:%d, load_r1:%d, load_r2:%d, time %.2f\n",
                     ant->tour_length, p->gain, p->pos_n1, p->pos_n2, p->load_r1, p->load_r2, elapsed_time( VIRTUAL));
         }
     }
@@ -376,16 +376,16 @@ void write_params(Problem *instance)
 static void fprintf_parameters (FILE *stream, Problem *instance)
 {
     fprintf(stream,"max_time\t\t %.2f\n", instance->max_runtime);
-    fprintf(stream,"seed\t\t %ld\n", instance->rnd_seed);
+    fprintf(stream,"seed\t\t %d\n", instance->rnd_seed);
     fprintf(stream,"optimum\t\t\t %f\n", instance->optimum);
-    fprintf(stream,"n_ants\t\t\t %ld\n", instance->n_ants);
-    fprintf(stream,"nn_ants\t\t\t %ld\n", instance->nn_ants);
+    fprintf(stream,"n_ants\t\t\t %d\n", instance->n_ants);
+    fprintf(stream,"nn_ants\t\t\t %d\n", instance->nn_ants);
     fprintf(stream,"alpha\t\t\t %.2f\n", alpha);
     fprintf(stream,"beta\t\t\t %.2f\n", beta);
     fprintf(stream,"rho\t\t\t %.2f\n", rho);
-    fprintf(stream,"ras_ranks\t\t %ld\n", ras_ranks);
+    fprintf(stream,"ras_ranks\t\t %d\n", ras_ranks);
     fprintf(stream,"ls_flag\t\t\t %d\n", instance->ls_flag);
-    fprintf(stream,"nn_ls\t\t\t %ld\n", instance->nn_ls);
+    fprintf(stream,"nn_ls\t\t\t %d\n", instance->nn_ls);
     fprintf(stream,"dlb_flag\t\t %d\n", instance->dlb_flag);
 }
 
@@ -399,7 +399,7 @@ void read_instance_file(Problem *instance, const char *vrp_file_name)
 {
     FILE         *vrp_file;
     char         buf[LINE_BUF_LEN];
-    long int     i, j;
+    int     i, j;
     Point *nodeptr;
     
     vrp_file = fopen(vrp_file_name, "r");
@@ -409,7 +409,7 @@ void read_instance_file(Problem *instance, const char *vrp_file_name)
     }
     printf("\nreading vrp-file %s ... \n\n", vrp_file_name);
     
-    instance->max_distance = LONG_MAX;
+    instance->max_distance = INFINITY;
     instance->service_time = 0;
     instance->optimum = 0;
     
@@ -453,11 +453,11 @@ void read_instance_file(Problem *instance, const char *vrp_file_name)
         }
         else if( strcmp("DIMENSION", buf) == 0 ){
             fscanf(vrp_file, "%s", buf);
-            fscanf(vrp_file, "%ld", &instance->num_node);
+            fscanf(vrp_file, "%d", &instance->num_node);
             buf[0]=0;
         }
         else if ( strcmp("DIMENSION:", buf) == 0 ) {
-            fscanf(vrp_file, "%ld", &instance->num_node);
+            fscanf(vrp_file, "%d", &instance->num_node);
             buf[0]=0;
         }
         else if( strcmp("DISPLAY_DATA_TYPE", buf) == 0 ){
@@ -518,11 +518,11 @@ void read_instance_file(Problem *instance, const char *vrp_file_name)
         }
         else if( strcmp("CAPACITY", buf) == 0 ){
             fscanf(vrp_file, "%s", buf);
-            fscanf(vrp_file, "%ld", &instance->vehicle_capacity);
+            fscanf(vrp_file, "%d", &instance->vehicle_capacity);
             buf[0]=0;
         }
         else if ( strcmp("CAPACITY:", buf) == 0 ) {
-            fscanf(vrp_file, "%ld", &instance->vehicle_capacity);
+            fscanf(vrp_file, "%d", &instance->vehicle_capacity);
             buf[0]=0;
         }
         else if ( strcmp("DISTANCE", buf) == 0 ) {
@@ -560,7 +560,7 @@ void read_instance_file(Problem *instance, const char *vrp_file_name)
         exit(EXIT_FAILURE);
     else {
         for ( i = 0 ; i < instance->num_node ; i++ ) {
-            fscanf(vrp_file,"%ld %lf %lf", &j, &nodeptr[i].x, &nodeptr[i].y );
+            fscanf(vrp_file,"%d %lf %lf", &j, &nodeptr[i].x, &nodeptr[i].y );
         }
     }
     
@@ -572,7 +572,7 @@ void read_instance_file(Problem *instance, const char *vrp_file_name)
         TRACE ( printf("found section contaning the node demand\n"); )
     }
     for ( i = 0 ; i < instance->num_node ; i++ ) {
-        fscanf(vrp_file,"%ld %ld", &j, &nodeptr[i].demand);
+        fscanf(vrp_file,"%d %d", &j, &nodeptr[i].demand);
     }
     
     instance->nodeptr = nodeptr;

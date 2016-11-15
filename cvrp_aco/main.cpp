@@ -20,7 +20,7 @@
 #include "io.h"
 
 static bool parallel_flag  = true;  /* 是否使用并行算法 */
-static long int tries = 20;
+static int tries = 15;
 
 /*
  FUNCTION:       checks whether termination condition is met
@@ -38,7 +38,7 @@ bool termination_condition(Problem *instance)
 /*
  * 解析命令行，获取文件名
  */
-char* parse_commandline (long int argc, char *argv [])
+char* parse_commandline (int argc, char *argv [])
 {
     char *filename;
     
@@ -62,7 +62,7 @@ char* parse_commandline (long int argc, char *argv [])
  */
 int main(int argc, char *argv[])
 {
-    for (int i = 9; i < 10; i++) {
+    for (int i = 1; i <= 1; i++) {
     for (int ntry = 0 ; ntry < tries; ntry++)
     {
         Problem *instance = new Problem(0);
@@ -71,9 +71,9 @@ int main(int argc, char *argv[])
         start_timers();
         
         char *filename = parse_commandline(argc, argv);
-        sprintf(filename, "/Users/sunny/Desktop/cvrp_proj/src/cvrp_aco/cvrp_aco/CMT/CMT%d.vrp", i);
+        sprintf(filename, "/Users/sunny/Desktop/cvrp_proj/src/cvrp_aco/dataset/CMT/CMT%d.vrp", i);
 //        linux
-//        sprintf(filename, "./CMT/CMT%d.vrp", i);
+//        sprintf(filename, "../dataset/CMT/CMT%d.vrp", i);
         
         
         read_instance_file(instance, filename);

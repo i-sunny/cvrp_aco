@@ -1,21 +1,25 @@
 # Makefile for cvrp_aco
 VERSION=1.0
 
-OPTIM_FLAGS=-O
+OPTIM_FLAGS=-O2
 WARN_FLAGS=-Wall -ansi -pedantic
-CFLAGS=$(WARN_FLAGS) $(OPTIM_FLAGS)
+CPPFLAGS=$(WARN_FLAGS) $(OPTIM_FLAGS) -lpthread
+CC=g++
 # To change the default timer implementation, uncomment the line below
 # or call 'make TIMER=unix'
 TIMER=unix
 LDLIBS=-lm
 
+OBJS= antColony.o io.o localSearch.o main.o $(TIMER)_timer.o move.o neighbourSearch.o parallelAco.o problem.o simulatedAnnealing.o utilities.o vrpHelper.o
+EXE=main
 
 all: clean cvrp_aco
 
 clean:
 	@$(RM) *.o cvrp_aco
 
-cvrp_aco: antColony.o io.o localSearch.o main.o $(TIMER)_timer.o move.o neighbourSearch.o parallelAco.o problem.o simulatedAnnealing.o utilities.o vrpHelper.o
+cvrp_aco: $(OBJS)
+	$(CC) $(CPPFLAGS) $(OBJS) -o $(EXE)
 
 antColony.o: antColony.cpp antColony.h
 

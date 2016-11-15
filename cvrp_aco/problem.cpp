@@ -24,14 +24,14 @@
 
 
 /**** 用于parallel aco参数 ***/
-long int g_master_problem_iteration_num;   /* 每次外循环，主问题蚁群的迭代的次数 */
-long int g_sub_problem_iteration_num;      /* 每次外循环，子问题蚁群的迭代次数 */
+int g_master_problem_iteration_num;   /* 每次外循环，主问题蚁群的迭代的次数 */
+int g_sub_problem_iteration_num;      /* 每次外循环，子问题蚁群的迭代次数 */
 bool sa_flag = true;                        /* 是否使用sa */
 
 double rho;           /* parameter for evaporation */
 double alpha;         /* importance of trail */
 double beta;          /* importance of heuristic evaluate */
-long int ras_ranks;   /* additional parameter for rank-based version of ant system */
+int ras_ranks;   /* additional parameter for rank-based version of ant system */
 
 /* ------------------------------------------------------------------------ */
 
@@ -67,7 +67,7 @@ void exit_problem(Problem *instance)
     for (int i = 0 ; i < instance->n_ants ; i++ ) {
         free( instance->ants[i].tour );
         free( instance->ants[i].visited );
-        free( instance->ants[i].demand_meet_node );
+        free( instance->ants[i].candidate );
     }
     free( instance->ants );
     free( instance->best_so_far_ant->tour );
@@ -84,7 +84,7 @@ void exit_problem(Problem *instance)
 void init_sub_problem(Problem *master, Problem *sub)
 {
     double **sub_dis;
-    long int ri, rj;
+    int ri, rj;
     Point *nodeptr, *m_node;
     
     // 初始化 sub-problem distance矩阵
@@ -92,10 +92,10 @@ void init_sub_problem(Problem *master, Problem *sub)
                                       sizeof(double *) * sub->num_node)) == NULL) {
         exit(EXIT_FAILURE);
     }
-    for (long int i = 0; i < sub->num_node; i++ ) {
+    for (int i = 0; i < sub->num_node; i++ ) {
         sub_dis[i] = (double *)(sub_dis + sub->num_node) + i * sub->num_node;
         ri = sub->real_nodes[i];
-        for (long int j = 0; j < sub->num_node; j++ ) {
+        for (int j = 0; j < sub->num_node; j++ ) {
             rj = sub->real_nodes[j];
             sub_dis[i][j] = master->distance[ri][rj];
         }
@@ -106,7 +106,7 @@ void init_sub_problem(Problem *master, Problem *sub)
     if((nodeptr = (Point *)malloc(sizeof(Point) * sub->num_node)) == NULL) {
         exit(EXIT_FAILURE);
     }
-    for (long int i = 0 ; i < sub->num_node ; i++ ) {
+    for (int i = 0 ; i < sub->num_node ; i++ ) {
         ri = sub->real_nodes[i];
         m_node = &master->nodeptr[ri];
         nodeptr[i].x = m_node->x;
@@ -146,7 +146,7 @@ void exit_sub_problem(Problem *sub)
  */
 void allocate_ants (Problem *instance)
 {
-    long int i;
+    int i;
     AntStruct *ants, *best_so_far_ant;
     double   *prob_of_selection;
     
@@ -156,16 +156,16 @@ void allocate_ants (Problem *instance)
         exit(1);
     }
     for (i = 0 ; i < instance->n_ants ; i++) {
-        ants[i].tour        = (long int *)calloc(2*instance->num_node-1, sizeof(long int));   // tour最长为2 * num_node - 1
+        ants[i].tour        = (int *)calloc(2*instance->num_node-1, sizeof(int));   // tour最长为2 * num_node - 1
         ants[i].visited     = (bool *)calloc(instance->num_node, sizeof(bool));
-        ants[i].demand_meet_node = (bool *)calloc(instance->num_node, sizeof(bool));
+        ants[i].candidate = (bool *)calloc(instance->num_node, sizeof(bool));
     }
     
     if((best_so_far_ant = (AntStruct *)malloc(sizeof(AntStruct))) == NULL){
         printf("Out of memory, exit.");
         exit(1);
     }
-    best_so_far_ant->tour        = (long int *)calloc(2*instance->num_node-1, sizeof(long int));
+    best_so_far_ant->tour        = (int *)calloc(2*instance->num_node-1, sizeof(int));
     best_so_far_ant->visited     = (bool *)calloc(instance->num_node, sizeof(bool));
     
     if ((prob_of_selection = (double *)malloc(sizeof(double) * (instance->nn_ants + 1))) == NULL) {
@@ -209,7 +209,7 @@ void set_default_parameters (Problem *instance)
     rho            = 0.1;
     ras_ranks      = 6;          /* number of ranked ants, top-{ras_ranks} ants */
     
-    instance->rnd_seed       = (long int) time(NULL);
+    instance->rnd_seed       = (int) time(NULL);
     instance->max_runtime    = 600.0;
     
     // parallel aco
@@ -223,12 +223,12 @@ void set_default_parameters (Problem *instance)
  * 检查 ant vrp solution 的有效性
  * i.e. tour = [0,1,4,2,0,5,3,0] toute1 = [0,1,4,2,0] route2 = [0,5,3,0]
  */
-int check_solution(Problem *instance, long int *tour, long int tour_size)
+bool check_solution(Problem *instance, int *tour, int tour_size)
 {
     int i;
     int * used;
-    long int num_node = instance->num_node;
-    long int route_beg;    /* 单条回路起点 */
+    int num_node = instance->num_node;
+    int route_beg;    /* 单条回路起点 */
     
     used = (int *)calloc (num_node, sizeof(int));
     
@@ -244,7 +244,7 @@ int check_solution(Problem *instance, long int *tour, long int tour_size)
         if (tour[i] != 0) {
             // 非depot点只能路过一次
             if (used[tour[i]]) {
-                fprintf(stderr,"\n%s:error: solution vector has two times the value %ld (last position: %d)\n", __FUNCTION__, tour[i], i);
+                fprintf(stderr,"\n%s:error: solution vector has two times the value %d (last position: %d)\n", __FUNCTION__, tour[i], i);
                 goto error;
             } else {
                 used[tour[i]] = TRUE;
@@ -273,7 +273,7 @@ int check_solution(Problem *instance, long int *tour, long int tour_size)
 error:
     fprintf(stderr,"\n%s:error: solution_vector:", __FUNCTION__);
     for (i = 0; i < tour_size; i++)
-        fprintf(stderr, " %ld", tour[i]);
+        fprintf(stderr, " %d", tour[i]);
     fprintf(stderr,"\n");
     free(used);
     return FALSE;
@@ -284,9 +284,9 @@ error:
  * 注意depot点出现两次（分别出现在首尾）
  * i.e. toute = [0,1,4,2,0]
  */
-int check_route(Problem *instance, long int *tour, long int rbeg, long int rend)
+bool check_route(Problem *instance, int *tour, int rbeg, int rend)
 {
-    long int load = 0;
+    int load = 0;
     double distance = 0;
     
     if (tour[rbeg] != 0 || tour[rend] != 0) {
@@ -294,14 +294,14 @@ int check_route(Problem *instance, long int *tour, long int rbeg, long int rend)
         return FALSE;
     }
     if (rend - rbeg < 2) {
-        fprintf(stderr,"\n%s:error: 单条回路长度不对. rbeg=%ld, rend=%ld\n", __FUNCTION__, rbeg, rend);
+        fprintf(stderr,"\n%s:error: 单条回路长度不对. rbeg=%d, rend=%d\n", __FUNCTION__, rbeg, rend);
         return FALSE;
     }
-    for (long int i = rbeg + 1; i < rend; i++) {
+    for (int i = rbeg + 1; i < rend; i++) {
         load += instance->nodeptr[tour[i]].demand;
     }
     if (load > instance->vehicle_capacity) {
-        fprintf(stderr,"\n%s:error: 单条回路超过车辆最大承载量 load = %ld, capacity = %ld rbeg = %ld rend = %ld\n",
+        fprintf(stderr,"\n%s:error: 单条回路超过车辆最大承载量 load = %d, capacity = %d rbeg = %d rend = %d\n",
                 __FUNCTION__, load, instance->vehicle_capacity, rbeg, rend);
         return FALSE;
     }
@@ -310,7 +310,7 @@ int check_route(Problem *instance, long int *tour, long int rbeg, long int rend)
     distance += instance->service_time * (rend - rbeg - 1);
     
     if (distance > instance->max_distance) {
-        fprintf(stderr,"\n%s:error: 单条回路超过车辆最大路程 distance = %f, max_distance = %f rbeg = %ld rend = %ld\n",
+        fprintf(stderr,"\n%s:error: 单条回路超过车辆最大路程 distance = %f, max_distance = %f rbeg = %d rend = %d\n",
                 __FUNCTION__, distance, instance->max_distance, rbeg, rend);
         return FALSE;
     }

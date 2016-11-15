@@ -28,6 +28,7 @@
 static struct rusage res;
 static struct timeval tp;
 static double virtual_time, real_time;
+static char format_time[26];
 
 
 
@@ -77,6 +78,19 @@ double elapsed_time(TIMER_TYPE type)
 		- virtual_time );
     }
 
+}
+
+
+char* get_format_time(void)
+{
+    time_t timer;
+    struct tm* tm_info;
+    
+    time(&timer);
+    tm_info = localtime(&timer);
+    
+    strftime(format_time, 26, "%Y-%m-%d %H:%M:%S", tm_info);
+    return format_time;
 }
 
 

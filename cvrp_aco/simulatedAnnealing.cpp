@@ -23,7 +23,7 @@
 bool tabu_flag = true;
 
 SimulatedAnnealing::SimulatedAnnealing(Problem *instance, AntColony *ant_colony, double t0,
-                                       double alpha, long int epoch_length, long int terminal_ratio)
+                                       double alpha, int epoch_length, int terminal_ratio)
 {
     this->instance = instance;
     this->t = t0;
@@ -34,11 +34,11 @@ SimulatedAnnealing::SimulatedAnnealing(Problem *instance, AntColony *ant_colony,
     
     // copy best so far ant
     best_ant = new AntStruct();
-    best_ant->tour = new long int[2*instance->num_node-1];
+    best_ant->tour = new int[2*instance->num_node-1];
     AntColony::copy_solution_from_to(instance->best_so_far_ant, best_ant);
     
     iter_ant = new AntStruct();
-    iter_ant->tour = new long int[2*instance->num_node-1];
+    iter_ant->tour = new int[2*instance->num_node-1];
     AntColony::copy_solution_from_to(best_ant, iter_ant);
     
     iteration = 0;
@@ -67,7 +67,7 @@ SimulatedAnnealing::~SimulatedAnnealing()
 
 void SimulatedAnnealing::run(void)
 {
-    printf("\n----- Start SA. length: %f iter: %ld time: %f-----\n", best_ant->tour_length, instance->iteration, elapsed_time( VIRTUAL));
+    printf("\n----- Start SA. length: %f iter: %d time: %f-----\n", best_ant->tour_length, instance->iteration, elapsed_time( VIRTUAL));
     write_anneal_report(instance, iter_ant, NULL);
     
     tabu_list.clear();
@@ -86,7 +86,7 @@ void SimulatedAnnealing::run(void)
     
     ant_colony->compute_total_information();
     
-    printf("----- End SA. length: %f iter: %ld time: %f-----\n", best_ant->tour_length, instance->iteration, elapsed_time( VIRTUAL));
+    printf("----- End SA. length: %f iter: %d time: %f-----\n", best_ant->tour_length, instance->iteration, elapsed_time( VIRTUAL));
     
 }
 
@@ -111,7 +111,7 @@ bool SimulatedAnnealing::step(void)
                 if (tabu_flag) {
                     update_tabu_list(move);
                 }
-                write_anneal_report(instance, iter_ant, move);
+//                write_anneal_report(instance, iter_ant, move);
                 
                 DEBUG(assert(check_solution(instance, iter_ant->tour, iter_ant->tour_size));)
             } else {
@@ -185,7 +185,7 @@ void SimulatedAnnealing::accept(Move *move)
         AntColony::copy_solution_from_to(iter_ant, best_ant);
         // update pheromone
         ant_colony->global_update_pheromone_weighted(iter_ant, 2 * ras_ranks);
-        printf("[%d]SA better solution. length:%f, sa_iter:%ld\n", instance->pid,iter_ant->tour_length, iteration);
+        printf("[%d]SA better solution. length:%f, sa_iter:%d\n", instance->pid,iter_ant->tour_length, iteration);
     }
 }
 
@@ -201,8 +201,8 @@ void SimulatedAnnealing::reject(Move *move)
 bool SimulatedAnnealing::is_tabu(Move *move)
 {
     Move *tabu_move;
-    long int i;
-    long int pos_n1, pos_n2;
+    int i;
+    int pos_n1, pos_n2;
     
     pos_n1 = move->pos_n1;
     pos_n2 = move->pos_n2;
