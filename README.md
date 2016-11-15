@@ -60,10 +60,9 @@ Code
 
 The program is developed under XCode, so it can be executed by XCode directly.
 
-This program can also be compiled by the GNU g++. To run this program, you need to do the folllowing three steps:
+This program can also be compiled by the GNU g++. To run this program, you need to do the folllowing two steps:
 
 * make all;
-* g++ *.o -o solver -lpthread;
-* ./solver filename
+* ./main filename
 
 
