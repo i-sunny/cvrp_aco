@@ -73,7 +73,7 @@ Procedures implementing init/exit aco and aco steps:
  */
 void AntColony::init_aco()
 {
-    instance->best_so_far_time = elapsed_time(VIRTUAL);
+    instance->best_so_far_time = elapsed_time(REAL);
     
     /* Initialize variables concerning statistics etc. */
     instance->iteration   = 0;
@@ -359,7 +359,7 @@ void AntColony::update_statistics()
         // 获得更优解
         instance->best_stagnate_cnt = 0;
         
-        instance->best_so_far_time = elapsed_time( VIRTUAL );
+        instance->best_so_far_time = elapsed_time( REAL );
         copy_solution_from_to(instance->iteration_best_ant, best_so_far_ant );
         
         instance->best_solution_iter = instance->iteration;

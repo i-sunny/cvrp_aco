@@ -210,7 +210,7 @@ void set_default_parameters (Problem *instance)
     ras_ranks      = 6;          /* number of ranked ants, top-{ras_ranks} ants */
     
     instance->rnd_seed       = (int) time(NULL);
-    instance->max_runtime    = 600.0;
+    instance->max_runtime    = 1200.0;
     
     // parallel aco
     g_master_problem_iteration_num    = 1;      /* 每次外循环，主问题蚁群的迭代次数 */

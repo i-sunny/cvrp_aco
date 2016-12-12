@@ -376,7 +376,7 @@ void ParallelAco::update_subs_to_master(Problem *master, const vector<Problem *>
     DEBUG(assert(check_solution(master, master_tour, k));)
     
     // 记录-report
-    master->best_so_far_time = elapsed_time(VIRTUAL);
+    master->best_so_far_time = elapsed_time(REAL);
     write_best_so_far_report(master);
     
 //    print_solution(master, master_tour, k);

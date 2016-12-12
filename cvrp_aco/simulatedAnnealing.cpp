@@ -67,7 +67,7 @@ SimulatedAnnealing::~SimulatedAnnealing()
 
 void SimulatedAnnealing::run(void)
 {
-    printf("\n----- Start SA. length: %f iter: %d time: %f-----\n", best_ant->tour_length, instance->iteration, elapsed_time( VIRTUAL));
+    printf("\n----- Start SA. length: %f iter: %d time: %f-----\n", best_ant->tour_length, instance->iteration, elapsed_time( REAL));
     write_anneal_report(instance, iter_ant, NULL);
     
     tabu_list.clear();
@@ -79,14 +79,14 @@ void SimulatedAnnealing::run(void)
     if (best_ant->tour_length - instance->best_so_far_ant->tour_length < -EPSILON) {
         AntColony::copy_solution_from_to(best_ant, instance->best_so_far_ant);
         if (instance->pid == 0) {
-            instance->best_so_far_time = elapsed_time(VIRTUAL);
+            instance->best_so_far_time = elapsed_time(REAL);
             write_best_so_far_report(instance);
         }
     }
     
     ant_colony->compute_total_information();
     
-    printf("----- End SA. length: %f iter: %d time: %f-----\n", best_ant->tour_length, instance->iteration, elapsed_time( VIRTUAL));
+    printf("----- End SA. length: %f iter: %d time: %f-----\n", best_ant->tour_length, instance->iteration, elapsed_time( REAL));
     
 }
 
@@ -126,7 +126,7 @@ bool SimulatedAnnealing::step(void)
                 
                 float ar = accept_cnt / (float) test_cnt;
                 float ir = improvement_cnt / (float) test_cnt;
-                DEBUG(printf("Time: %f, T: %f, ar: %f, ir: %f moves:%ld\n", elapsed_time(VIRTUAL), t, ar, ir, test_cnt);)
+                DEBUG(printf("Time: %f, T: %f, ar: %f, ir: %f moves:%ld\n", elapsed_time(REAL), t, ar, ir, test_cnt);)
                 test_cnt = accept_cnt = improvement_cnt = 0;
             }
             
@@ -156,7 +156,7 @@ bool SimulatedAnnealing::acceptable(Move *move)
     if (delta < -EPSILON) {
         accepted = true;
         improvement_cnt++;
-        //        printf("Time: %f, T: %f, improvement: %ld\n", elapsed_time(VIRTUAL), t, delta);
+        //        printf("Time: %f, T: %f, improvement: %ld\n", elapsed_time(REAL), t, delta);
     } else if (fabs(delta) < EPSILON) {
         accepted = true;
     }else {

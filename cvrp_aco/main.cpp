@@ -20,7 +20,7 @@
 #include "io.h"
 
 static bool parallel_flag  = true;  /* 是否使用并行算法 */
-static int tries = 15;
+static int tries = 10;
 
 /*
  FUNCTION:       checks whether termination condition is met
@@ -31,7 +31,7 @@ static int tries = 15;
 bool termination_condition(Problem *instance)
 {
     return ((instance->iteration >= instance->max_iteration) ||
-            (elapsed_time( VIRTUAL ) >= instance->max_runtime) ||
+            (elapsed_time( REAL ) >= instance->max_runtime) ||
             (fabs(instance->best_so_far_ant->tour_length - instance->optimum) < 10 * EPSILON));
 }
 
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
         init_problem(instance);
         init_report(instance, ntry);
         
-        printf("Initialization took %.10f seconds\n", elapsed_time(VIRTUAL));
+        printf("Initialization took %.10f seconds\n", elapsed_time(REAL));
 
         if (parallel_flag && instance->num_subs > 1) {
             solver = new ParallelAco(instance);

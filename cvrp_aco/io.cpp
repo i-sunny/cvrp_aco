@@ -250,12 +250,12 @@ void exit_report(Problem *instance, int ntry) {
     }
     
     printf("\n\nBest Length: %f\t Iterations: %d\t At time %.2f\t Tot.time %.2f\n",
-            instance->best_so_far_ant->tour_length, instance->iteration, instance->best_so_far_time, elapsed_time(VIRTUAL));
+            instance->best_so_far_ant->tour_length, instance->iteration, instance->best_so_far_time, elapsed_time(REAL));
     printf("############### end try %d ###############\n\n", ntry);
     
     if (report) {
         fprintf(report, "Best Length: %f\t Iterations: %d\t At time %.2f\t Tot.time %.2f\n",
-                instance->best_so_far_ant->tour_length, instance->iteration, instance->best_so_far_time, elapsed_time(VIRTUAL));
+                instance->best_so_far_ant->tour_length, instance->iteration, instance->best_so_far_time, elapsed_time(REAL));
         fflush(report);
     }
 
@@ -315,10 +315,10 @@ void write_best_so_far_report(Problem *instance)
 void write_iter_report(Problem *instance)
 {
     DEBUG(printf("iteration: %ld, iter best length %f, time %.2f\n",
-           instance->iteration, instance->iteration_best_ant->tour_length, elapsed_time( VIRTUAL));)
+           instance->iteration, instance->iteration_best_ant->tour_length, elapsed_time( REAL));)
     if (iter_report) {
         fprintf(iter_report, "%f\t %d\t %.3f\n",
-                instance->iteration_best_ant->tour_length, instance->iteration, elapsed_time( VIRTUAL));
+                instance->iteration_best_ant->tour_length, instance->iteration, elapsed_time( REAL));
     }
 }
 
@@ -329,24 +329,24 @@ void write_anneal_report(Problem *instance, AntStruct *ant, Move *move)
 {
     if (InversionMove *p = dynamic_cast<InversionMove *>(move)) {
         DEBUG(printf("[Inversion Move] moved length %f, gain:%f, pos_n1:%ld, pos_n2:%ld, time %.2f\n",
-               ant->tour_length, p->gain, p->pos_n1, p->pos_n2, elapsed_time( VIRTUAL));)
+               ant->tour_length, p->gain, p->pos_n1, p->pos_n2, elapsed_time( REAL));)
         if (anneal_report) {
             fprintf(anneal_report, "[Inversion Move]: best length %f, gain:%f, pos_n1:%d, pos_n2:%d, time %.2f\n",
-                    ant->tour_length, p->gain, p->pos_n1, p->pos_n2, elapsed_time( VIRTUAL));
+                    ant->tour_length, p->gain, p->pos_n1, p->pos_n2, elapsed_time( REAL));
         }
     } else if (InsertionMove *p = dynamic_cast<InsertionMove *>(move)) {
         DEBUG(printf("[Insertion Move] moved length %f, gain:%f, pos_n1:%ld, pos_n2:%ld, load_r1:%ld, load_r2:%ld, time %.2f\n",
-               ant->tour_length, p->gain, p->pos_n1, p->pos_n2, p->load_r1, p->load_r2, elapsed_time( VIRTUAL));)
+               ant->tour_length, p->gain, p->pos_n1, p->pos_n2, p->load_r1, p->load_r2, elapsed_time( REAL));)
         if (anneal_report) {
             fprintf(anneal_report, "[Insertion Move]: best length %f, gain:%f, pos_n1:%d, pos_n2:%d, time %.2f\n",
-                    ant->tour_length, p->gain, p->pos_n1, p->pos_n2, elapsed_time( VIRTUAL));
+                    ant->tour_length, p->gain, p->pos_n1, p->pos_n2, elapsed_time( REAL));
         }
     } else if (ExchangeMove *p = dynamic_cast<ExchangeMove *>(move)) {
         DEBUG(printf("[Exchange Move] moved length %f, gain:%f, pos_n1:%ld, pos_n2:%ld, load_r1:%ld, load_r2:%ld, time %.2f\n",
-               ant->tour_length, p->gain, p->pos_n1, p->pos_n2, p->load_r1, p->load_r2, elapsed_time( VIRTUAL));)
+               ant->tour_length, p->gain, p->pos_n1, p->pos_n2, p->load_r1, p->load_r2, elapsed_time( REAL));)
         if (anneal_report) {
             fprintf(anneal_report, "[Exchange Move] moved length %f, gain:%f, pos_n1:%d, pos_n2:%d, load_r1:%d, load_r2:%d, time %.2f\n",
-                    ant->tour_length, p->gain, p->pos_n1, p->pos_n2, p->load_r1, p->load_r2, elapsed_time( VIRTUAL));
+                    ant->tour_length, p->gain, p->pos_n1, p->pos_n2, p->load_r1, p->load_r2, elapsed_time( REAL));
         }
     }
 //    print_solution(instance, ant->tour, ant->tour_size);
