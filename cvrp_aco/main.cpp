@@ -89,7 +89,6 @@ int main(int argc, char *argv[])
         solver->init_aco();
         
         while (!termination_condition(instance)) {
-        
             solver->run_aco_iteration();
             instance->iteration++;
         }
