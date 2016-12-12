@@ -16,7 +16,7 @@ EXE=main
 all: clean cvrp_aco
 
 clean:
-	@$(RM) *.o cvrp_aco
+	@$(RM) *.o main
 
 cvrp_aco: $(OBJS)
 	$(CC) $(CPPFLAGS) $(OBJS) -o $(EXE)

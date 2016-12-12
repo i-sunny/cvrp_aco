@@ -141,8 +141,6 @@ void AntColony::run_aco_iteration()
             delete annealer;
         }
     }
-    
-//    print_probabilities(instance);
 }
 
 /*
@@ -171,22 +169,22 @@ void AntColony::construct_solutions( void )
 
 void AntColony::construct_ant_solution(AntStruct *ant)
 {
-    int visited_node_cnt = 0;   /* count of visited node by this ant */
+    int visited_cnt = 0;   /* count of visited node by this ant */
     
-    int path_load;          /* 单次从depot出发的送货量 */
+    int route_load;          /* 单次从depot出发的送货量 */
     int next_node, current_node;
     int i, candidate_cnt, step;
-    double path_distance;
+    double route_dist;
     
     /* Mark all nodes as unvisited */
     ant_empty_memory(ant);
     
-    path_load = 0;
-    path_distance = 0;
+    route_load = 0;
+    route_dist = 0;
     step = 0;
     init_ant_place(ant, step);
     
-    while (visited_node_cnt < num_node - 1) {
+    while (visited_cnt < num_node - 1) {
         current_node = ant->tour[step];
         step++;
         
@@ -197,8 +195,8 @@ void AntColony::construct_ant_solution(AntStruct *ant)
         }
         for(i = 0; i < num_node; i++) {
             if (ant->visited[i] == FALSE
-                && path_load + nodeptr[i].demand <= vehicle_capacity
-                && path_distance + (distance[current_node][i] + instance->service_time) + distance[i][0] <= instance->max_distance) {
+                && route_load + nodeptr[i].demand <= vehicle_capacity
+                && route_dist + (distance[current_node][i] + instance->service_time) + distance[i][0] <= instance->max_distance) {
                 ant->candidate[i] = TRUE;
                 candidate_cnt++;
             }
@@ -209,14 +207,15 @@ void AntColony::construct_ant_solution(AntStruct *ant)
          2）否则，选择下一个配送点
          */
         if (candidate_cnt == 0) {
-            path_load = 0;
-            path_distance = 0;
+            route_load = 0;
+            route_dist = 0;
             init_ant_place(ant, step);
         } else {
             next_node = neighbour_choose_and_move_to_next(ant, step);
-            path_load += nodeptr[next_node].demand;
-            path_distance += distance[current_node][next_node] + instance->service_time;
-            visited_node_cnt++;
+            route_load += nodeptr[next_node].demand;
+            route_dist += distance[current_node][next_node] + instance->service_time;
+            ant->visited[next_node] = TRUE;
+            visited_cnt++;
         }
     }
     
@@ -657,9 +656,7 @@ int AntColony::choose_best_next( AntStruct *a, int phase )
     current_node = a->tour[phase-1];
     value_best = -1.;             /* values in total matrix are always >= 0.0 */    
     for ( node = 0 ; node < num_node ; node++ ) {
-        if ( a->visited[node] ) {
-            ; /* node already visited, do nothing */
-        } else if(a->candidate[node] == FALSE) {
+        if(a->candidate[node] == FALSE) {
             ;  /* 该点不满足要求 */
         } else {
             if ( total_info[current_node][node] > value_best ) {
@@ -672,7 +669,6 @@ int AntColony::choose_best_next( AntStruct *a, int phase )
     DEBUG( assert ( value_best > 0.0 ); )
     DEBUG( assert ( a->visited[next_node] == FALSE ); )
     a->tour[phase] = next_node;
-    a->visited[next_node] = TRUE;
     
     return next_node;
 }
@@ -698,9 +694,7 @@ int AntColony::neighbour_choose_best_next( AntStruct *a, int phase )
     value_best = -1.;             /* values in total matix are always >= 0.0 */    
     for ( i = 0 ; i < nn_ants ; i++ ) {
         help_node = nn_list[current_node][i];
-        if ( a->visited[help_node] ) {
-            ;   /* node already visited, do nothing */
-        } else if(a->candidate[help_node] == FALSE) {
+        if(a->candidate[help_node] == FALSE) {
             ;  /* 该点不满足要求 */
         } else {
             help = total_info[current_node][help_node];
@@ -718,7 +712,6 @@ int AntColony::neighbour_choose_best_next( AntStruct *a, int phase )
         DEBUG( assert ( value_best > 0.0 ); )
         DEBUG( assert ( a->visited[next_node] == FALSE ); )
         a->tour[phase] = next_node;
-        a->visited[next_node] = TRUE;
     }
     return next_node;
 }
@@ -741,9 +734,7 @@ void AntColony::choose_closest_next( AntStruct *a, int phase )
     current_node = a->tour[phase-1];
     min_distance = INFINITY;             /* Search shortest edge */    
     for ( node = 0 ; node < num_node ; node++ ) {
-        if ( a->visited[node] ) {
-            ; /* node already visited */
-        } else if(a->candidate[node] == FALSE) {
+        if(a->candidate[node] == FALSE) {
             ;  /* 该点不满足要求 */
         } else {
             if ( distance[current_node][node] < min_distance) {
@@ -754,7 +745,6 @@ void AntColony::choose_closest_next( AntStruct *a, int phase )
     }
     DEBUG( assert ( 0 <= next_node && next_node < num_node); );
     a->tour[phase] = next_node;
-    a->visited[next_node] = TRUE;
 }
 
 
@@ -781,9 +771,7 @@ int AntColony::neighbour_choose_and_move_to_next(AntStruct *a, int phase)
     DEBUG( assert ( current_node >= 0 && current_node < num_node ); )
     for ( i = 0 ; i < nn_ants ; i++ ) {
         neighbour_node = nn_list[current_node][i];
-        if ( a->visited[neighbour_node] ) {
-            prob_ptr[i] = 0.0;   /* node already visited */
-        } else if(a->candidate[neighbour_node] == FALSE) {
+        if(a->candidate[neighbour_node] == FALSE) {
             prob_ptr[i] = 0.0;  /* 该点不满足要求 */
         } else {
             DEBUG( assert ( neighbour_node >= 0 && neighbour_node < num_node ); )
@@ -820,7 +808,6 @@ int AntColony::neighbour_choose_and_move_to_next(AntStruct *a, int phase)
         DEBUG(assert ( help >= 0 && help < num_node );)
         DEBUG( assert ( a->visited[help] == FALSE ); )
         a->tour[phase] = help; /* nn_list[current_node][i]; */
-        a->visited[help] = TRUE;
         
         return help;
     }

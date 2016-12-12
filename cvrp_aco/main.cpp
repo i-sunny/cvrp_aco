@@ -62,7 +62,7 @@ char* parse_commandline (int argc, char *argv [])
  */
 int main(int argc, char *argv[])
 {
-    for (int i = 1; i <= 1; i++) {
+    for (int i = 1; i <= 2; i++) {
     for (int ntry = 0 ; ntry < tries; ntry++)
     {
         Problem *instance = new Problem(0);
@@ -71,10 +71,8 @@ int main(int argc, char *argv[])
         start_timers();
         
         char *filename = parse_commandline(argc, argv);
-        sprintf(filename, "/Users/sunny/Desktop/cvrp_proj/src/cvrp_aco/dataset/CMT/CMT%d.vrp", i);
-//        linux
 //        sprintf(filename, "../dataset/CMT/CMT%d.vrp", i);
-        
+        sprintf(filename, "../dataset/Golden/Golden_%d.vrp", i);
         
         read_instance_file(instance, filename);
         init_problem(instance);

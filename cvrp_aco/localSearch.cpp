@@ -66,7 +66,7 @@ void LocalSearch::do_local_search(void)
             two_opt_solution(ants[k].tour, ants[k].tour_size);
             
             //2) swap - exchange 2 nodes in the tour
-            swap(ants[k].tour, ants[k].tour_size);
+//            swap(ants[k].tour, ants[k].tour_size);
             
             ants[k].tour_length = compute_tour_length(instance, ants[k].tour, ants[k].tour_size);
         }
