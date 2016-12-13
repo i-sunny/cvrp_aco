@@ -67,13 +67,19 @@ SimulatedAnnealing::~SimulatedAnnealing()
 
 void SimulatedAnnealing::run(void)
 {
-    printf("\n----- Start SA. length: %f iter: %d time: %f-----\n", best_ant->tour_length, instance->iteration, elapsed_time( REAL));
+    printf("\n----- Start SA. pid: %d length: %f iter: %d time: %f-----\n",
+           instance->pid, best_ant->tour_length, instance->iteration, elapsed_time( REAL));
     write_anneal_report(instance, iter_ant, NULL);
     
     tabu_list.clear();
     
+    double beg_time = elapsed_time(REAL);
     while (t > (t0 / terminal_ratio)) {
         step();
+        if(elapsed_time(REAL) - beg_time > 10) {
+            printf("omg, it happens!\n");
+            break;
+        }
     }
     
     if (best_ant->tour_length - instance->best_so_far_ant->tour_length < -EPSILON) {
@@ -85,8 +91,8 @@ void SimulatedAnnealing::run(void)
     }
     
     ant_colony->compute_total_information();
-    
-    printf("----- End SA. length: %f iter: %d time: %f-----\n", best_ant->tour_length, instance->iteration, elapsed_time( REAL));
+    printf("----- End SA. pid: %d length: %f iter: %d time: %f-----\n",
+           instance->pid, best_ant->tour_length, instance->iteration, elapsed_time( REAL));
     
 }
 
@@ -129,11 +135,6 @@ bool SimulatedAnnealing::step(void)
                 DEBUG(printf("Time: %f, T: %f, ar: %f, ir: %f moves:%ld\n", elapsed_time(REAL), t, ar, ir, test_cnt);)
                 test_cnt = accept_cnt = improvement_cnt = 0;
             }
-            
-            // update pheromone
-        //    if (move->gain < -EPSILON) {
-        //        ant_colony->global_update_pheromone_weighted(iter_ant, 0.01);
-        //    }
         }
     }
     delete move;
