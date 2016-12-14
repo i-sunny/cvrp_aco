@@ -62,7 +62,7 @@ char* parse_commandline (int argc, char *argv [])
  */
 int main(int argc, char *argv[])
 {
-    for (int i = 3; i <= 3; i++) {
+    for (int i = 4; i <= 4; i++) {
     for (int ntry = 0 ; ntry < tries; ntry++)
     {
         Problem *instance = new Problem(0);

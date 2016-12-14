@@ -173,8 +173,9 @@ void AntColony::construct_ant_solution(AntStruct *ant)
     
     int route_load;          /* 单次从depot出发的送货量 */
     int next_node, current_node;
-    int i, candidate_cnt, step;
+    int i, step;
     double route_dist;
+    bool candidate_flag;
     
     /* Mark all nodes as unvisited */
     ant_empty_memory(ant);
@@ -189,7 +190,7 @@ void AntColony::construct_ant_solution(AntStruct *ant)
         step++;
         
         /* 查看所有可以派送的点 */
-        candidate_cnt = 0;
+        candidate_flag = FALSE;
         for (i = 0; i < num_node; i++) {
             ant->candidate[i] = FALSE;
         }
@@ -198,7 +199,7 @@ void AntColony::construct_ant_solution(AntStruct *ant)
                 && route_load + nodeptr[i].demand <= vehicle_capacity
                 && route_dist + (distance[current_node][i] + instance->service_time) + distance[i][0] <= instance->max_distance) {
                 ant->candidate[i] = TRUE;
-                candidate_cnt++;
+                candidate_flag = TRUE;
             }
         }
         
@@ -206,7 +207,7 @@ void AntColony::construct_ant_solution(AntStruct *ant)
          1)如果没有可行的配送点,则蚂蚁回到depot，重新开始新的路径
          2）否则，选择下一个配送点
          */
-        if (candidate_cnt == 0) {
+        if (!candidate_flag) {
             route_load = 0;
             route_dist = 0;
             init_ant_place(ant, step);
