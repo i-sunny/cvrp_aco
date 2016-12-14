@@ -73,7 +73,7 @@ void SimulatedAnnealing::run(void)
     }
     printf("\n----- Start SA. pid: %d length: %f iter: %d time: %f-----\n",
            instance->pid, best_ant->tour_length, instance->iteration, elapsed_time( REAL));
-    write_anneal_report(instance, iter_ant, NULL);
+//    write_anneal_report(instance, iter_ant, NULL);
     
     tabu_list.clear();
     
