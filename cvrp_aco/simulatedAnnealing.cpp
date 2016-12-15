@@ -77,11 +77,12 @@ void SimulatedAnnealing::run(void)
     
     tabu_list.clear();
     
-    double beg_time = elapsed_time(REAL);
+    double beg_time = elapsed_time(REAL), end_time;
     while (t > (t0 / terminal_ratio)) {
         step();
-        if(elapsed_time(REAL) - beg_time > 10) {
-            printf("omg, it happens!\n");
+        end_time = elapsed_time(REAL);
+        if(end_time - beg_time > 10) {
+            printf("omg, it happens! pid: %d\n", instance->pid);
             break;
         }
     }

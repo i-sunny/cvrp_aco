@@ -25,11 +25,8 @@
 #include "timer.h"
 
 
-static struct rusage res;
-static struct timeval tp;
 static double virtual_time, real_time;
 static char format_time[26];
-
 
 
 void start_timers(void)
@@ -42,6 +39,9 @@ void start_timers(void)
       (SIDE)EFFECTS:  virtual and real time are computed   
 */
 {
+    static struct rusage res;
+    static struct timeval tp;
+    
     getrusage( RUSAGE_SELF, &res );
     virtual_time = (double) res.ru_utime.tv_sec +
 		   (double) res.ru_stime.tv_sec +
@@ -63,6 +63,9 @@ double elapsed_time(TIMER_TYPE type)
       (SIDE)EFFECTS:  none
 */
 {
+    static struct rusage res;
+    static struct timeval tp;
+    
     if (type == REAL) {
         gettimeofday( &tp, NULL );
         return( (double) tp.tv_sec +
