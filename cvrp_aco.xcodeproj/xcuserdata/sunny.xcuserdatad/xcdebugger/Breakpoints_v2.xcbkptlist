@@ -16,7 +16,7 @@
             startingLineNumber = "78"
             endingLineNumber = "78"
             landmarkName = "main(int argc, char *argv[])"
-            landmarkType = "7">
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -32,7 +32,7 @@
             startingLineNumber = "452"
             endingLineNumber = "452"
             landmarkName = "handle(void* in)"
-            landmarkType = "7">
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -80,7 +80,7 @@
             startingLineNumber = "195"
             endingLineNumber = "195"
             landmarkName = "ParallelAco::build_sub_problems(AntStruct *ant, const vector&lt; vector&lt;RouteCenter *&gt; &gt;&amp; sub_problem_routes)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -288,7 +288,7 @@
             startingLineNumber = "804"
             endingLineNumber = "804"
             landmarkName = "AntColony::neighbour_choose_and_move_to_next(AntStruct *a, int phase)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -304,7 +304,7 @@
             startingLineNumber = "797"
             endingLineNumber = "797"
             landmarkName = "AntColony::neighbour_choose_and_move_to_next(AntStruct *a, int phase)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -320,7 +320,7 @@
             startingLineNumber = "786"
             endingLineNumber = "786"
             landmarkName = "AntColony::neighbour_choose_and_move_to_next(AntStruct *a, int phase)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -336,7 +336,7 @@
             startingLineNumber = "160"
             endingLineNumber = "160"
             landmarkName = "AntColony::construct_solutions( void )"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -352,7 +352,7 @@
             startingLineNumber = "154"
             endingLineNumber = "154"
             landmarkName = "AntColony::construct_solutions( void )"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -368,7 +368,7 @@
             startingLineNumber = "157"
             endingLineNumber = "157"
             landmarkName = "AntColony::construct_solutions( void )"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -416,7 +416,7 @@
             startingLineNumber = "405"
             endingLineNumber = "405"
             landmarkName = "ParallelAco::run_aco_iteration()"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -450,7 +450,7 @@
             startingLineNumber = "99"
             endingLineNumber = "99"
             landmarkName = "SimulatedAnnealing::run(void)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -466,7 +466,7 @@
             startingLineNumber = "85"
             endingLineNumber = "85"
             landmarkName = "SimulatedAnnealing::run(void)"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

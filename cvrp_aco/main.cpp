@@ -20,7 +20,7 @@
 #include "io.h"
 
 static bool parallel_flag  = true;  /* 是否使用并行算法 */
-static int tries = 10;
+static int tries = 15;
 
 /*
  FUNCTION:       checks whether termination condition is met
@@ -71,8 +71,8 @@ int main(int argc, char *argv[])
         start_timers();
         
         char *filename = parse_commandline(argc, argv);
-//        sprintf(filename, "../dataset/CMT/CMT%d.vrp", i);
-        sprintf(filename, "../dataset/Golden/Golden_%d.vrp", i);
+        sprintf(filename, "../dataset/CMT/CMT%d.vrp", i);
+//        sprintf(filename, "../dataset/Golden/Golden_%d.vrp", i);
         
         read_instance_file(instance, filename);
         init_problem(instance);

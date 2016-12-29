@@ -39,8 +39,8 @@ void start_timers(void)
       (SIDE)EFFECTS:  virtual and real time are computed   
 */
 {
-    static struct rusage res;
-    static struct timeval tp;
+    struct rusage res;
+    struct timeval tp;
     
     getrusage( RUSAGE_SELF, &res );
     virtual_time = (double) res.ru_utime.tv_sec +
@@ -63,8 +63,8 @@ double elapsed_time(TIMER_TYPE type)
       (SIDE)EFFECTS:  none
 */
 {
-    static struct rusage res;
-    static struct timeval tp;
+    struct rusage res;
+    struct timeval tp;
     
     if (type == REAL) {
         gettimeofday( &tp, NULL );
