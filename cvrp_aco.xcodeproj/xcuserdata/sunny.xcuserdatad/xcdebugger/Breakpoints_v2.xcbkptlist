@@ -256,7 +256,7 @@
             startingLineNumber = "240"
             endingLineNumber = "240"
             landmarkName = "init_report(Problem *instance, int ntry)"
-            landmarkType = "7">
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -272,7 +272,7 @@
             startingLineNumber = "241"
             endingLineNumber = "241"
             landmarkName = "init_report(Problem *instance, int ntry)"
-            landmarkType = "7">
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

@@ -81,7 +81,7 @@ void SimulatedAnnealing::run(void)
     while (t > (t0 / terminal_ratio)) {
         step();
         end_time = elapsed_time(REAL);
-        if(end_time - beg_time > 10) {
+        if(end_time - beg_time > 20) {
             printf("omg, it happens! pid: %d\n", instance->pid);
             break;
         }
